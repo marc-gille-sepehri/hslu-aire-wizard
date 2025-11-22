@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Readiness Assessment - HSLU</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "FS Albert Web Regular", Helvetica, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #bae0ea 0%, #7bb8c8 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 18px;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.95;
+        }
+
+        .content-section {
+            padding: 60px 20px;
+            background: white;
+        }
+
+        .content-section h2 {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .content-section p {
+            font-size: 16px;
+            color: #495057;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .content-section ul {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        .content-section li {
+            font-size: 16px;
+            color: #495057;
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        .wizard-embed {
+            padding: 40px 20px;
+            background: #f8f9fa;
+        }
+
+        .wizard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .wizard-container iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+            display: block;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .footer a {
+            color: #bae0ea;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .content-section {
+                padding: 40px 20px;
+            }
+
+            .content-section h2 {
+                font-size: 24px;
+            }
+
+            .wizard-container iframe {
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>AI Readiness Assessment</h1>
+            <p>
+                Finde heraus, wie bereit dein Unternehmen für künstliche Intelligenz ist. 
+                Unser interaktiver Wizard bewertet deine Organisation in fünf wichtigen Dimensionen 
+                und gibt dir personalisierte Empfehlungen.
+            </p>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="container">
+            <h2>Warum AI Readiness wichtig ist</h2>
+            <p>
+                Künstliche Intelligenz transformiert Unternehmen in allen Branchen. Um von KI zu profitieren, 
+                müssen Organisationen jedoch gut vorbereitet sein. Unsere Assessment-Tool hilft dir dabei, 
+                den aktuellen Stand deines Unternehmens zu verstehen und die nächsten Schritte zu identifizieren.
+            </p>
+            
+            <h2 style="margin-top: 40px;">Was wird bewertet?</h2>
+            <ul>
+                <li><strong>Strategie & Orientierung:</strong> Klarheit über KI-Ziele und Vision</li>
+                <li><strong>Daten & Informationsqualität:</strong> Verfügbarkeit und Qualität deiner Daten</li>
+                <li><strong>Prozesse & Systeme:</strong> Digitalisierung und Systemintegration</li>
+                <li><strong>Organisation & Rollen:</strong> Strukturen und Verantwortlichkeiten</li>
+                <li><strong>Kompetenzen & Skills:</strong> Wissen und Fähigkeiten deines Teams</li>
+            </ul>
+
+            <p style="margin-top: 30px;">
+                Der Assessment dauert etwa 10-15 Minuten und gibt dir sofort ein detailliertes Ergebnis 
+                mit personalisierten Empfehlungen für dein Unternehmen.
+            </p>
+        </div>
+    </div>
+
+    <div class="wizard-embed">
+        <div class="wizard-container">
+            <iframe 
+                src="/hslu-aire-wizard/index.html" 
+                title="AI Readiness Wizard"
+                allow="fullscreen"
+                loading="lazy"
+            ></iframe>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="container">
+            <h2>Nächste Schritte</h2>
+            <p>
+                Nach Abschluss des Assessments erhältst du eine detaillierte Bewertung und Empfehlungen, 
+                die auf deinen Antworten basieren. Diese können dir helfen:
+            </p>
+            <ul>
+                <li>Schwachstellen in deiner KI-Strategie zu identifizieren</li>
+                <li>Prioritäten für KI-Initiativen zu setzen</li>
+                <li>Die richtigen Schulungen und Programme zu finden</li>
+                <li>Dein Team auf die KI-Transformation vorzubereiten</li>
+            </ul>
+
+            <p style="margin-top: 30px;">
+                Hast du Fragen oder möchtest du mehr über unsere KI-Services erfahren? 
+                Kontaktiere uns für ein persönliches Gespräch.
+            </p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="container">
+            <p>&copy; 2024 HSLU - Hochschule Luzern</p>
+            <p>
+                <a href="#">Impressum</a> | 
+                <a href="#">Datenschutz</a> | 
+                <a href="#">Kontakt</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+
