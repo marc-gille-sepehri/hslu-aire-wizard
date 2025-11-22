@@ -1,0 +1,130 @@
+.dimension-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.overview-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.dimension-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dimension-item {
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dimension-item:hover {
+  border-color: #bae0ea;
+  transform: translateX(4px);
+}
+
+.dimension-item.active {
+  border-color: #bae0ea;
+  background: #e8f6f9;
+  box-shadow: 0 2px 8px rgba(186, 224, 234, 0.2);
+}
+
+.dimension-item.complete {
+  border-color: #28a745;
+}
+
+.dimension-item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.dimension-item-icon {
+  font-size: 20px;
+  color: #5a9fb2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+.dimension-item-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.5;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  fill: none !important;
+  display: block;
+  box-shadow: none !important;
+  overflow: visible;
+}
+
+.dimension-item-icon svg path,
+.dimension-item-icon svg circle,
+.dimension-item-icon svg polygon,
+.dimension-item-icon svg line {
+  fill: none !important;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.dimension-item-icon svg rect {
+  display: none !important;
+  opacity: 0 !important;
+  fill: none !important;
+  stroke: none !important;
+}
+
+.dimension-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c3e50;
+  flex: 1;
+}
+
+.dimension-item-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dimension-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: #e9ecef;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.dimension-progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #bae0ea 0%, #7bb8c8 100%);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.dimension-item.complete .dimension-progress-fill {
+  background: #28a745;
+}
+
+.dimension-progress-text {
+  font-size: 11px;
+  color: #6c757d;
+  font-weight: 600;
+  min-width: 35px;
+  text-align: right;
+}
+

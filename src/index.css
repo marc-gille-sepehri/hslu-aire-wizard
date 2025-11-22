@@ -1,0 +1,51 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "FS Albert Web Regular", Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #bae0ea 0%, #7bb8c8 100%);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Remove borders and backgrounds from all icons */
+svg {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  overflow: visible;
+  shape-rendering: geometricPrecision;
+}
+
+/* Hide any rectangle elements that might create borders */
+svg rect[width][height] {
+  display: none !important;
+  opacity: 0 !important;
+  fill: none !important;
+  stroke: none !important;
+}
+
+/* Remove any fill or border paths from SVG elements */
+svg path,
+svg circle,
+svg polygon,
+svg line,
+svg ellipse {
+  fill: none !important;
+  stroke: currentColor;
+}
+
+/* Ensure no background rectangles */
+svg > rect:first-child {
+  display: none !important;
+}
+

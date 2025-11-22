@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Readiness Wizard - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "FS Albert Web Regular", Helvetica, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #bae0ea 0%, #7bb8c8 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .iframe-container {
+            width: 100%;
+            height: 800px;
+            border: none;
+            overflow: hidden;
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .info {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .info p {
+            margin-bottom: 8px;
+        }
+
+        .info code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .iframe-container {
+                height: 600px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI Readiness Wizard</h1>
+            <p>Eingebettete Demo-Version</p>
+        </div>
+        <div class="iframe-container">
+            <iframe 
+                src="./index.html" 
+                title="AI Readiness Wizard"
+                allow="fullscreen"
+                loading="lazy"
+            ></iframe>
+        </div>
+        <div class="info">
+            <p><strong>Hinweis:</strong> Dies ist eine Demo-Seite, die den Wizard in einem iframe einbettet.</p>
+            <p>Um den Wizard auf deiner eigenen Website einzubetten, verwende folgenden Code:</p>
+            <p>
+                <code>&lt;iframe src="https://[DEIN-USERNAME].github.io/hslu-aire-wizard/" width="100%" height="800" frameborder="0"&gt;&lt;/iframe&gt;</code>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+
