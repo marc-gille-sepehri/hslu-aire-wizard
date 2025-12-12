@@ -22,16 +22,62 @@
   align-items: center;
 }
 
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .site-logo {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.site-logo span {
   font-size: 2rem;
   font-weight: 700;
-  color: #2c3e50;
-  margin: 0;
+  line-height: 1;
   letter-spacing: -0.5px;
   background: linear-gradient(135deg, #2c3e50 0%, #5a9fb2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.hslu-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  line-height: 0;
+}
+
+.hslu-logo-link:hover {
+  opacity: 0.8;
+}
+
+.hslu-logo {
+  height: 60px;
+  width: auto;
+  display: block;
+  margin: 0;
+  margin-top: 33px;
+  padding: 0;
+  vertical-align: top;
+  object-fit: contain;
+}
+
+.hslu-logo-link svg,
+.hslu-logo svg {
+  display: block;
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
 }
 
 .site-nav {
@@ -606,8 +652,21 @@
 }
 
 @media (max-width: 768px) {
-  .site-logo {
+  .logo-container {
+    gap: 1rem;
+  }
+
+  .site-logo span {
     font-size: 1.5rem;
+  }
+
+  .hslu-logo {
+    height: 40px;
+  }
+
+  .hslu-logo-link svg,
+  .hslu-logo svg {
+    height: 32px;
   }
 
   .site-nav {

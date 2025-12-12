@@ -32,7 +32,16 @@ function App() {
       <header className="site-header">
         <div className="container">
           <div className="header-content">
-            <h1 className="site-logo">AI@RE</h1>
+            <div className="logo-container">
+              <h1 className="site-logo"><span>AI@RE</span></h1>
+              <a href="https://www.hslu.ch" target="_blank" rel="noopener noreferrer" className="hslu-logo-link">
+                <img 
+                  src="https://www.hslu.ch/-/media/campus/common/images/header/hslu-logo.svg?sc_lang=de-ch" 
+                  alt="HSLU Logo" 
+                  className="hslu-logo"
+                />
+              </a>
+            </div>
             <nav className="site-nav">
               <a href="#home" onClick={(e) => { e.preventDefault(); setShowWizard(false); setShowResult(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Home</a>
               <a href="#about" onClick={(e) => { e.preventDefault(); setShowWizard(false); setShowResult(false); const element = document.getElementById('about'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Über uns</a>
