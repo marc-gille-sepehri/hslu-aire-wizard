@@ -3,7 +3,7 @@ import { FiZap } from 'react-icons/fi'
 import { dimensions, recommendations } from '../data/questions'
 import './Result.css'
 
-function Result({ answers, onReset }) {
+function Result({ answers, onReset, onBackToHome }) {
   const result = useMemo(() => {
     // Calculate average score per dimension
     const dimensionScores = dimensions.map((dim) => {
@@ -121,6 +121,11 @@ function Result({ answers, onReset }) {
         </div>
 
         <div className="result-actions">
+          {onBackToHome && (
+            <button className="reset-button reset-button-secondary" onClick={onBackToHome}>
+              Zurück zur Startseite
+            </button>
+          )}
           <button className="reset-button" onClick={onReset}>
             Erneut starten
           </button>

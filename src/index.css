@@ -4,12 +4,18 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: "FS Albert Web Regular", Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #bae0ea 0%, #7bb8c8 100%);
+  background: #ffffff;
   min-height: 100vh;
+  color: #2c3e50;
+  line-height: 1.6;
 }
 
 #root {

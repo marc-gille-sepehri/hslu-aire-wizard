@@ -212,8 +212,10 @@
 .result-actions {
   display: flex;
   justify-content: center;
+  gap: 1rem;
   padding-top: 20px;
   border-top: 2px solid #e9ecef;
+  flex-wrap: wrap;
 }
 
 .reset-button {
@@ -232,6 +234,16 @@
 .reset-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(186, 224, 234, 0.4);
+}
+
+.reset-button-secondary {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.reset-button-secondary:hover {
+  background: #dee2e6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .result-data {
