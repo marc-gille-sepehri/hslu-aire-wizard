@@ -39,14 +39,16 @@ function App() {
     // Create mailto link with encoded data
     const mailtoLink = `mailto:info@ai-in-real-estate.ch?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nE-Mail: ${email}\n\nNachricht:\n${message}`)}`
     
-    // Open email client
-    window.location.href = mailtoLink
+    // Reset form immediately
+    e.target.reset()
     
     // Show success message
     alert('Vielen Dank für Ihre Nachricht! Ihr E-Mail-Programm wird geöffnet.')
     
-    // Reset form
-    e.target.reset()
+    // Open email client after a short delay to ensure form is reset
+    setTimeout(() => {
+      window.location.href = mailtoLink
+    }, 100)
   }
 
   return (
