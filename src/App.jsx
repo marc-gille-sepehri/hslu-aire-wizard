@@ -28,6 +28,27 @@ function App() {
     setAnswers(null)
   }
 
+  const handleContactSubmit = (e) => {
+    e.preventDefault()
+    const formData = new FormData(e.target)
+    const name = formData.get('name')
+    const email = formData.get('email')
+    const subject = formData.get('subject')
+    const message = formData.get('message')
+    
+    // Create mailto link with encoded data
+    const mailtoLink = `mailto:info@ai-in-real-estate.ch?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nE-Mail: ${email}\n\nNachricht:\n${message}`)}`
+    
+    // Open email client
+    window.location.href = mailtoLink
+    
+    // Show success message
+    alert('Vielen Dank für Ihre Nachricht! Ihr E-Mail-Programm wird geöffnet.')
+    
+    // Reset form
+    e.target.reset()
+  }
+
   return (
     <div className="app">
       <header className="site-header">
@@ -231,7 +252,7 @@ function App() {
                     </div>
                   </div>
                   <div className="contact-form">
-                    <form onSubmit={(e) => { e.preventDefault(); alert('Vielen Dank für Ihre Nachricht!'); }}>
+                    <form onSubmit={handleContactSubmit}>
                       <div className="form-group">
                         <label htmlFor="name">Name</label>
                         <input type="text" id="name" name="name" required />
