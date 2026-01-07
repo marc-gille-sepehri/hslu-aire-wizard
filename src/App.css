@@ -165,8 +165,25 @@
 .hero-subtitle {
   font-size: 1.3rem;
   color: #6c757d;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   line-height: 1.7;
+  font-weight: 400;
+}
+
+.hero-subline {
+  font-size: 1.1rem;
+  color: #495057;
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.hero-note {
+  font-size: 0.95rem;
+  color: #6c757d;
+  margin-top: 1rem;
+  text-align: center;
   font-weight: 400;
 }
 
@@ -193,6 +210,49 @@
 .content-section {
   padding: 6rem 0;
   background: #ffffff;
+}
+
+.section-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.section-content p {
+  font-size: 1.1rem;
+  color: #495057;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+.section-content h3 {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.section-content ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 1.5rem 0;
+}
+
+.section-content ul li {
+  font-size: 1.1rem;
+  color: #495057;
+  line-height: 1.8;
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.section-content ul li::before {
+  content: "•";
+  color: #5a9fb2;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
 }
 
 .section-intro {
@@ -319,8 +379,44 @@
 }
 
 .wizard-preview-content {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
+}
+
+.dimensions-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin: 3rem 0;
+  text-align: left;
+}
+
+.dimension-item {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #5a9fb2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dimension-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.dimension-item h3 {
+  font-size: 1.25rem;
+  color: #2c3e50;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.dimension-item p {
+  font-size: 1rem;
+  color: #6c757d;
+  line-height: 1.6;
+  margin: 0;
 }
 
 /* Wizard Section */

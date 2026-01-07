@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { dimensions, responseOptions } from '../data/questions'
 import QuestionSlide from './QuestionSlide'
 import DimensionOverview from './DimensionOverview'
+import UserInfoForm from './UserInfoForm'
 import './Wizard.css'
 
 function Wizard({ onComplete }) {
+  const [showUserInfoForm, setShowUserInfoForm] = useState(false)
   const [currentDimension, setCurrentDimension] = useState(0)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
@@ -29,9 +31,17 @@ function Wizard({ onComplete }) {
       setCurrentDimension(currentDimension + 1)
       setCurrentQuestion(0)
     } else {
-      // All questions answered
-      onComplete(answers)
+      // All questions answered - show user info form
+      setShowUserInfoForm(true)
     }
+  }
+
+  const handleUserInfoSubmit = async (data) => {
+    await onComplete(data)
+  }
+
+  const handleBackToQuestions = () => {
+    setShowUserInfoForm(false)
   }
 
   const handlePrevious = () => {
@@ -55,6 +65,18 @@ function Wizard({ onComplete }) {
 
   const isLastQuestion = currentDimension === dimensions.length - 1 && 
                          currentQuestion === currentDim.questions.length - 1
+
+  if (showUserInfoForm) {
+    return (
+      <div className="wizard">
+        <UserInfoForm
+          answers={answers}
+          onSubmit={handleUserInfoSubmit}
+          onBack={handleBackToQuestions}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="wizard">

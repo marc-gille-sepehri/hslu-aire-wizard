@@ -1,0 +1,139 @@
+.user-info-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem 0;
+}
+
+.user-info-container {
+  max-width: 600px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 3rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.user-info-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.user-info-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.user-info-subtitle {
+  font-size: 1.1rem;
+  color: #6c757d;
+  line-height: 1.6;
+}
+
+.user-info-form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.user-info-error {
+  background: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.form-group input {
+  padding: 0.875rem 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #5a9fb2;
+}
+
+.form-group input:disabled {
+  background: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.user-info-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.user-info-button {
+  flex: 1;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.user-info-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.user-info-button-primary {
+  background: linear-gradient(135deg, #5a9fb2 0%, #7bb8c8 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(90, 159, 178, 0.3);
+}
+
+.user-info-button-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(90, 159, 178, 0.4);
+}
+
+.user-info-button-secondary {
+  background: #f8f9fa;
+  color: #495057;
+  border: 2px solid #e9ecef;
+}
+
+.user-info-button-secondary:hover:not(:disabled) {
+  background: #e9ecef;
+}
+
+@media (max-width: 768px) {
+  .user-info-container {
+    padding: 2rem 1.5rem;
+  }
+
+  .user-info-title {
+    font-size: 1.75rem;
+  }
+
+  .user-info-actions {
+    flex-direction: column;
+  }
+}
+

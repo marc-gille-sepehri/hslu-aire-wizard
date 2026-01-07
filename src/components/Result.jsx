@@ -59,64 +59,21 @@ function Result({ answers, onReset, onBackToHome }) {
     <div className="result">
       <div className="result-container">
         <div className="result-header">
-          <h1 className="result-title">Dein AI Readiness Ergebnis</h1>
+          <h1 className="result-title">Vielen Dank!</h1>
           <p className="result-subtitle">
-            Basierend auf deinen Antworten haben wir eine Empfehlung für dich
+            Ihr persönliches AI Readiness Ergebnis wurde an Ihre E-Mail-Adresse gesendet.
+          </p>
+          <p className="result-subtitle" style={{ marginTop: '1rem', fontSize: '1rem' }}>
+            Bitte überprüfen Sie Ihr Postfach (auch den Spam-Ordner).
           </p>
         </div>
 
         <div className="result-content">
-          <div className="overall-score">
-            <div className="score-circle">
-              <div className="score-value">
-                {result.overallAverage.toFixed(1)}
-              </div>
-              <div className="score-label">von 5.0</div>
-            </div>
-            <div className="score-description">
-              <h3>Gesamtbewertung</h3>
-              <p>
-                Deine durchschnittliche Bewertung über alle Dimensionen hinweg
-              </p>
-            </div>
-          </div>
-
-          <div className="dimension-scores">
-            <h3 className="scores-title">Bewertung nach Dimensionen</h3>
-            <div className="scores-grid">
-              {result.dimensionScores.map((dim) => (
-                <div key={dim.id} className="score-item">
-                  <div className="score-item-header">
-                    <span className="score-item-title">{dim.title}</span>
-                    <span className="score-item-value">
-                      {dim.score.toFixed(1)} / {dim.maxScore}
-                    </span>
-                  </div>
-                  <div className="score-item-bar">
-                    <div
-                      className="score-item-fill"
-                      style={{
-                        width: `${(dim.score / dim.maxScore) * 100}%`,
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="recommendation">
-            <div className="recommendation-icon">
-              <FiZap />
-            </div>
-            <div className="recommendation-content">
-              <h3 className="recommendation-title">
-                {result.recommendation.title}
-              </h3>
-              <p className="recommendation-message">
-                {result.recommendation.message}
-              </p>
-            </div>
+          <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>✓</div>
+            <p style={{ fontSize: '1.2rem', color: '#6c757d', maxWidth: '600px', margin: '0 auto' }}>
+              Ihre Ergebnisse wurden erfolgreich verarbeitet und an Ihre E-Mail-Adresse gesendet.
+            </p>
           </div>
         </div>
 

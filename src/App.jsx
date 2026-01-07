@@ -10,10 +10,39 @@ function App() {
   const [showImprint, setShowImprint] = useState(false)
   const [showPrivacy, setShowPrivacy] = useState(false)
 
-  const handleComplete = (answersData) => {
-    setAnswers(answersData)
-    setShowResult(true)
-    setShowWizard(false)
+  const handleComplete = async (data) => {
+    const { firstName, lastName, email, answers: answersData } = data
+    
+    try {
+      // Send to server
+      const response = await fetch('https://tfjysfumn3.eu-central-1.awsapprunner.com/wizard-result', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          answers: answersData,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Fehler beim Senden der Daten')
+      }
+
+      const result = await response.json()
+      
+      // Show success message
+      setAnswers(answersData)
+      setShowResult(true)
+      setShowWizard(false)
+    } catch (error) {
+      console.error('Error submitting wizard result:', error)
+      alert('Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut oder kontaktieren Sie uns direkt.')
+    }
   }
 
   const handleReset = () => {
@@ -94,7 +123,6 @@ function App() {
             <nav className="site-nav">
               <a href="#home" onClick={(e) => { e.preventDefault(); setShowWizard(false); setShowResult(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Home</a>
               {/* <a href="#about" onClick={(e) => { e.preventDefault(); setShowWizard(false); setShowResult(false); const element = document.getElementById('about'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Über uns</a> */}
-              <a href="#wizard" onClick={(e) => { e.preventDefault(); handleStartWizard(); }}>Wizard</a>
               <a href="#contact" onClick={(e) => { e.preventDefault(); setShowWizard(false); setShowResult(false); const element = document.getElementById('contact'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Kontakt</a>
             </nav>
           </div>
@@ -107,14 +135,17 @@ function App() {
             <section id="home" className="hero-section">
               <div className="container">
                 <div className="hero-content">
-                  <h2 className="hero-title">Künstliche Intelligenz im Immobilienwesen</h2>
+                  <h2 className="hero-title">Sind Sie bereit für KI – oder nur im Blindflug unterwegs?</h2>
                   <p className="hero-subtitle">
-                    Entdecken Sie das Potenzial von KI für Ihre Immobilienprojekte. 
-                    Bewerten Sie Ihre KI-Bereitschaft und erhalten Sie personalisierte Empfehlungen.
+                    Der AI Readiness Check zeigt Ihnen in 7 Minuten, wo Ihr Unternehmen steht.
+                  </p>
+                  <p className="hero-subline">
+                    Erkennen Sie Ihre grössten Chancen, Risiken und Prioritäten: klar, präzise und fundiert.
                   </p>
                   <button className="cta-button" onClick={handleStartWizard}>
-                    KI-Bereitschaft testen
+                    Jetzt Readiness Check starten
                   </button>
+                  <p className="hero-note">Kostenlos. Anonym. In 7 Minuten.</p>
                 </div>
               </div>
             </section>
@@ -235,18 +266,87 @@ function App() {
               </div>
             </section> */}
 
+            <section className="content-section">
+              <div className="container">
+                <div className="section-content">
+                  <p>
+                    Die Immobilienwirtschaft verändert sich schneller, als viele Unternehmen reagieren können.
+                  </p>
+                  <p>
+                    AI automatisiert Prozesse, verändert Rollen, verschiebt Wertschöpfung. Viele Unternehmen treiben Digitalisierung voran, ohne zu wissen, wo sie wirklich stehen.
+                  </p>
+                  <h3>Die Folge:</h3>
+                  <ul>
+                    <li>falsche Prioritäten</li>
+                    <li>teure Fehlentscheidungen</li>
+                    <li>Projekte, die scheitern. Nicht wegen AI, sondern wegen fehlender Grundlagen</li>
+                    <li>Teams, die überfordert sind</li>
+                    <li>Strategien, die nicht greifen</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            <section className="content-section">
+              <div className="container">
+                <div className="section-content">
+                  <h2 className="section-title">Der Readiness Check ist Ihre 7-Minuten-Standortbestimmung.</h2>
+                  <p>
+                    Er zeigt Ihnen neutral, unabhängig und evidenzbasiert:
+                  </p>
+                  <ul>
+                    <li>Wie gut Ihre Daten auf AI vorbereitet sind</li>
+                    <li>Wo Ihre Organisation blockiert – und wo sie stark ist</li>
+                    <li>Welche Kompetenzen fehlen</li>
+                    <li>Wie gross Ihr Umsetzungspotenzial wirklich ist</li>
+                    <li>Was Sie sofort tun können, um handlungsfähig zu sein</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
             <section id="wizard" className="wizard-preview-section">
               <div className="container">
                 <div className="wizard-preview-content">
-                  <h2 className="section-title">Bewerten Sie Ihre KI-Bereitschaft</h2>
+                  <h2 className="section-title">Was genau misst der Readiness Check?</h2>
                   <p className="section-description">
-                    Unser interaktiver Wizard hilft Ihnen, den aktuellen Stand Ihrer 
-                    KI-Integration zu verstehen und zeigt auf, wo Potenziale liegen. 
-                    Die Bewertung umfasst fünf zentrale Dimensionen und liefert Ihnen 
-                    personalisierte Handlungsempfehlungen.
+                    Wir analysieren den Reifegrad Ihres Unternehmens in 7 entscheidenden Dimensionen, die über Erfolg oder Scheitern von AI entscheiden:
+                  </p>
+                  <div className="dimensions-list">
+                    <div className="dimension-item">
+                      <h3>1. Strategie & Orientierung</h3>
+                      <p>Haben Sie klar definiert, wofür Sie AI nutzen wollen und warum?</p>
+                    </div>
+                    <div className="dimension-item">
+                      <h3>2. Daten & Informationsqualität</h3>
+                      <p>Sind Ihre Daten nutzbar, strukturiert und verlässlich?</p>
+                    </div>
+                    <div className="dimension-item">
+                      <h3>3. Prozesse & Systeme</h3>
+                      <p>Sind Ihre Abläufe digital genug für AI – oder voller manueller Brüche?</p>
+                    </div>
+                    <div className="dimension-item">
+                      <h3>4. Organisation & Rollen</h3>
+                      <p>Wer trägt Verantwortung? Wer treibt AI voran?</p>
+                    </div>
+                    <div className="dimension-item">
+                      <h3>5. Kompetenzen & Skills</h3>
+                      <p>Versteht Ihr Team AI und kann es damit arbeiten?</p>
+                    </div>
+                    <div className="dimension-item">
+                      <h3>6. Kultur & Veränderungsbereitschaft</h3>
+                      <p>Ist Innovation möglich oder dominiert Risikoangst?</p>
+                    </div>
+                    <div className="dimension-item">
+                      <h3>7. Governance & Risiko</h3>
+                      <p>Haben Sie Leitplanken, Sicherheit und Compliance im Griff?</p>
+                    </div>
+                  </div>
+                  <p className="section-description">
+                    Das Ergebnis zeigt Ihnen Ihr komplettes AI-Profil, Ihre Stärken und Ihre grössten Handlungsfelder auf einen Blick.
                   </p>
                   <button className="cta-button" onClick={handleStartWizard}>
-                    Wizard starten
+                    Jetzt Readiness Check starten
                   </button>
                 </div>
               </div>
@@ -338,7 +438,6 @@ function App() {
               <ul>
                 <li><a href="#home">Home</a></li>
                 {/* <li><a href="#about">Über uns</a></li> */}
-                <li><a href="#wizard">Wizard</a></li>
                 <li><a href="#contact">Kontakt</a></li>
               </ul>
             </div>
