@@ -28,27 +28,52 @@ function App() {
     setAnswers(null)
   }
 
-  const handleContactSubmit = (e) => {
+  const handleContactSubmit = async (e) => {
     e.preventDefault()
     const formData = new FormData(e.target)
-    const name = formData.get('name')
+    const fullName = formData.get('name')
     const email = formData.get('email')
     const subject = formData.get('subject')
     const message = formData.get('message')
     
-    // Create mailto link with encoded data
-    const mailtoLink = `mailto:info@ai-in-real-estate.ch?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nE-Mail: ${email}\n\nNachricht:\n${message}`)}`
+    // Disable submit button to prevent double submission
+    const submitButton = e.target.querySelector('button[type="submit"]')
+    submitButton.disabled = true
+    submitButton.textContent = 'Wird gesendet...'
     
-    // Reset form immediately
-    e.target.reset()
-    
-    // Show success message
-    alert('Vielen Dank für Ihre Nachricht! Ihr E-Mail-Programm wird geöffnet.')
-    
-    // Open email client after a short delay to ensure form is reset
-    setTimeout(() => {
-      window.location.href = mailtoLink
-    }, 100)
+    try {
+      const response = await fetch('https://tfjysfumn3.eu-central-1.awsapprunner.com/contact-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName,
+          email,
+          subject,
+          message
+        })
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Fehler beim Senden der Nachricht')
+      }
+      
+      // Reset form on success
+      e.target.reset()
+      
+      // Show success message
+      alert('Vielen Dank für Ihre Nachricht! Wir werden uns bald bei Ihnen melden.')
+    } catch (error) {
+      console.error('Error submitting contact form:', error)
+      alert('Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut oder kontaktieren Sie uns direkt per E-Mail.')
+    } finally {
+      // Re-enable submit button
+      const submitButton = e.target.querySelector('button[type="submit"]')
+      submitButton.disabled = false
+      submitButton.textContent = 'Nachricht senden'
+    }
   }
 
   return (
