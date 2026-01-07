@@ -15,7 +15,7 @@ function App() {
     
     try {
       // Send to server
-      const response = await fetch('https://tfjysfumn3.eu-central-1.awsapprunner.com/wizard-result', {
+      const response = await fetch('https://d3nr6vksmj.eu-central-1.awsapprunner.com/wizard-result', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ function App() {
     submitButton.textContent = 'Wird gesendet...'
     
     try {
-      const response = await fetch('https://tfjysfumn3.eu-central-1.awsapprunner.com/contact-request', {
+      const response = await fetch('https://d3nr6vksmj.eu-central-1.awsapprunner.com/contact-request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
