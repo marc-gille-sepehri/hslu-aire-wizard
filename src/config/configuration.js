@@ -1,5 +1,8 @@
+// Use VITE_CONFIG_MODE=production when building for deploy (e.g. in GitHub Actions). Omit for local dev (defaults to test).
+const buildMode = import.meta.env.VITE_CONFIG_MODE
+
 export const config = {
-  mode: 'test', // 'test' | 'production'
+  mode: buildMode === 'production' ? 'production' : 'test',
   // In production, ?bypass=thisSecret in the URL shows the Test Bypass button (e.g. /check?bypass=your-secret)
   bypassSecret: '666',
 }
