@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { dimensions, responseOptions } from '../data/questions'
 import { config } from '../config/configuration'
 import QuestionSlide from './QuestionSlide'
@@ -8,6 +9,11 @@ import UserInfoForm from './UserInfoForm'
 import './Wizard.css'
 
 function Wizard({ onComplete }) {
+  const [searchParams] = useSearchParams()
+  const showBypass =
+    config.mode !== 'production' ||
+    (config.mode === 'production' && searchParams.get('bypass') === config.bypassSecret)
+
   const [showCompanyInfoForm, setShowCompanyInfoForm] = useState(false)
   const [showUserInfoForm, setShowUserInfoForm] = useState(false)
   const [currentDimension, setCurrentDimension] = useState(0)
@@ -135,7 +141,7 @@ function Wizard({ onComplete }) {
             {answeredQuestions} / {totalQuestions} Fragen beantwortet
           </div>
         </div>
-        {config.mode !== 'production' && (
+        {showBypass && (
           <button 
             className="wizard-bypass-button"
             onClick={handleBypassAllQuestions}

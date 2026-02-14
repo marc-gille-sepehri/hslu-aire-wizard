@@ -1,5 +1,7 @@
 export const config = {
   mode: 'test', // 'test' | 'production'
+  // In production, ?bypass=thisSecret in the URL shows the Test Bypass button (e.g. /check?bypass=your-secret)
+  bypassSecret: '666',
 }
 
 export const apiBaseUrl =
