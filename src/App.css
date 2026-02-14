@@ -64,6 +64,22 @@
   opacity: 0.8;
 }
 
+.ib-logo-link {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+  overflow: hidden;
+}
+
+.ib-logo-link:hover {
+  opacity: 0.8;
+}
+
 .hslu-logo {
   height: 2rem;
   width: auto;

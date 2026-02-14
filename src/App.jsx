@@ -67,18 +67,20 @@ function App() {
           <div className="header-content">
             <div className="logo-container">
               <h1 className="site-logo"><span>AI@RE</span></h1>
-              <a href="https://www.hslu.ch" target="_blank" rel="noopener noreferrer" className="hslu-logo-link">
+              <a href="https://hub.hslu.ch/immobilienblog/category/aireal-estate/" target="_blank" rel="noopener noreferrer" className="hslu-logo-link">
                 <img 
                   src="/hslu-logo.svg" 
                   alt="HSLU Logo" 
                   className="hslu-logo"
                 />
               </a>
-              <img 
-                src="/s_w530_IB_Logo_2013-web.jpg" 
-                alt="Immobilienbranche Logo" 
-                className="ib-logo"
-              />
+              <a href="https://www.immobilienbusiness.ch/de/" target="_blank" rel="noopener noreferrer" className="ib-logo-link">
+                <img 
+                  src="/s_w530_IB_Logo_2013-web.jpg" 
+                  alt="Immobilienbranche Logo" 
+                  className="ib-logo"
+                />
+              </a>
             </div>
             <nav className="site-nav">
               <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link>
