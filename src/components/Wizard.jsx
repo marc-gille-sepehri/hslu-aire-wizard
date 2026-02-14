@@ -135,7 +135,7 @@ function Wizard({ onComplete }) {
             {answeredQuestions} / {totalQuestions} Fragen beantwortet
           </div>
         </div>
-        {config.mode === 'test' && (
+        {config.mode !== 'production' && (
           <button 
             className="wizard-bypass-button"
             onClick={handleBypassAllQuestions}
