@@ -102,6 +102,11 @@
   margin-top: 0.5rem;
 }
 
+.form-group-checkbox:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 .checkbox-label {
   display: flex;
   align-items: flex-start;
@@ -115,9 +120,28 @@
   margin-top: 0.25rem;
   width: 20px;
   height: 20px;
+  min-width: 20px;
   cursor: pointer;
   flex-shrink: 0;
   accent-color: #5a9fb2;
+}
+
+/* Override global .form-group input:focus so the frame doesn’t stretch across the row */
+.form-group-checkbox .checkbox-input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.form-group-checkbox .checkbox-input:focus-visible {
+  outline: 2px solid #5a9fb2 !important;
+  outline-offset: 2px;
+  box-shadow: none !important;
+}
+
+.form-group-checkbox .checkbox-label:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .checkbox-text {
