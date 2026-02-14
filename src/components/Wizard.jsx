@@ -1,15 +1,19 @@
 import { useState } from 'react'
 import { dimensions, responseOptions } from '../data/questions'
+import { config } from '../config/configuration'
 import QuestionSlide from './QuestionSlide'
 import DimensionOverview from './DimensionOverview'
+import CompanyInfoForm from './CompanyInfoForm'
 import UserInfoForm from './UserInfoForm'
 import './Wizard.css'
 
 function Wizard({ onComplete }) {
+  const [showCompanyInfoForm, setShowCompanyInfoForm] = useState(false)
   const [showUserInfoForm, setShowUserInfoForm] = useState(false)
   const [currentDimension, setCurrentDimension] = useState(0)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
+  const [companyInfo, setCompanyInfo] = useState(null)
 
   const currentDim = dimensions[currentDimension]
   const totalQuestions = dimensions.reduce((sum, dim) => sum + dim.questions.length, 0)
@@ -31,17 +35,31 @@ function Wizard({ onComplete }) {
       setCurrentDimension(currentDimension + 1)
       setCurrentQuestion(0)
     } else {
-      // All questions answered - show user info form
-      setShowUserInfoForm(true)
+      // All questions answered - show company info form
+      setShowCompanyInfoForm(true)
     }
   }
 
-  const handleUserInfoSubmit = async (data) => {
-    await onComplete(data)
+  const handleCompanyInfoSubmit = (data) => {
+    setCompanyInfo(data)
+    setShowCompanyInfoForm(false)
+    setShowUserInfoForm(true)
+  }
+
+  const handleBackToCompanyInfo = () => {
+    setShowUserInfoForm(false)
+    setShowCompanyInfoForm(true)
   }
 
   const handleBackToQuestions = () => {
-    setShowUserInfoForm(false)
+    setShowCompanyInfoForm(false)
+  }
+
+  const handleUserInfoSubmit = async (data) => {
+    await onComplete({
+      ...data,
+      ...companyInfo,
+    })
   }
 
   const handlePrevious = () => {
@@ -66,13 +84,38 @@ function Wizard({ onComplete }) {
   const isLastQuestion = currentDimension === dimensions.length - 1 && 
                          currentQuestion === currentDim.questions.length - 1
 
+  const handleBypassAllQuestions = () => {
+    // Fill all questions with a default value (3 = neutral)
+    const allAnswers = {}
+    dimensions.forEach((dim) => {
+      dim.questions.forEach((_, questionIndex) => {
+        const key = `${dim.id}-${questionIndex}`
+        allAnswers[key] = 3 // Neutral value
+      })
+    })
+    setAnswers(allAnswers)
+    setShowCompanyInfoForm(true)
+  }
+
+  if (showCompanyInfoForm) {
+    return (
+      <div className="wizard">
+        <CompanyInfoForm
+          answers={answers}
+          onSubmit={handleCompanyInfoSubmit}
+          onBack={handleBackToQuestions}
+        />
+      </div>
+    )
+  }
+
   if (showUserInfoForm) {
     return (
       <div className="wizard">
         <UserInfoForm
           answers={answers}
           onSubmit={handleUserInfoSubmit}
-          onBack={handleBackToQuestions}
+          onBack={handleBackToCompanyInfo}
         />
       </div>
     )
@@ -92,6 +135,15 @@ function Wizard({ onComplete }) {
             {answeredQuestions} / {totalQuestions} Fragen beantwortet
           </div>
         </div>
+        {config.mode === 'test' && (
+          <button 
+            className="wizard-bypass-button"
+            onClick={handleBypassAllQuestions}
+            title="Test Mode: Bypass all questions"
+          >
+            ⚡ Bypass (Test)
+          </button>
+        )}
       </div>
 
       <div className="wizard-content">

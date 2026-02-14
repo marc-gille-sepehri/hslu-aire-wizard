@@ -6,15 +6,16 @@ function UserInfoForm({ answers, onSubmit, onBack }) {
     firstName: '',
     lastName: '',
     email: '',
+    consentToNewsletter: false,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value, type, checked } = e.target
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === 'checkbox' ? checked : value,
     }))
     setError('')
   }
@@ -46,6 +47,7 @@ function UserInfoForm({ answers, onSubmit, onBack }) {
     try {
       await onSubmit({
         ...formData,
+        requestMoreMaterial: formData.consentToNewsletter,
         answers,
       })
     } catch (err) {
@@ -109,6 +111,28 @@ function UserInfoForm({ answers, onSubmit, onBack }) {
               disabled={isSubmitting}
               placeholder="ihre.email@beispiel.ch"
             />
+          </div>
+
+          <div className="user-info-privacy">
+            <p className="privacy-notice">
+              <strong>Datenschutz:</strong> Ihre persönlichen Daten werden ausschließlich verwendet, um Ihnen das Ergebnis per E-Mail zu senden. Die Daten werden nicht gespeichert, es sei denn, Sie geben unten Ihre Einwilligung.
+            </p>
+          </div>
+
+          <div className="form-group form-group-checkbox">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                name="consentToNewsletter"
+                checked={formData.consentToNewsletter}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                className="checkbox-input"
+              />
+              <span className="checkbox-text">
+                Ich möchte über interessante Umfragen, Neuigkeiten und Angebote zu AI in der Immobilienwirtschaft in DACH informiert werden
+              </span>
+            </label>
           </div>
 
           <div className="user-info-actions">

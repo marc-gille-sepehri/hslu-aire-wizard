@@ -1,0 +1,206 @@
+.statistics-container {
+  min-height: 100vh;
+  padding: 2rem 0;
+  background: #f8f9fa;
+}
+
+.statistics-header {
+  max-width: 1200px;
+  margin: 0 auto 1rem;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.statistics-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.statistics-subtitle {
+  font-size: 1.2rem;
+  color: #6c757d;
+  margin-bottom: 2rem;
+}
+
+.statistics-filters {
+  max-width: 100%;
+  margin: 0 0 1rem;
+  padding: 0 0 1rem;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.filter-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.9rem;
+  width: 180px;
+  min-width: 180px;
+  flex-shrink: 0;
+}
+
+.statistics-meta {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.statistics-total {
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+.statistics-total strong {
+  color: #5a9fb2;
+  font-size: 1.2rem;
+}
+
+.statistics-legend {
+  margin: 2rem 0 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.legend-title {
+  display: none;
+}
+
+.legend-items {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.legend-label {
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.statistics-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem 0.5rem;
+}
+
+.chart-card {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  transition: none;
+}
+
+.chart-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.chart-card-large {
+  grid-column: 1 / -1;
+  max-width: 300px;
+  margin: 0 auto 0.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  width: 100%;
+}
+
+.chart-card-small {
+  max-width: 220px;
+  margin: 0 auto;
+}
+
+/* Ensure ApexCharts can use its colors - no interference from global rules */
+/* Charts should not be affected by the icon SVG rules above */
+
+.statistics-loading,
+.statistics-error {
+  max-width: 600px;
+  margin: 4rem auto;
+  padding: 3rem;
+  background: #ffffff;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.statistics-loading p,
+.statistics-error p {
+  font-size: 1.2rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
+.retry-button {
+  background: linear-gradient(135deg, #5a9fb2 0%, #7bb8c8 100%);
+  color: white;
+  border: none;
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.retry-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(90, 159, 178, 0.3);
+}
+
+@media (max-width: 768px) {
+  .statistics-content {
+    grid-template-columns: 1fr;
+    padding: 2rem 1rem;
+  }
+
+  .chart-card {
+    padding: 1.5rem;
+  }
+
+  .statistics-title {
+    font-size: 2rem;
+  }
+
+  .statistics-subtitle {
+    font-size: 1rem;
+  }
+}
+

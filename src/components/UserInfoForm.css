@@ -79,6 +79,58 @@
   cursor: not-allowed;
 }
 
+.user-info-privacy {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #5a9fb2;
+}
+
+.privacy-notice {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #495057;
+  line-height: 1.6;
+}
+
+.privacy-notice strong {
+  color: #2c3e50;
+}
+
+.form-group-checkbox {
+  margin-top: 0.5rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-weight: normal;
+  line-height: 1.5;
+}
+
+.checkbox-input {
+  margin-top: 0.25rem;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+  accent-color: #5a9fb2;
+}
+
+.checkbox-text {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #495057;
+}
+
+.checkbox-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .user-info-actions {
   display: flex;
   gap: 1rem;

@@ -1,61 +1,16 @@
 import { useState } from 'react'
-import Wizard from './components/Wizard'
-import Result from './components/Result'
+import { Routes, Route, Link, useLocation } from 'react-router-dom'
+import HomePage from './pages/HomePage'
+import WizardPage from './pages/WizardPage'
+import ResultPage from './pages/ResultPage'
+import StatisticsPage from './pages/StatisticsPage'
+import { apiBaseUrl, contactEmail } from './config/configuration'
 import './App.css'
 
 function App() {
-  const [answers, setAnswers] = useState(null)
-  const [showResult, setShowResult] = useState(false)
-  const [showWizard, setShowWizard] = useState(false)
   const [showImprint, setShowImprint] = useState(false)
   const [showPrivacy, setShowPrivacy] = useState(false)
-
-  const handleComplete = async (data) => {
-    const { firstName, lastName, email, answers: answersData } = data
-    
-    try {
-      // Send to server
-      const response = await fetch('https://d3nr6vksmj.eu-central-1.awsapprunner.com/wizard-result', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          answers: answersData,
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Fehler beim Senden der Daten')
-      }
-
-      const result = await response.json()
-      
-      // Show success message
-      setAnswers(answersData)
-      setShowResult(true)
-      setShowWizard(false)
-    } catch (error) {
-      console.error('Error submitting wizard result:', error)
-      alert('Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut oder kontaktieren Sie uns direkt.')
-    }
-  }
-
-  const handleReset = () => {
-    setAnswers(null)
-    setShowResult(false)
-    setShowWizard(false)
-  }
-
-  const handleStartWizard = () => {
-    setShowWizard(true)
-    setShowResult(false)
-    setAnswers(null)
-  }
+  const location = useLocation()
 
   const handleContactSubmit = async (e) => {
     e.preventDefault()
@@ -71,7 +26,7 @@ function App() {
     submitButton.textContent = 'Wird gesendet...'
     
     try {
-      const response = await fetch('https://d3nr6vksmj.eu-central-1.awsapprunner.com/contact-request', {
+      const response = await fetch(`${apiBaseUrl}/contact-request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -114,316 +69,35 @@ function App() {
               <h1 className="site-logo"><span>AI@RE</span></h1>
               <a href="https://www.hslu.ch" target="_blank" rel="noopener noreferrer" className="hslu-logo-link">
                 <img 
-                  src="https://www.hslu.ch/-/media/campus/common/images/header/hslu-logo.svg?sc_lang=de-ch" 
+                  src="/hslu-logo.svg" 
                   alt="HSLU Logo" 
                   className="hslu-logo"
                 />
               </a>
+              <img 
+                src="/s_w530_IB_Logo_2013-web.jpg" 
+                alt="Immobilienbranche Logo" 
+                className="ib-logo"
+              />
             </div>
             <nav className="site-nav">
-              <a href="#home" onClick={(e) => { e.preventDefault(); setShowWizard(false); setShowResult(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Home</a>
-              {/* <a href="#about" onClick={(e) => { e.preventDefault(); setShowWizard(false); setShowResult(false); const element = document.getElementById('about'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Über uns</a> */}
-              <a href="#contact" onClick={(e) => { e.preventDefault(); setShowWizard(false); setShowResult(false); const element = document.getElementById('contact'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Kontakt</a>
+              <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link>
+              <Link to="/statistics">Statistiken</Link>
+              {location.pathname === '/' && (
+                <a href="#contact" onClick={(e) => { e.preventDefault(); const element = document.getElementById('contact'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Kontakt</a>
+              )}
             </nav>
           </div>
         </div>
       </header>
 
       <main className="site-main">
-        {!showWizard && !showResult ? (
-          <>
-            <section id="home" className="hero-section">
-              <div className="container">
-                <div className="hero-content">
-                  <h2 className="hero-title">Sind Sie bereit für KI – oder nur im Blindflug unterwegs?</h2>
-                  <p className="hero-subtitle">
-                    Der AI Readiness Check zeigt Ihnen in 7 Minuten, wo Ihr Unternehmen steht.
-                  </p>
-                  <p className="hero-subline">
-                    Erkennen Sie Ihre grössten Chancen, Risiken und Prioritäten: klar, präzise und fundiert.
-                  </p>
-                  <button className="cta-button" onClick={handleStartWizard}>
-                    Jetzt Readiness Check starten
-                  </button>
-                  <p className="hero-note">Kostenlos. Anonym. In 7 Minuten.</p>
-                </div>
-              </div>
-            </section>
-
-            {/* <section id="about" className="content-section">
-              <div className="container">
-                <div className="section-intro">
-                  <h2 className="section-title">Die Zukunft der Immobilienbranche</h2>
-                  <p className="section-description">
-                    Künstliche Intelligenz revolutioniert die Immobilienbranche und schafft 
-                    neue Möglichkeiten für Effizienz, Präzision und Kundenerlebnis. Entdecken 
-                    Sie, wie KI-Technologien bereits heute den Markt transformieren.
-                  </p>
-                </div>
-                <div className="content-grid">
-                  <div className="content-card">
-                    <div className="card-icon">📊</div>
-                    <h3>Automatisierte Bewertungen</h3>
-                    <p>
-                      KI-gestützte Systeme analysieren Marktdaten, Standortfaktoren und 
-                      Immobilienmerkmale in Echtzeit, um präzise Bewertungen zu erstellen. 
-                      Diese Technologie reduziert Bewertungszeiten von Wochen auf Stunden 
-                      und erhöht gleichzeitig die Genauigkeit durch Berücksichtigung 
-                      hunderter Variablen simultan.
-                    </p>
-                  </div>
-                  <div className="content-card">
-                    <div className="card-icon">🔮</div>
-                    <h3>Predictive Analytics</h3>
-                    <p>
-                      Vorhersagemodelle unterstützen Investitionsentscheidungen durch 
-                      Analyse historischer Trends, Marktentwicklungen und externer Faktoren. 
-                      Identifizieren Sie Chancen, bevor sie sichtbar werden, und minimieren 
-                      Sie Risiken durch datenbasierte Prognosen.
-                    </p>
-                  </div>
-                  <div className="content-card">
-                    <div className="card-icon">📄</div>
-                    <h3>Intelligente Dokumentenverarbeitung</h3>
-                    <p>
-                      Automatisierte Extraktion und Analyse von Verträgen, Gutachten und 
-                      Dokumenten beschleunigt Due-Diligence-Prozesse erheblich und minimiert 
-                      menschliche Fehler. KI erkennt relevante Informationen, 
-                      Klauseln und Risiken in Sekunden.
-                    </p>
-                  </div>
-                  <div className="content-card">
-                    <div className="card-icon">🏠</div>
-                    <h3>Virtuelle Immobilienbesichtigungen</h3>
-                    <p>
-                      VR- und AR-Technologien ermöglichen immersive Besichtigungserlebnisse 
-                      aus der Ferne. KI optimiert diese Erfahrungen durch personalisierte 
-                      Präsentationen basierend auf Kundenpräferenzen und erzeugt 
-                      realistische 3D-Modelle aus Grundrissen.
-                    </p>
-                  </div>
-                  <div className="content-card">
-                    <div className="card-icon">⚡</div>
-                    <h3>Energieeffizienz-Optimierung</h3>
-                    <p>
-                      KI-Systeme analysieren Energieverbrauchsmuster und schlagen 
-                      Optimierungsmaßnahmen vor. Dies reduziert Betriebskosten und 
-                      verbessert die Nachhaltigkeit von Immobilienportfolios erheblich, 
-                      während gleichzeitig der CO₂-Fußabdruck minimiert wird.
-                    </p>
-                  </div>
-                  <div className="content-card">
-                    <div className="card-icon">🏢</div>
-                    <h3>Smart Building Management</h3>
-                    <p>
-                      Intelligente Gebäudeverwaltungssysteme nutzen IoT-Sensoren und KI, 
-                      um Wartungsbedarf vorherzusagen, Komfort zu optimieren und 
-                      Ressourcenverbrauch zu minimieren. Proaktive Instandhaltung 
-                      reduziert Ausfallzeiten und Kosten.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </section> */}
-
-            {/* <section className="benefits-section">
-              <div className="container">
-                <h2 className="section-title">Warum KI in der Immobilienbranche?</h2>
-                <div className="benefits-grid">
-                  <div className="benefit-item">
-                    <h3>Kosteneinsparungen</h3>
-                    <p>
-                      Automatisierung reduziert manuelle Arbeitsprozesse um bis zu 70%, 
-                      was erhebliche Kosteneinsparungen ermöglicht und Ressourcen für 
-                      strategische Aufgaben freisetzt.
-                    </p>
-                  </div>
-                  <div className="benefit-item">
-                    <h3>Präzision & Genauigkeit</h3>
-                    <p>
-                      KI-basierte Analysen eliminieren menschliche Fehlerquellen und 
-                      liefern konsistente, objektive Ergebnisse auf Basis umfassender 
-                      Datenauswertung.
-                    </p>
-                  </div>
-                  <div className="benefit-item">
-                    <h3>Zeitersparnis</h3>
-                    <p>
-                      Prozesse, die früher Tage oder Wochen dauerten, werden auf Stunden 
-                      oder Minuten reduziert, was schnelleres Reagieren auf Marktchancen 
-                      ermöglicht.
-                    </p>
-                  </div>
-                  <div className="benefit-item">
-                    <h3>Skalierbarkeit</h3>
-                    <p>
-                      KI-Systeme können problemlos große Datenmengen und mehrere Projekte 
-                      gleichzeitig bearbeiten, ohne dass zusätzliche personelle Ressourcen 
-                      erforderlich sind.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </section> */}
-
-            <section className="content-section">
-              <div className="container">
-                <div className="section-content">
-                  <p>
-                    Die Immobilienwirtschaft verändert sich schneller, als viele Unternehmen reagieren können.
-                  </p>
-                  <p>
-                    AI automatisiert Prozesse, verändert Rollen, verschiebt Wertschöpfung. Viele Unternehmen treiben Digitalisierung voran, ohne zu wissen, wo sie wirklich stehen.
-                  </p>
-                  <h3>Die Folge:</h3>
-                  <ul>
-                    <li>falsche Prioritäten</li>
-                    <li>teure Fehlentscheidungen</li>
-                    <li>Projekte, die scheitern. Nicht wegen AI, sondern wegen fehlender Grundlagen</li>
-                    <li>Teams, die überfordert sind</li>
-                    <li>Strategien, die nicht greifen</li>
-                  </ul>
-                </div>
-              </div>
-            </section>
-
-            <section className="content-section">
-              <div className="container">
-                <div className="section-content">
-                  <h2 className="section-title">Der Readiness Check ist Ihre 7-Minuten-Standortbestimmung.</h2>
-                  <p>
-                    Er zeigt Ihnen neutral, unabhängig und evidenzbasiert:
-                  </p>
-                  <ul>
-                    <li>Wie gut Ihre Daten auf AI vorbereitet sind</li>
-                    <li>Wo Ihre Organisation blockiert – und wo sie stark ist</li>
-                    <li>Welche Kompetenzen fehlen</li>
-                    <li>Wie gross Ihr Umsetzungspotenzial wirklich ist</li>
-                    <li>Was Sie sofort tun können, um handlungsfähig zu sein</li>
-                  </ul>
-                </div>
-              </div>
-            </section>
-
-            <section id="wizard" className="wizard-preview-section">
-              <div className="container">
-                <div className="wizard-preview-content">
-                  <h2 className="section-title">Was genau misst der Readiness Check?</h2>
-                  <p className="section-description">
-                    Wir analysieren den Reifegrad Ihres Unternehmens in 7 entscheidenden Dimensionen, die über Erfolg oder Scheitern von AI entscheiden:
-                  </p>
-                  <div className="dimensions-list">
-                    <div className="dimension-item">
-                      <h3>1. Strategie & Orientierung</h3>
-                      <p>Haben Sie klar definiert, wofür Sie AI nutzen wollen und warum?</p>
-                    </div>
-                    <div className="dimension-item">
-                      <h3>2. Daten & Informationsqualität</h3>
-                      <p>Sind Ihre Daten nutzbar, strukturiert und verlässlich?</p>
-                    </div>
-                    <div className="dimension-item">
-                      <h3>3. Prozesse & Systeme</h3>
-                      <p>Sind Ihre Abläufe digital genug für AI – oder voller manueller Brüche?</p>
-                    </div>
-                    <div className="dimension-item">
-                      <h3>4. Organisation & Rollen</h3>
-                      <p>Wer trägt Verantwortung? Wer treibt AI voran?</p>
-                    </div>
-                    <div className="dimension-item">
-                      <h3>5. Kompetenzen & Skills</h3>
-                      <p>Versteht Ihr Team AI und kann es damit arbeiten?</p>
-                    </div>
-                    <div className="dimension-item">
-                      <h3>6. Kultur & Veränderungsbereitschaft</h3>
-                      <p>Ist Innovation möglich oder dominiert Risikoangst?</p>
-                    </div>
-                    <div className="dimension-item">
-                      <h3>7. Governance & Risiko</h3>
-                      <p>Haben Sie Leitplanken, Sicherheit und Compliance im Griff?</p>
-                    </div>
-                  </div>
-                  <p className="section-description">
-                    Das Ergebnis zeigt Ihnen Ihr komplettes AI-Profil, Ihre Stärken und Ihre grössten Handlungsfelder auf einen Blick.
-                  </p>
-                  <button className="cta-button" onClick={handleStartWizard}>
-                    Jetzt Readiness Check starten
-                  </button>
-                </div>
-              </div>
-            </section>
-
-            <section id="contact" className="contact-section">
-              <div className="container">
-                <h2 className="section-title">Kontakt</h2>
-                <div className="contact-content">
-                  <div className="contact-info">
-                    <h3>Lassen Sie uns gemeinsam die Zukunft gestalten</h3>
-                    <p>
-                      Haben Sie Fragen zu KI-Lösungen für die Immobilienbranche? 
-                      Wir beraten Sie gerne zu den Möglichkeiten und der Implementierung 
-                      von KI-Technologien in Ihrem Unternehmen.
-                    </p>
-                    <div className="contact-details">
-                      <div className="contact-detail-item">
-                        <strong>E-Mail</strong>
-                        <a href="mailto:info@ai-in-real-estate.ch">info@ai-in-real-estate.ch</a>
-                      </div>
-                      <div className="contact-detail-item">
-                        <strong>Telefon</strong>
-                        <a href="tel:+41417576734">+41 41 757 67 34</a>
-                      </div>
-                      <div className="contact-detail-item">
-                        <strong>Adresse</strong>
-                        <p>Suurstoffi 1<br />6343 Rotkreuz, Schweiz</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="contact-form">
-                    <form onSubmit={handleContactSubmit}>
-                      <div className="form-group">
-                        <label htmlFor="name">Name</label>
-                        <input type="text" id="name" name="name" required />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="email">E-Mail</label>
-                        <input type="email" id="email" name="email" required />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="subject">Betreff</label>
-                        <input type="text" id="subject" name="subject" required />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="message">Nachricht</label>
-                        <textarea id="message" name="message" rows="5" required></textarea>
-                      </div>
-                      <button type="submit" className="cta-button">Nachricht senden</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </>
-        ) : showWizard ? (
-          <section className="wizard-section">
-            <div className="container">
-        <Wizard onComplete={handleComplete} />
-            </div>
-          </section>
-        ) : (
-          <section className="result-section">
-            <div className="container">
-              <Result 
-                answers={answers} 
-                onReset={() => {
-                  setAnswers(null)
-                  setShowResult(false)
-                  setShowWizard(true)
-                }}
-                onBackToHome={handleReset}
-              />
-            </div>
-          </section>
-        )}
+        <Routes>
+          <Route path="/" element={<HomePage onContactSubmit={handleContactSubmit} />} />
+          <Route path="/check" element={<WizardPage />} />
+          <Route path="/result" element={<ResultPage />} />
+          <Route path="/statistics" element={<StatisticsPage />} />
+        </Routes>
       </main>
 
       <footer className="site-footer">
@@ -436,14 +110,15 @@ function App() {
             <div className="footer-section">
               <h4>Navigation</h4>
               <ul>
-                <li><a href="#home">Home</a></li>
-                {/* <li><a href="#about">Über uns</a></li> */}
-                <li><a href="#contact">Kontakt</a></li>
+                <li><Link to="/">Home</Link></li>
+                {location.pathname === '/' && (
+                  <li><a href="#contact">Kontakt</a></li>
+                )}
               </ul>
             </div>
             <div className="footer-section">
               <h4>Kontakt</h4>
-              <p>Email: info@ai-in-real-estate.ch</p>
+              <p>Email: {contactEmail}</p>
               <p>Tel: +41 41 757 67 34</p>
             </div>
           </div>
@@ -507,7 +182,7 @@ function App() {
             <h3>Kontakt</h3>
             <p>
               Telefon: +41 41 757 67 34<br />
-              E-Mail: info@ai-in-real-estate.ch
+              E-Mail: {contactEmail}
             </p>
             <h3>Verantwortlich für den Inhalt gemäß Art. 321 OR</h3>
             <p>
@@ -566,7 +241,7 @@ function App() {
                 6343 Rotkreuz<br />
                 Schweiz<br />
                 <br />
-                E-Mail: info@ai-in-real-estate.ch<br />
+                E-Mail: {contactEmail}<br />
                 Telefon: +41 41 757 67 34
               </p>
 
@@ -702,7 +377,7 @@ function App() {
                 oder wenden Sie sich direkt an die für den Datenschutz verantwortliche Person 
                 in unserem Unternehmen:<br />
                 <br />
-                E-Mail: info@ai-in-real-estate.ch<br />
+                E-Mail: {contactEmail}<br />
                 Telefon: +41 41 757 67 34
               </p>
             </div>

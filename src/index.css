@@ -32,26 +32,34 @@ svg {
   shape-rendering: geometricPrecision;
 }
 
-/* Hide any rectangle elements that might create borders */
-svg rect[width][height] {
+/* Hide any rectangle elements that might create borders - but exclude ApexCharts */
+*:not(.apexcharts-wrapper):not(.chart-card):not(.apexcharts-canvas) svg rect[width][height] {
   display: none !important;
   opacity: 0 !important;
   fill: none !important;
   stroke: none !important;
 }
 
-/* Remove any fill or border paths from SVG elements */
-svg path,
-svg circle,
-svg polygon,
-svg line,
-svg ellipse {
-  fill: none !important;
+/* Only remove fill from actual icon SVGs - NO !important so ApexCharts can override */
+/* Target only SVGs that are clearly icons, not charts */
+header .icon svg path,
+header .icon svg circle,
+footer .icon svg path,
+footer .icon svg circle,
+nav .icon svg path,
+nav .icon svg circle,
+button .icon svg path,
+button .icon svg circle,
+a .icon svg path,
+a .icon svg circle,
+svg.icon:not(.apexcharts-svg) path,
+svg.icon:not(.apexcharts-svg) circle {
+  fill: none;
   stroke: currentColor;
 }
 
-/* Ensure no background rectangles */
-svg > rect:first-child {
+/* Ensure no background rectangles - but exclude ApexCharts */
+*:not(.apexcharts-wrapper):not(.chart-card):not(.apexcharts-canvas) svg > rect:first-child {
   display: none !important;
 }
 
