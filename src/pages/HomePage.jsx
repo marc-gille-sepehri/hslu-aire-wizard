@@ -8,22 +8,39 @@ function HomePage({ onContactSubmit }) {
       <section id="home" className="hero-section">
         <div className="container">
           <div className="hero-content">
-            <h2 className="hero-title">KI in der Immobilienwirtschaft – DACH-Branchenüberblick</h2>
+            <p className="hero-eyebrow">Die erste reine AI-Konferenz für Real Estate im DACH-Raum</p>
+            <h2 className="hero-title">Reprogramming Real Estate: Wie AI die Branche neu definiert</h2>
             <p className="hero-subtitle">
-              Anonyme Online-Umfragen, Checks und Polls zur Erfassung des Status quo der KI-Nutzung in der Immobilienbranche in Deutschland, Österreich und der Schweiz.
+              <strong>1. Juni 2026, 08:00–17:00 Uhr</strong> · IFZ Campus Zug-Rotkreuz · CHF 590.–
             </p>
             <p className="hero-subline">
-              Wir werten die Antworten ausschließlich aggregiert aus und stellen verständliche Statistiken, Benchmarks und Einordnungen bereit – damit die Branche Fortschritte messen kann, ohne einzelne Unternehmen oder Personen offenzulegen.
+              Konferenz zu KI-Wertschöpfung, Live-Solution-Labs, IFZ AI-Readiness Report 2026 und Best AI Use Case Award. Für Entscheider/innen aus Immobilien, PropTech und Beratung.
             </p>
+
+            <div className="hero-award-block">
+              <h3 className="hero-award-title">HSLU Best AI@RE Use Case Award 2026</h3>
+              <p className="hero-award-text">
+                Plattform für KI-Lösungen in Real Estate (Bewertung, Bau, Betrieb, ESG, Finanzierung, AI Agents). Voraussetzung: konkreter Business Case, lauffähiger Prototyp, Start-Up oder Unternehmensprojekt.
+              </p>
+              <p className="hero-award-timeline">
+                Bewerbung bis 30.4.2026 · 5 Nominierte · Live-Pitch & Publikumsvoting am 1.6.2026
+              </p>
+              <a href="https://forms.office.com/e/DSkmSUEmBq" target="_blank" rel="noopener noreferrer" className="cta-button">
+                Für den Award bewerben
+              </a>
+            </div>
+
             <div className="hero-cta-buttons">
-              <Link to="/check" className="cta-button">
-                Jetzt Readiness Check starten
+              <a href="https://www.hslu.ch/de-ch/wirtschaft/agenda/veranstaltungen/2026/06/01/reprogramming-real-estate-wie-ai-die-branche-neu-definiert/" target="_blank" rel="noopener noreferrer" className="cta-button">
+                Konferenz anmelden
+              </a>
+              <Link to="/check" className="cta-button cta-button-secondary">
+                Readiness Check starten
               </Link>
               <Link to="/statistics" className="cta-button cta-button-secondary">
-                Aktuelle Statistiken ansehen
+                Statistiken ansehen
               </Link>
             </div>
-            <p className="hero-trust-note">Keine Namen. Keine Unternehmensdaten. Veröffentlichung nur in aggregierter Form.</p>
           </div>
         </div>
       </section>

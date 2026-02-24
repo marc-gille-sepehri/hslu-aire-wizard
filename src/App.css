@@ -154,22 +154,31 @@
 
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);
   padding: 7rem 0;
   text-align: center;
   position: relative;
   overflow: hidden;
 }
 
+/* Grayscale background image */
 .hero-section::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 30% 50%, rgba(90, 159, 178, 0.05) 0%, transparent 50%);
+  inset: 0;
+  background: url(/hallway.png) center / cover no-repeat;
+  filter: grayscale(100%);
   pointer-events: none;
+  z-index: 0;
+}
+
+/* CI-color tint overlay */
+.hero-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(90, 159, 178, 0.55);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .hero-content {
@@ -179,30 +188,79 @@
   z-index: 1;
 }
 
+.hero-eyebrow {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #bae0ea;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 0.75rem 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
 .hero-title {
   font-size: 3.5rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: #ffffff;
   margin-bottom: 1.5rem;
   line-height: 1.15;
   letter-spacing: -1px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .hero-subtitle {
   font-size: 1.3rem;
-  color: #6c757d;
+  color: rgba(255, 255, 255, 0.95);
   margin-bottom: 1.5rem;
   line-height: 1.7;
   font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 .hero-subline {
   font-size: 1.1rem;
-  color: #495057;
-  margin-bottom: 2.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
   line-height: 1.7;
   font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.hero-award-block {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.hero-award-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.hero-award-text {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.5;
+}
+
+.hero-award-timeline {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 1rem 0;
   font-style: italic;
+}
+
+.hero-award-block .cta-button {
+  margin-top: 0.25rem;
 }
 
 .hero-note {
@@ -840,12 +898,31 @@
     font-size: 0.9rem;
   }
 
+  .hero-eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+  }
+
   .hero-title {
-    font-size: 2rem;
+    font-size: 1.85rem;
   }
 
   .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .hero-award-block {
+    padding: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .hero-award-title {
     font-size: 1.1rem;
+  }
+
+  .hero-award-text,
+  .hero-award-timeline {
+    font-size: 0.9rem;
   }
 
   .hero-cta-buttons {
