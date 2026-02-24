@@ -8,7 +8,7 @@ function HomePage({ onContactSubmit }) {
       <section id="home" className="hero-section">
         <div className="container">
           <div className="hero-content">
-            <p className="hero-eyebrow">Die erste reine AI-Konferenz für Real Estate im DACH-Raum</p>
+            <p className="hero-eyebrow">Die erste reine AI-Konferenz für den Real Estate im DACH-Raum</p>
             <h2 className="hero-title">Reprogramming Real Estate: Wie AI die Branche neu definiert</h2>
             <p className="hero-subtitle">
               <strong>1. Juni 2026, 08:00–17:00 Uhr</strong> · IFZ Campus Zug-Rotkreuz · CHF 590.–
@@ -32,7 +32,7 @@ function HomePage({ onContactSubmit }) {
 
             <div className="hero-cta-buttons">
               <a href="https://www.hslu.ch/de-ch/wirtschaft/agenda/veranstaltungen/2026/06/01/reprogramming-real-estate-wie-ai-die-branche-neu-definiert/" target="_blank" rel="noopener noreferrer" className="cta-button">
-                Konferenz anmelden
+                Zur Konferenz anmelden
               </a>
               <Link to="/check" className="cta-button cta-button-secondary">
                 Readiness Check starten
