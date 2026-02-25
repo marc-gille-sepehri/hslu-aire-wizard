@@ -25,9 +25,9 @@ function HomePage({ onContactSubmit }) {
               <p className="hero-award-timeline">
                 Bewerbung bis 30.4.2026 · 5 Nominierte · Live-Pitch & Publikumsvoting am 1.6.2026
               </p>
-              <a href="https://forms.office.com/e/DSkmSUEmBq" target="_blank" rel="noopener noreferrer" className="cta-button">
-                Für den Award bewerben
-              </a>
+              <Link to="/award" className="cta-button">
+                Details zum Award
+              </Link>
             </div>
 
             <div className="hero-cta-buttons">

@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage'
 import WizardPage from './pages/WizardPage'
 import ResultPage from './pages/ResultPage'
 import StatisticsPage from './pages/StatisticsPage'
+import AwardPage from './pages/AwardPage'
 import { apiBaseUrl, contactEmail } from './config/configuration'
 import './App.css'
 
@@ -84,6 +85,7 @@ function App() {
             </div>
             <nav className="site-nav">
               <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link>
+              <Link to="/award">Award</Link>
               <Link to="/statistics">Statistiken</Link>
               {location.pathname === '/' && (
                 <a href="#contact" onClick={(e) => { e.preventDefault(); const element = document.getElementById('contact'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Kontakt</a>
@@ -99,6 +101,7 @@ function App() {
           <Route path="/check" element={<WizardPage />} />
           <Route path="/result" element={<ResultPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />
+          <Route path="/award" element={<AwardPage />} />
         </Routes>
       </main>
 
@@ -113,6 +116,8 @@ function App() {
               <h4>Navigation</h4>
               <ul>
                 <li><Link to="/">Home</Link></li>
+                <li><Link to="/award">Award</Link></li>
+                <li><Link to="/statistics">Statistiken</Link></li>
                 {location.pathname === '/' && (
                   <li><a href="#contact">Kontakt</a></li>
                 )}
