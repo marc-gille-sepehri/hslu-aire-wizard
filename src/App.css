@@ -226,6 +226,47 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
+.hero-sponsors {
+  margin-bottom: 2rem;
+}
+
+.hero-sponsors-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 1rem 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.hero-sponsors-logos {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  background: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+}
+
+.hero-sponsor-link {
+  display: block;
+  transition: opacity 0.2s ease;
+}
+
+.hero-sponsor-link:hover {
+  opacity: 0.85;
+}
+
+.hero-sponsor-logo {
+  height: 3.5rem;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+}
+
 .hero-award-block {
   background: rgba(255, 255, 255, 0.14);
   backdrop-filter: blur(8px);
@@ -909,6 +950,16 @@
 
   .hero-subtitle {
     font-size: 1rem;
+  }
+
+  .hero-sponsors-logos {
+    gap: 1.5rem;
+    padding: 0.875rem 1rem;
+  }
+
+  .hero-sponsor-logo {
+    height: 2.75rem;
+    max-width: 150px;
   }
 
   .hero-award-block {

@@ -17,6 +17,18 @@ function HomePage({ onContactSubmit }) {
               Konferenz zu KI-Wertschöpfung, Live-Solution-Labs, IFZ AI-Readiness Report 2026 und Best AI Use Case Award. Für Entscheider/innen aus Immobilien, PropTech und Beratung.
             </p>
 
+            <div className="hero-sponsors">
+              <p className="hero-sponsors-label">Sponsoren</p>
+              <div className="hero-sponsors-logos">
+                <a href="https://swissproptech.ch/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="SwissPropTech">
+                  <img src="/swissproptech-logo.png" alt="SwissPropTech" className="hero-sponsor-logo" />
+                </a>
+                <a href="https://www.immobilienbusiness.ch/de/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="IMMOBILIEN Business">
+                  <img src="/s_w530_IB_Logo_2013-web.jpg" alt="IMMOBILIEN Business" className="hero-sponsor-logo" />
+                </a>
+              </div>
+            </div>
+
             <div className="hero-award-block">
               <h3 className="hero-award-title">HSLU Best AI@RE Use Case Award 2026</h3>
               <p className="hero-award-text">
