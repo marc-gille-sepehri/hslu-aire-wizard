@@ -18,7 +18,7 @@ function HomePage({ onContactSubmit }) {
             </p>
 
             <div className="hero-sponsors">
-              <p className="hero-sponsors-label">Sponsoren</p>
+              <p className="hero-sponsors-label">Partner</p>
               <div className="hero-sponsors-logos">
                 <a href="https://swissproptech.ch/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="SwissPropTech">
                   <img src="/swissproptech-logo.png" alt="SwissPropTech" className="hero-sponsor-logo" />
