@@ -28,6 +28,17 @@
   gap: 1.5rem;
 }
 
+.site-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.site-logo-link:hover {
+  opacity: 0.85;
+}
+
 .site-logo {
   margin: 0;
   margin-right: 0.5rem;
@@ -261,9 +272,9 @@
 }
 
 .hero-sponsor-logo {
-  height: 3.5rem;
+  height: 3.85rem;
   width: auto;
-  max-width: 180px;
+  max-width: 198px;
   object-fit: contain;
 }
 
@@ -958,8 +969,8 @@
   }
 
   .hero-sponsor-logo {
-    height: 2.75rem;
-    max-width: 150px;
+    height: 3rem;
+    max-width: 165px;
   }
 
   .hero-award-block {

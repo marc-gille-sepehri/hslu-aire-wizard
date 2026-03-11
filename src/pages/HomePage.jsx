@@ -38,6 +38,9 @@ function HomePage({ onContactSubmit }) {
                 <a href="https://www.lukb.ch/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="LUKB">
                   <img src="/lukb.jpg" alt="LUKB" className="hero-sponsor-logo" />
                 </a>
+                <a href="https://www.beyondbim.ch/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="beyondBIM">
+                  <img src="/beyond-bim.jpg" alt="beyondBIM" className="hero-sponsor-logo" />
+                </a>
                 {SHOW_PROPTECH_POWERHOUSE && (
                   <a href="https://proptechpowerhouse.com/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="PropTech Powerhouse">
                     <img src="/proptech-powerhouse.jpg" alt="PropTech Powerhouse" className="hero-sponsor-logo" />

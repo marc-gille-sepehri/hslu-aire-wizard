@@ -67,7 +67,9 @@ function App() {
         <div className="container">
           <div className="header-content">
             <div className="logo-container">
-              <h1 className="site-logo"><span>AI@RE</span></h1>
+              <Link to="/" className="site-logo-link" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                <h1 className="site-logo"><span>AI@RE</span></h1>
+              </Link>
               <a href="https://hub.hslu.ch/immobilienblog/category/aireal-estate/" target="_blank" rel="noopener noreferrer" className="hslu-logo-link">
                 <img 
                   src="/hslu-logo.svg" 
