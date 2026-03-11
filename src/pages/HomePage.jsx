@@ -3,7 +3,7 @@ import { contactEmail } from '../config/configuration'
 import './HomePage.css'
 
 // Set to true to show PropTech Powerhouse in partner logos
-const SHOW_PROPTECH_POWERHOUSE = false
+const SHOW_PROPTECH_POWERHOUSE = true
 
 function HomePage({ onContactSubmit }) {
   return (
