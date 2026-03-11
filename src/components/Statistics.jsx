@@ -5,10 +5,29 @@ import { dimensions } from '../data/questions'
 import { apiBaseUrl } from '../config/configuration'
 import './Statistics.css'
 
+// Mock statistics for local dev when backend is unavailable
+const getMockStatistics = () => {
+  const dimCounts = (s1, s2, s3, s4, s5) => ({ 1: s1, 2: s2, 3: s3, 4: s4, 5: s5 })
+  const dimensionsData = {}
+  dimensions.forEach(dim => {
+    dimensionsData[dim.id.toString()] = {
+      title: dim.title,
+      counts: dimCounts(2, 5, 8, 12, 6),
+    }
+  })
+  const overall = dimCounts(14, 35, 56, 84, 42)
+  return {
+    totalSubmissions: 42,
+    overall,
+    dimensions: dimensionsData,
+  }
+}
+
 function Statistics() {
   const [statistics, setStatistics] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [useMockData, setUseMockData] = useState(false)
   const [filters, setFilters] = useState({
     companySize: [],
     companyCountry: [],
@@ -64,9 +83,17 @@ function Statistics() {
       const data = await response.json()
       setStatistics(data)
       setError(null)
+      setUseMockData(false)
     } catch (err) {
-      console.error('Error fetching statistics:', err)
-      setError('Fehler beim Laden der Statistiken')
+      if (import.meta.env.DEV) {
+        console.warn('API unavailable, using mock statistics:', err.message)
+        setStatistics(getMockStatistics())
+        setError(null)
+        setUseMockData(true)
+      } else {
+        console.error('Error fetching statistics:', err)
+        setError('Fehler beim Laden der Statistiken')
+      }
     } finally {
       setLoading(false)
     }
@@ -89,6 +116,134 @@ function Statistics() {
     '#3d6f7d'  // Dark (Score 5)
   ]
 
+  const computeAverageScore = (counts) => {
+    const total = [1, 2, 3, 4, 5].reduce((sum, score) => sum + (counts[score] || 0), 0)
+    if (total === 0) return 0
+    const weightedSum = [1, 2, 3, 4, 5].reduce((sum, score) => sum + score * (counts[score] || 0), 0)
+    return Math.round((weightedSum / total) * 10) / 10
+  }
+
+  const scoreLegendLabels = [
+    'Score 1 - Trifft gar nicht zu',
+    'Score 2 - Trifft eher nicht zu',
+    'Score 3 - Neutral',
+    'Score 4 - Trifft eher zu',
+    'Score 5 - Trifft voll zu',
+  ]
+
+  const createStackedBarChartOptions = () => {
+    const categories = dimensions.map(d => d.title)
+
+    const series = [1, 2, 3, 4, 5].map((score, idx) => {
+      const data = dimensions.map(dim => {
+        const counts = statistics.dimensions[dim.id.toString()]?.counts || {}
+        return counts[score] || 0
+      })
+      return { name: scoreLegendLabels[idx], data }
+    })
+
+    return {
+      series,
+      options: {
+        chart: {
+          type: 'bar',
+          stacked: true,
+          stackType: '100%',
+          fontFamily: 'Helvetica, Arial, sans-serif',
+          toolbar: { show: false },
+          animations: { enabled: true },
+        },
+        plotOptions: {
+          bar: {
+            horizontal: true,
+            borderRadius: 2,
+          },
+        },
+        colors: chartColors,
+        xaxis: { categories },
+        stroke: {
+          width: 1,
+          colors: ['#fff'],
+        },
+        fill: { opacity: 1 },
+        dataLabels: {
+          enabled: true,
+          formatter: (val) => {
+            const n = Number(val)
+            return !isNaN(n) && n > 5 ? `${Math.round(n)}%` : ''
+          },
+        },
+        legend: {
+          show: false,
+        },
+        tooltip: {
+          y: {
+            formatter: (val) => {
+              const n = Number(val)
+              return !isNaN(n) ? `${n.toFixed(1)}%` : ''
+            },
+          },
+        },
+      },
+    }
+  }
+
+  const createRadarChartOptions = () => {
+    const categories = dimensions.map(d => d.title)
+    const data = dimensions.map(dim => {
+      const counts = statistics.dimensions[dim.id.toString()]?.counts || {}
+      return computeAverageScore(counts)
+    })
+
+    return {
+      series: [{ name: 'Durchschnitt', data }],
+      options: {
+        chart: {
+          type: 'radar',
+          fontFamily: 'Helvetica, Arial, sans-serif',
+          toolbar: { show: false },
+          animations: { enabled: true },
+          offsetY: -15,
+        },
+        grid: {
+          padding: {
+            top: -40,
+            bottom: -40,
+          },
+        },
+        xaxis: { categories },
+        yaxis: {
+          min: 0,
+          max: 5,
+          tickAmount: 5,
+          labels: {
+            formatter: (val) => val.toFixed(1),
+          },
+        },
+        colors: ['#5a9fb2'],
+        stroke: { width: 2 },
+        fill: { opacity: 0.2 },
+        markers: { size: 4 },
+        dataLabels: { enabled: false },
+        plotOptions: {
+          radar: {
+            size: undefined,
+            polygons: {
+              strokeColors: '#e9ecef',
+              connectorColors: '#e9ecef',
+              fill: { colors: undefined },
+            },
+          },
+        },
+        tooltip: {
+          y: {
+            formatter: (val) => `Ø ${val.toFixed(1)}`,
+          },
+        },
+      },
+    }
+  }
+
   const createDonutChartOptions = (title, counts, isOverall = false) => {
     const labels = ['1', '2', '3', '4', '5']
     const series = labels.map(label => counts[label] || 0)
@@ -100,7 +255,9 @@ function Statistics() {
         fontFamily: 'Helvetica, Arial, sans-serif',
         toolbar: { show: false },
         animations: { enabled: true },
+        offsetY: isOverall ? -20 : 0,
       },
+      grid: isOverall ? { padding: { top: -40, bottom: -40 } } : undefined,
       labels: labels.map(label => `Score ${label}`),
       colors: chartColors,
       fill: { type: 'solid', opacity: 1 },
@@ -155,8 +312,9 @@ function Statistics() {
         },
       },
       title: {
-        text: title,
+        text: title || ' ',
         align: 'center',
+        show: !!title,
         style: {
           fontSize: '16px',
           fontWeight: 600,
@@ -210,11 +368,6 @@ function Statistics() {
     )
   }
 
-  const dimensionTitles = {}
-  dimensions.forEach(dim => {
-    dimensionTitles[dim.id.toString()] = dim.title
-  })
-
   return (
     <ConfigProvider
       theme={{
@@ -234,7 +387,7 @@ function Statistics() {
 
         <div className="statistics-content">
           <div className="statistics-filters">
-            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+            <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
               <div className="filter-group">
                 <label>Unternehmensgröße:</label>
                 <Select
@@ -280,38 +433,63 @@ function Statistics() {
             <span className="statistics-total">
               Gesamt: <strong>{statistics.totalSubmissions}</strong> Einreichungen
             </span>
+            {useMockData && (
+              <span className="statistics-mock-banner">
+                Demo-Daten (Backend nicht erreichbar). Filter haben keine Wirkung.
+              </span>
+            )}
           </div>
 
           <div className="charts-grid">
-            <div className="chart-card chart-card-large">
-              {(() => {
-                const chartData = createDonutChartOptions('Gesamtbewertung', statistics.overall, true)
-                return (
-                  <Chart
-                    series={chartData.series}
-                    options={chartData.options}
-                    type="donut"
-                    height={240}
-                  />
-                )
-              })()}
+            <div className="chart-card chart-card-large gesamtbewertung-section">
+              <h3 className="gesamtbewertung-title">Gesamtbewertung</h3>
+              <div className="gesamtbewertung-charts">
+                <div className="gesamtbewertung-donut">
+                  {(() => {
+                    const chartData = createDonutChartOptions('', statistics.overall, true)
+                    return (
+                      <Chart
+                        series={chartData.series}
+                        options={chartData.options}
+                        type="donut"
+                        height={480}
+                      />
+                    )
+                  })()}
+                </div>
+                <div className="gesamtbewertung-radar">
+                  {(() => {
+                    const radarData = createRadarChartOptions()
+                    return (
+                      <Chart
+                        series={radarData.series}
+                        options={radarData.options}
+                        type="radar"
+                        height={480}
+                      />
+                    )
+                  })()}
+                </div>
+              </div>
             </div>
 
-            {Object.keys(statistics.dimensions).map((dimId) => {
-              const dim = statistics.dimensions[dimId]
-              const title = dimensionTitles[dimId] || dim.title || `Dimension ${dimId}`
-              const chartData = createDonutChartOptions(title, dim.counts, false)
-              return (
-                <div key={dimId} className="chart-card chart-card-small">
-                  <Chart
-                    series={chartData.series}
-                    options={chartData.options}
-                    type="donut"
-                    height={180}
-                  />
-                </div>
-              )
-            })}
+            <div className="chart-card chart-card-stacked-bar apexcharts-wrapper">
+              <h3 className="stacked-bar-title">Verteilung nach Dimensionen</h3>
+              <div className="apexcharts-wrapper">
+                {(() => {
+                  const barData = createStackedBarChartOptions()
+                  return (
+                    <Chart
+                      series={barData.series}
+                      options={barData.options}
+                      type="bar"
+                      height={400}
+                      width="100%"
+                    />
+                  )
+                })()}
+              </div>
+            </div>
           </div>
 
           <div className="statistics-legend">

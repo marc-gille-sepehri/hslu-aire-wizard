@@ -40,6 +40,14 @@ svg {
   stroke: none !important;
 }
 
+/* Restore ApexCharts rect elements (bars, etc.) - equal specificity to hiding rule, last wins */
+.apexcharts-wrapper .apexcharts-canvas svg.apexcharts-svg rect[width][height] {
+  display: block !important;
+  opacity: 1 !important;
+  fill: revert !important;
+  stroke: revert !important;
+}
+
 /* Only remove fill from actual icon SVGs - NO !important so ApexCharts can override */
 /* Target only SVGs that are clearly icons, not charts */
 header .icon svg path,

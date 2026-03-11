@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom'
 import { contactEmail } from '../config/configuration'
 import './HomePage.css'
 
+// Set to true to show PropTech Powerhouse in partner logos
+const SHOW_PROPTECH_POWERHOUSE = false
+
 function HomePage({ onContactSubmit }) {
   return (
     <>
@@ -20,11 +23,31 @@ function HomePage({ onContactSubmit }) {
             <div className="hero-sponsors">
               <p className="hero-sponsors-label">Partner</p>
               <div className="hero-sponsors-logos">
-                <a href="https://swissproptech.ch/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="SwissPropTech">
-                  <img src="/swissproptech-logo.png" alt="SwissPropTech" className="hero-sponsor-logo" />
+                <a href="https://www.gefma.de" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="GEFMA">
+                  <img src="/gefma.png" alt="GEFMA" className="hero-sponsor-logo" />
+                </a>
+                <a href="https://www.iz.de/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="IZ">
+                  <img src="/iz.png" alt="IZ" className="hero-sponsor-logo" />
                 </a>
                 <a href="https://www.immobilienbusiness.ch/de/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="IMMOBILIEN Business">
                   <img src="/s_w530_IB_Logo_2013-web.jpg" alt="IMMOBILIEN Business" className="hero-sponsor-logo" />
+                </a>
+                <a href="https://www.immopac.ch/de" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="ImmoPac">
+                  <img src="/immopac.jpg" alt="ImmoPac" className="hero-sponsor-logo" />
+                </a>
+                <a href="https://www.lukb.ch/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="LUKB">
+                  <img src="/lukb.jpg" alt="LUKB" className="hero-sponsor-logo" />
+                </a>
+                {SHOW_PROPTECH_POWERHOUSE && (
+                  <a href="https://proptechpowerhouse.com/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="PropTech Powerhouse">
+                    <img src="/proptech-powerhouse.jpg" alt="PropTech Powerhouse" className="hero-sponsor-logo" />
+                  </a>
+                )}
+                <a href="https://pt1.vc/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="PT1">
+                  <img src="/pt1.png" alt="PT1" className="hero-sponsor-logo" />
+                </a>
+                <a href="https://swissproptech.ch/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="SwissPropTech">
+                  <img src="/swissproptech-logo.png" alt="SwissPropTech" className="hero-sponsor-logo" />
                 </a>
               </div>
             </div>

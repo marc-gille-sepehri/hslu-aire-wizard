@@ -52,8 +52,20 @@
 
 .statistics-meta {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-start;
+  gap: 1rem;
   margin-bottom: 1.5rem;
+}
+
+.statistics-mock-banner {
+  font-size: 0.9rem;
+  color: #856404;
+  background: #fff3cd;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #ffc107;
 }
 
 .statistics-total {
@@ -134,16 +146,74 @@
 
 .chart-card-large {
   grid-column: 1 / -1;
-  max-width: 300px;
+  max-width: 100%;
   margin: 0 auto 0.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #f0f0f0;
   width: 100%;
 }
 
+.gesamtbewertung-section {
+  max-width: 100%;
+  padding-bottom: 0.5rem !important;
+}
+
+.gesamtbewertung-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+  text-align: center;
+  margin: 0 0 0.5rem;
+}
+
+.gesamtbewertung-charts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  padding: 0;
+  margin: -0.5rem 0;
+}
+
+.gesamtbewertung-donut {
+  flex-shrink: 0;
+  min-width: 280px;
+  margin-top: -1.5rem;
+  margin-bottom: -1.5rem;
+}
+
+.gesamtbewertung-radar {
+  flex: 1;
+  min-width: 400px;
+  max-width: 640px;
+  margin-top: -1.5rem;
+  margin-bottom: -1.5rem;
+}
+
+/* Reduce ApexCharts internal padding for Gesamtbewertung charts */
+.gesamtbewertung-donut > div,
+.gesamtbewertung-radar > div {
+  margin-top: -1rem !important;
+  margin-bottom: -1rem !important;
+}
+
 .chart-card-small {
   max-width: 220px;
   margin: 0 auto;
+}
+
+.chart-card-stacked-bar {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.stacked-bar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 1rem;
 }
 
 /* Ensure ApexCharts can use its colors - no interference from global rules */
@@ -201,6 +271,17 @@
 
   .statistics-subtitle {
     font-size: 1rem;
+  }
+
+  .gesamtbewertung-charts {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .gesamtbewertung-radar {
+    width: 100%;
+    min-width: unset;
   }
 }
 
