@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="AI@RE">
+  <defs>
+    <linearGradient id="aire-bg" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2c3e50"/>
+      <stop offset="1" stop-color="#5a9fb2"/>
+    </linearGradient>
+    <linearGradient id="tower" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#f5fafb"/>
+      <stop offset="1" stop-color="#d4e8ed"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background (CI) -->
+  <rect width="32" height="32" rx="8" fill="url(#aire-bg)"/>
+  <!-- Left mid-rise -->
+  <rect x="3" y="12" width="7" height="16" rx="1.2" fill="url(#tower)" opacity="0.92"/>
+  <g fill="#2c3e50" opacity="0.22">
+    <rect x="4.2" y="14" width="4.6" height="1" rx="0.2"/>
+    <rect x="4.2" y="16.5" width="4.6" height="1" rx="0.2"/>
+    <rect x="4.2" y="19" width="4.6" height="1" rx="0.2"/>
+    <rect x="4.2" y="21.5" width="4.6" height="1" rx="0.2"/>
+  </g>
+  <!-- Center high-rise (tallest) -->
+  <rect x="11.5" y="4" width="9" height="24" rx="1.2" fill="url(#tower)"/>
+  <g fill="#2c3e50" opacity="0.2">
+    <rect x="12.6" y="6" width="6.8" height="1.1" rx="0.25"/>
+    <rect x="12.6" y="8.5" width="6.8" height="1.1" rx="0.25"/>
+    <rect x="12.6" y="11" width="6.8" height="1.1" rx="0.25"/>
+    <rect x="12.6" y="13.5" width="6.8" height="1.1" rx="0.25"/>
+    <rect x="12.6" y="16" width="6.8" height="1.1" rx="0.25"/>
+    <rect x="12.6" y="18.5" width="6.8" height="1.1" rx="0.25"/>
+    <rect x="12.6" y="21" width="6.8" height="1.1" rx="0.25"/>
+    <rect x="12.6" y="23.5" width="6.8" height="1.1" rx="0.25"/>
+  </g>
+  <!-- Accent strip (teal glass) -->
+  <rect x="14.2" y="5.2" width="3.6" height="21.6" rx="0.4" fill="#5a9fb2" opacity="0.35"/>
+  <!-- Right tower -->
+  <rect x="22" y="14" width="7" height="14" rx="1.2" fill="url(#tower)" opacity="0.9"/>
+  <g fill="#2c3e50" opacity="0.2">
+    <rect x="23.1" y="16" width="4.8" height="1" rx="0.2"/>
+    <rect x="23.1" y="18.5" width="4.8" height="1" rx="0.2"/>
+    <rect x="23.1" y="21" width="4.8" height="1" rx="0.2"/>
+    <rect x="23.1" y="23.5" width="4.8" height="1" rx="0.2"/>
+  </g>
+</svg>
