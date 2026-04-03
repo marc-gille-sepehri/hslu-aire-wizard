@@ -5,6 +5,8 @@ import WizardPage from './pages/WizardPage'
 import ResultPage from './pages/ResultPage'
 import StatisticsPage from './pages/StatisticsPage'
 import AwardPage from './pages/AwardPage'
+import AwardVotePage from './pages/AwardVotePage'
+import AwardResultsPage from './pages/AwardResultsPage'
 import { apiBaseUrl, contactEmail } from './config/configuration'
 import './App.css'
 
@@ -104,6 +106,9 @@ function App() {
           <Route path="/result" element={<ResultPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />
           <Route path="/award" element={<AwardPage />} />
+          {/* Hidden preview: not linked from nav */}
+          <Route path="/award-vote" element={<AwardVotePage />} />
+          <Route path="/award-results" element={<AwardResultsPage />} />
         </Routes>
       </main>
 
@@ -119,6 +124,7 @@ function App() {
               <ul>
                 <li><Link to="/">Home</Link></li>
                 <li><Link to="/award">Award</Link></li>
+                <li><Link to="/award-results">Award-Ergebnisse</Link></li>
                 <li><Link to="/statistics">Statistiken</Link></li>
                 {location.pathname === '/' && (
                   <li><a href="#contact">Kontakt</a></li>
