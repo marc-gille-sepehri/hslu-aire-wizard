@@ -1,11 +1,13 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { apiBaseUrl } from '../config/configuration'
-import { awardVoteCandidates } from '../data/awardVoteCandidates'
-import { getYoutubeEmbedSrc } from '../utils/youtubeEmbed'
+import { fetchAwardCandidates } from '../api/awardApi'
+import { getYoutubeEmbedSrc, getLoomEmbedSrc } from '../utils/youtubeEmbed'
 import './AwardVotePage.css'
 
 function AwardVotePage() {
+  const [candidates, setCandidates] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [selected, setSelected] = useState(null)
   const [email, setEmail] = useState('')
@@ -13,6 +15,29 @@ function AwardVotePage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        setLoading(true)
+        const rows = await fetchAwardCandidates()
+        if (!cancelled) {
+          setCandidates(rows)
+          setLoadError(null)
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setLoadError(e.message || 'Kandidaten konnten nicht geladen werden.')
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const openVote = (candidate) => {
     setSelected(candidate)
@@ -71,88 +96,113 @@ function AwardVotePage() {
   return (
     <section className="award-vote-page">
       <div className="container">
-        <p className="award-vote-discrete">
-          Interne Vorschau — nicht in der Navigation verlinkt.
-        </p>
-        <h1 className="award-vote-title">AI@RE Award 2026 · Publikumsvoting (Demo)</h1>
+        <h1 className="award-vote-title">AI@RE Award 2026 · Publikumsvoting</h1>
         <p className="award-vote-intro">
-          Stimme für einen der folgenden Beispiel-Kandidaten. Nach Eingabe deiner E-Mail erhältst du eine Bestätigung.
+          Stimme für einen der folgenden Kandidaten. Nach Eingabe deiner E-Mail erhältst du eine Bestätigung.
         </p>
 
-        <ul className="award-vote-list">
-          {awardVoteCandidates.map((c) => {
-            const youtubeEmbedSrc = getYoutubeEmbedSrc(c.videoUrl)
-            return (
-            <li key={c.id} className="award-vote-card">
-              <div className="award-vote-card-layout">
-                {youtubeEmbedSrc ? (
-                  <div className="award-vote-card-media">
-                    <div className="award-vote-video-frame">
-                      <iframe
-                        title={`Video: ${c.solutionTitle}`}
-                        src={youtubeEmbedSrc}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowFullScreen
-                        loading="lazy"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                      />
-                    </div>
-                    <a
-                      href={c.videoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="award-vote-video-link"
-                    >
-                      Auf YouTube öffnen
-                    </a>
-                  </div>
-                ) : null}
-                <div className="award-vote-card-main">
-                  <div className="award-vote-card-head">
-                    <h2 className="award-vote-solution-title">{c.solutionTitle}</h2>
-                    <a
-                      href={c.companyUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="award-vote-company-link"
-                    >
-                      {c.companyName}
-                    </a>
-                  </div>
-                  <p className="award-vote-synopsis">{c.synopsis}</p>
-                  {!youtubeEmbedSrc && c.videoUrl ? (
-                    <div className="award-vote-video-fallback">
-                      <a
-                        href={c.videoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="award-vote-video-link"
-                      >
-                        Video ansehen
-                      </a>
+        <div className="award-vote-back award-vote-back--top">
+          <a
+            href="https://www.hslu.ch/de-ch/wirtschaft/agenda/veranstaltungen/2026/06/01/reprogramming-real-estate-wie-ai-die-branche-neu-definiert/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cta-button"
+          >
+            Zur Konferenz anmelden
+          </a>
+        </div>
+
+        {loading && <p className="award-vote-status">Laden …</p>}
+        {loadError && <p className="award-vote-error">{loadError}</p>}
+
+        {!loading && !loadError && (
+          <ul className="award-vote-list">
+            {candidates.map((c) => {
+              const resolvedVideoUrl =
+                c.videoUrl && c.videoUrl.startsWith('/')
+                  ? `${apiBaseUrl}${c.videoUrl}`
+                  : c.videoUrl
+              const youtubeEmbedSrc = getYoutubeEmbedSrc(resolvedVideoUrl)
+              const loomEmbedSrc = !youtubeEmbedSrc
+                ? getLoomEmbedSrc(resolvedVideoUrl)
+                : null
+              const iframeEmbedSrc = youtubeEmbedSrc || loomEmbedSrc
+              const externalLinkLabel = youtubeEmbedSrc
+                ? 'Auf YouTube öffnen'
+                : loomEmbedSrc
+                ? 'Auf Loom öffnen'
+                : null
+              const hasFileVideo = Boolean(resolvedVideoUrl) && !iframeEmbedSrc
+              return (
+              <li key={c.id} className="award-vote-card">
+                <div className="award-vote-card-layout">
+                  {iframeEmbedSrc || hasFileVideo ? (
+                    <div className="award-vote-card-media">
+                      <div className="award-vote-video-frame">
+                        {iframeEmbedSrc ? (
+                          <iframe
+                            title={`Video: ${c.companyName}`}
+                            src={iframeEmbedSrc}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="strict-origin-when-cross-origin"
+                          />
+                        ) : (
+                          <video
+                            src={resolvedVideoUrl}
+                            controls
+                            preload="metadata"
+                            playsInline
+                          />
+                        )}
+                      </div>
+                      {externalLinkLabel && (
+                        <a
+                          href={resolvedVideoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="award-vote-video-link"
+                        >
+                          {externalLinkLabel}
+                        </a>
+                      )}
                     </div>
                   ) : null}
-                  <div className="award-vote-actions">
-                    <button
-                      type="button"
-                      className="award-vote-button"
-                      onClick={() => openVote(c)}
-                    >
-                      Für diese Lösung stimmen
-                    </button>
+                  <div className="award-vote-card-main">
+                    <div className="award-vote-card-head">
+                      <h2 className="award-vote-solution-title">{c.companyName}</h2>
+                      {c.websiteUrl && (
+                        <a
+                          href={c.websiteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="award-vote-company-link"
+                        >
+                          {c.websiteUrl}
+                        </a>
+                      )}
+                    </div>
+                    <div className="award-vote-actions">
+                      <button
+                        type="button"
+                        className="award-vote-button"
+                        onClick={() => openVote(c)}
+                      >
+                        Für diese Lösung stimmen
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </li>
-            )
-          })}
-        </ul>
+                {c.description && (
+                  <p className="award-vote-synopsis">{c.description}</p>
+                )}
+              </li>
+              )
+            })}
+          </ul>
+        )}
 
-        <div className="award-vote-back">
-          <Link to="/award" className="cta-button cta-button-secondary">
-            Zur Award-Übersicht
-          </Link>
-        </div>
       </div>
 
       {modalOpen && selected && (
@@ -188,8 +238,10 @@ function AwardVotePage() {
               <form onSubmit={handleSubmit} className="award-vote-form">
                 <h2 id="award-vote-modal-title">Stimme abgeben</h2>
                 <p className="award-vote-modal-choice">
-                  <strong>{selected.solutionTitle}</strong>
-                  <span className="award-vote-modal-company">{selected.companyName}</span>
+                  <strong>{selected.companyName}</strong>
+                  {selected.description && (
+                    <span className="award-vote-modal-company">{selected.description}</span>
+                  )}
                 </p>
 
                 <label className="award-vote-label" htmlFor="award-vote-email">

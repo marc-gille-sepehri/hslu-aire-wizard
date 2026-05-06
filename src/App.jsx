@@ -4,7 +4,6 @@ import HomePage from './pages/HomePage'
 import WizardPage from './pages/WizardPage'
 import ResultPage from './pages/ResultPage'
 import StatisticsPage from './pages/StatisticsPage'
-import AwardPage from './pages/AwardPage'
 import AwardVotePage from './pages/AwardVotePage'
 import AwardResultsPage from './pages/AwardResultsPage'
 import { apiBaseUrl, contactEmail } from './config/configuration'
@@ -105,9 +104,7 @@ function App() {
           <Route path="/check" element={<WizardPage />} />
           <Route path="/result" element={<ResultPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />
-          <Route path="/award" element={<AwardPage />} />
-          {/* Hidden preview: not linked from nav */}
-          <Route path="/award-vote" element={<AwardVotePage />} />
+          <Route path="/award" element={<AwardVotePage />} />
           <Route path="/award-results" element={<AwardResultsPage />} />
         </Routes>
       </main>

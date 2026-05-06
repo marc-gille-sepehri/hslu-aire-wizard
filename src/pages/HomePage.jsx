@@ -60,14 +60,11 @@ function HomePage({ onContactSubmit }) {
 
             <div className="hero-award-block">
               <h3 className="hero-award-title">HSLU Best AI@RE Use Case Award 2026</h3>
-              <p className="hero-award-text">
-                Plattform für KI-Lösungen in Real Estate (Bewertung, Bau, Betrieb, ESG, Finanzierung, AI Agents). Voraussetzung: konkreter Business Case, lauffähiger Prototyp, Start-Up oder Unternehmensprojekt.
-              </p>
               <p className="hero-award-timeline">
-                Bewerbung bis 30.4.2026 · 5 Nominierte · Live-Pitch & Publikumsvoting am 1.6.2026
+                Die Jury hat getagt. Die finalen Kandidaten stehen fest.
               </p>
               <Link to="/award" className="cta-button">
-                Details zum Award
+                Jetzt abstimmen!
               </Link>
             </div>
 

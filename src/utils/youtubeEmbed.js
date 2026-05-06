@@ -40,3 +40,24 @@ export function getYoutubeEmbedSrc(url) {
     return null
   }
 }
+
+/**
+ * Convert a loom.com/share/<id> link to its iframe-embeddable form
+ * (loom.com/embed/<id>). Pass-through if already an /embed/ URL.
+ */
+export function getLoomEmbedSrc(url) {
+  if (!url || typeof url !== 'string') return null
+  try {
+    const u = new URL(url)
+    const host = u.hostname.replace(/^www\./, '')
+    if (host !== 'loom.com') return null
+    const parts = u.pathname.split('/').filter(Boolean)
+    if (parts.length < 2) return null
+    const [kind, id] = parts
+    if (kind !== 'share' && kind !== 'embed') return null
+    if (!id) return null
+    return `https://www.loom.com/embed/${id}`
+  } catch {
+    return null
+  }
+}
