@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="500" height="220" viewBox="0 0 500 220">
+  <defs>
+    <clipPath id="clip-Qaecy-Logo">
+      <rect width="500" height="220"/>
+    </clipPath>
+  </defs>
+  <g id="Qaecy-Logo" clip-path="url(#clip-Qaecy-Logo)">
+    <rect width="500" height="220" fill="#fff"/>
+    <g id="Gruppe_242" data-name="Gruppe 242" transform="translate(34.001 57.61)">
+      <path id="Pfad_21" data-name="Pfad 21" d="M41.84,101.505H54.58L80.7,32.518l26.113,68.987h12.745L80.7.257Z" transform="translate(63.019 0.409)" fill="#00347a"/>
+      <g id="Gruppe_239" data-name="Gruppe 239" transform="translate(0 0)">
+        <g id="Gruppe_241" data-name="Gruppe 241" transform="translate(0 0)">
+          <path id="Pfad_22" data-name="Pfad 22" d="M176.156,75.978l-.911-.893-.9.9A36.464,36.464,0,0,1,148.4,86.73h-.015a36.7,36.7,0,0,1,.013-73.409h.015a36.468,36.468,0,0,1,25.949,10.759l.893.893,8.272-8.272-.878-.893A48.177,48.177,0,0,0,148.525,1.52h-.172A48.668,48.668,0,0,0,99.8,50.09V50.1A48.6,48.6,0,0,0,182.64,84.379l.891-.883Z" transform="translate(151.963 2.314)" fill="#09c8cc"/>
+          <path id="Pfad_23" data-name="Pfad 23" d="M55.8,88.333A38.485,38.485,0,0,1,19.5,27.187,38.484,38.484,0,1,1,78.957,75.943l-.618.689,6.173,10.421,1.148-1.138a50.4,50.4,0,1,0-24.4,13.328l1.693-.378L56.636,88.211Z" transform="translate(0 0)" fill="#09c8cc"/>
+          <path id="Pfad_24" data-name="Pfad 24" d="M23.691,35.6l21.33,36H58.537L33.7,29.671Z" transform="translate(36.075 45.179)" fill="#09c8cc"/>
+          <path id="Pfad_25" data-name="Pfad 25" d="M135.174,2.256,166.761,54.62V95.549h11.529V54.618l.966-1.609L148.587,2.256Z" transform="translate(205.833 3.434)" fill="#0f5be9"/>
+          <path id="Pfad_26" data-name="Pfad 26" d="M171.22,2.256l-19.556,32.45L158.4,45.927,184.628,2.256Z" transform="translate(230.943 3.434)" fill="#0f5be9"/>
+          <rect id="Rechteck_311" data-name="Rechteck 311" width="17.662" height="11.536" transform="translate(213.476 46.505)" fill="#cfe602"/>
+          <path id="Pfad_27" data-name="Pfad 27" d="M119.554,2.256H77.677V95.549h41.877V84.02H89.211V13.79h30.343Z" transform="translate(118.282 3.434)" fill="#cfe602"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

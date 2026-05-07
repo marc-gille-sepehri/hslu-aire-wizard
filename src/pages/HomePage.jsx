@@ -52,6 +52,9 @@ function HomePage({ onContactSubmit }) {
                 <a href="https://pt1.vc/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="PT1">
                   <img src="/pt1.png" alt="PT1" className="hero-sponsor-logo" />
                 </a>
+                <a href="https://qaecy.com/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="Qaecy">
+                  <img src="/qaecy.svg" alt="Qaecy" className="hero-sponsor-logo" />
+                </a>
                 <a href="https://swissproptech.ch/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="SwissPropTech">
                   <img src="/swissproptech-logo.png" alt="SwissPropTech" className="hero-sponsor-logo" />
                 </a>
