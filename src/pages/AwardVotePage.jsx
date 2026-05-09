@@ -195,7 +195,10 @@ function AwardVotePage() {
                   </div>
                 </div>
                 {c.description && (
-                  <p className="award-vote-synopsis">{c.description}</p>
+                  <div className="award-vote-jury">
+                    <h3 className="award-vote-jury-heading">Beurteilung der Jury</h3>
+                    <p className="award-vote-synopsis">{c.description}</p>
+                  </div>
                 )}
               </li>
               )

@@ -95,8 +95,21 @@
   text-decoration: underline;
 }
 
+.award-vote-jury {
+  margin-top: 1rem;
+}
+
+.award-vote-jury-heading {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #868e96;
+}
+
 .award-vote-synopsis {
-  margin: 1rem 0 0;
+  margin: 0;
   color: #495057;
   line-height: 1.65;
   font-size: 1rem;
