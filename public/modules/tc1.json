@@ -1,0 +1,196 @@
+{
+  "module": {
+    "id": "ai-re-m1",
+    "title": "Modul 1 – Deep Dives zu den Blöcken",
+    "lang": "de",
+    "resources": {
+      "fig-transformation-circle": {
+        "kind": "diagram",
+        "src": "assets/transformation-circle.svg",
+        "alt": "Transformation Circle – AI als Betriebsmittel der Wertschöpfung",
+        "caption": "Grundmodell des Moduls"
+      },
+      "fig-wirkungsebenen": {
+        "kind": "diagram",
+        "src": "assets/wirkungsebenen.svg",
+        "alt": "Fünf Wirkungsebenen von AI: Kosten, Geschwindigkeit, Qualität, Skalierung, Umsatz"
+      },
+      "fig-individual-vs-strategisch": {
+        "kind": "diagram",
+        "src": "assets/individual-vs-strategisch.svg",
+        "alt": "Individuelle AI-Nutzung vs. unternehmensstrategische AI"
+      }
+    },
+    "sections": [
+      {
+        "id": "b1",
+        "title": "Block 1 – Was es braucht, damit AI die Produktivität erhöht",
+        "objectives": [
+          "Den Unterschied zwischen AI-Nutzung und AI-Integration verstehen",
+          "Die fünf Wirkungsebenen von AI auf Wertschöpfung benennen können",
+          "Pilot-Designs nach Skalierungsfähigkeit beurteilen"
+        ],
+        "artifacts": [
+          {
+            "type": "callout",
+            "id": "b1-kernsatz",
+            "variant": "insight",
+            "body": "**Kernaussage des Blocks:** Produktivität entsteht nicht durch AI-Nutzung, sondern durch AI-Integration. Für C-Level ist nicht entscheidend, *ob* Mitarbeitende AI nutzen, sondern *wo AI messbar die Wertschöpfung verändert.*"
+          },
+          {
+            "type": "prose",
+            "id": "b1-ausgangspunkt",
+            "body": "Viele Unternehmen der Immobilienwirtschaft haben AI bereits ausprobiert – ChatGPT, Copilot, Branchen-Tools. Einzelne Mitarbeitende lassen sich Texte schreiben, Dokumente zusammenfassen, E-Mails formulieren. Das ist nützlich. Aber es ist noch keine Transformation. Ein Mitarbeitender spart 20 Minuten bei einer E-Mail – das verändert weder Kostenstruktur noch Servicequalität noch Skalierungsfähigkeit. [[media:fig-transformation-circle]]"
+          },
+          {
+            "type": "mcq",
+            "id": "b1-q-toolfrage",
+            "stem": "Ein Unternehmen führt Copilot ein, schult alle Mitarbeitenden und feiert hohe Nutzungszahlen. Welche Aussage trifft am ehesten zu?",
+            "options": [
+              {
+                "text": "Das Unternehmen hat AI erfolgreich eingeführt – Nutzung ist der entscheidende Erfolgsindikator.",
+                "correct": false,
+                "feedback": "Nutzung ist ein Hygienefaktor, kein Erfolgskriterium. Sie zeigt, dass Mitarbeitende das Tool annehmen – aber sagt nichts über Wertschöpfung aus."
+              },
+              {
+                "text": "Nutzung ist ein erstes Signal, aber Wirkung entsteht erst, wenn AI in Kernprozesse integriert ist.",
+                "correct": true,
+                "feedback": "Genau. Das ist die zentrale Verschiebung von Block 1: weg vom Tool-Inventar, hin zur Prozesslandkarte."
+              },
+              {
+                "text": "Erst wenn jeder Mitarbeitende täglich AI nutzt, lohnt sich die Investition.",
+                "correct": false,
+                "feedback": "Tägliche Nutzung erzeugt individuelle Effizienz, aber keinen Business Impact. Der Hebel liegt in der Prozessintegration, nicht in der Nutzungshäufigkeit."
+              },
+              {
+                "text": "Die Schulung war der entscheidende Faktor – Tool plus Schulung ergibt Transformation.",
+                "correct": false,
+                "feedback": "Schulung allein verändert keinen Prozess. AI als Betriebsmittel verlangt, dass Arbeit anders organisiert wird, nicht nur, dass Menschen besser bedienen lernen."
+              }
+            ],
+            "explanation": "Der Fehler vieler AI-Initiativen ist, Chatbot-Nutzung mit Transformation zu verwechseln. Wirkung bleibt lokal, solange AI nur als zusätzliche Oberfläche neben der eigentlichen Arbeit existiert."
+          },
+          {
+            "type": "prose",
+            "id": "b1-falsche-frage",
+            "body": "Die falsche Führungsfrage lautet: *Welches AI-Tool sollen wir einsetzen?* Die richtige Frage lautet: *Welche Arbeitsschritte in unseren Kernprozessen können durch AI schneller, besser, günstiger oder skalierbarer werden?* Erst wenn diese Frage beantwortet ist, wird Technologie relevant."
+          },
+          {
+            "type": "bullets",
+            "id": "b1-wirkungsebenen",
+            "title": "Die fünf Wirkungsebenen, auf denen AI Wert schaffen kann",
+            "items": [
+              "**Kosten** – senkt AI manuellen Aufwand? (z. B. automatisierte Schadenvorprüfung)",
+              "**Geschwindigkeit** – verkürzt AI Durchlaufzeiten? (z. B. schnellere Vertragsanalyse)",
+              "**Qualität** – reduziert AI Fehler und Inkonsistenzen? (z. B. Compliance-Prüfung)",
+              "**Skalierung** – mehr Fälle mit gleichen Ressourcen? (z. B. mehr Dossiers pro Team)",
+              "**Umsatz / Topline** – ermöglicht AI mehr Geschäft? (z. B. bessere Lead-Triage, schnellere Due Diligence)"
+            ]
+          },
+          {
+            "type": "media",
+            "id": "b1-fig-wirkungsebenen",
+            "ref": "fig-wirkungsebenen"
+          },
+          {
+            "type": "callout",
+            "id": "b1-warn-pilot",
+            "variant": "warning",
+            "body": "**Der zentrale Denkfehler: Pilot statt Produktivsystem.** Ein schlechter Pilot zeigt: „Es geht technisch.“ Ein guter Pilot zeigt: „Es erzeugt messbaren Wert und kann skaliert werden.“ Der Unterschied liegt nicht in der Technologie, sondern im Design."
+          },
+          {
+            "type": "lab_select",
+            "id": "b1-lab-pilot-design",
+            "scenario": "Sie sind COO eines mittelgrossen Immobilienverwalters. Ihr Innovationsteam schlägt vier Pilotprojekte vor. Sie haben Budget für **eines**. Welches wählen Sie – und warum ist es das einzige, das die Kriterien eines produktivitätsorientierten AI-Piloten erfüllt?",
+            "options": [
+              {
+                "id": "a",
+                "label": "ChatGPT-Lizenzen für alle Mitarbeitenden, plus interner Prompting-Kurs",
+                "correct": false,
+                "feedback": "Das ist Tool-Verteilung, kein Pilot. Es fehlt Prozessbezug, Business Case, Messgrösse und Skalierungshypothese. Erwartbare Wirkung: individuelle Effizienzgewinne ohne organisatorischen Impact."
+              },
+              {
+                "id": "b",
+                "label": "AI-gestützte Schaden-Triage für ein Bewirtschaftungsteam mit definierten Eskalationsregeln, ERP-Anbindung im zweiten Schritt, gemessen an Zeit-bis-Erstreaktion und Eskalationsqualität",
+                "correct": true,
+                "feedback": "Richtig. Dieser Pilot hat alle sieben Elemente: klaren Prozessbezug, Business Case, echte Daten, Integrationspfad, Prozessverantwortung, Messgrössen und Skalierungshypothese (übertragbar auf weitere Teams und ähnliche Triage-Prozesse)."
+              },
+              {
+                "id": "c",
+                "label": "Hackathon mit drei externen AI-Startups, um Innovationspotenzial in der Bewirtschaftung breit zu sichten",
+                "correct": false,
+                "feedback": "Erkundung kann sinnvoll sein, ist aber kein produktivitätsorientierter Pilot. Es fehlt Fokus, Owner und Skalierungspfad. Risiko: viele Demos, keine produktive Nutzung."
+              },
+              {
+                "id": "d",
+                "label": "Custom GPT für die Geschäftsleitung, das interne Strategiepapiere zusammenfasst",
+                "correct": false,
+                "feedback": "Geringe Wirkungstiefe: kleine Nutzergruppe, keine Prozessintegration, schwer messbarer Business Impact. Kann ein Lernprojekt sein, aber kein strategischer Hebel."
+              }
+            ],
+            "explanation": "Ein produktivitätsorientierter Pilot braucht: klarer Prozessbezug, definierter Business Case, echte Daten/Dokumente, Systemanbindung oder Integrationspfad, prozessverantwortliche Person, Messgrössen, Skalierungshypothese. Option B erfüllt alle sieben."
+          },
+          {
+            "type": "callout",
+            "id": "b1-engpass",
+            "variant": "note",
+            "body": "**AI scheitert selten am Modell – sie scheitert an der Organisation.** Typische Engpässe: Prozesse nicht sauber beschrieben, Daten verteilt in Systemen/E-Mails/Excel, unklare Verantwortlichkeiten, Fachbereiche und IT arbeiten nebeneinander, keine Priorisierung nach Business Impact, Piloten ohne Skalierungsdesign, Governance erst nach dem Schaden."
+          },
+          {
+            "type": "media",
+            "id": "b1-fig-vergleich",
+            "ref": "fig-individual-vs-strategisch",
+            "caption_override": "Der Sprung von individueller AI-Nutzung zu unternehmensstrategischer AI"
+          },
+          {
+            "type": "bullets",
+            "id": "b1-fuenf-hebel",
+            "title": "Die fünf Produktivitätshebel agentischer AI",
+            "items": [
+              "**Automatisierung repetitiver Arbeit** – Zusammenfassen, Extrahieren, Vergleichen, Klassifizieren (Schadenmeldungen, Mietvertragsanalyse, Offertenvergleich)",
+              "**Beschleunigung von Wissensarbeit** – Suchen, Lesen, Einordnen, Verdichten – wenn AI auf die richtigen Informationen zugreifen kann",
+              "**Standardisierung von Entscheidungsgrundlagen** – Due Diligence, Risikoanalysen, Compliance-Prüfungen, Investitionsvorlagen",
+              "**Skalierung knapper Expertise** – Wissen erfahrener Personen in Prompts, Wissensbasen und Workflows übersetzen",
+              "**Orchestrierung komplexer Prozessketten** – Aufnehmen, Prüfen, Ergänzen, Systeme abfragen, Vorschläge erzeugen, Freigaben vorbereiten"
+            ]
+          },
+          {
+            "type": "mcq",
+            "id": "b1-q-organisation",
+            "stem": "Ihr CTO argumentiert: „Wir müssen warten, bis die Modelle besser werden, dann lohnt sich AI in unseren Prozessen.“ Wie reagieren Sie aus der Logik von Block 1?",
+            "options": [
+              {
+                "text": "Zustimmung – Modellqualität ist der entscheidende Engpass, alles andere folgt.",
+                "correct": false,
+                "feedback": "Das ist die typische Tool-zentrierte Sichtweise. Modellqualität ist relevant, aber selten der erste Engpass. In den meisten Unternehmen würde auch das beste Modell wenig bewirken, weil die organisatorischen Voraussetzungen fehlen."
+              },
+              {
+                "text": "Widerspruch – der eigentliche Engpass liegt im Operating Model: Prozesse, Daten, Verantwortlichkeiten, Use-Case-Priorisierung.",
+                "correct": true,
+                "feedback": "Genau. Die Reifeverschiebung lautet: weg von „Wir testen Tools“ hin zu „Wir redesignen Arbeitsschritte“. Das beste Modell läuft ins Leere, wenn keine priorisierten Prozesse, keine Datenstrategie, keine Verantwortlichen und keine Messung existieren."
+              },
+              {
+                "text": "Mittelweg – wir warten ein Jahr und prüfen dann erneut.",
+                "correct": false,
+                "feedback": "Warten ist keine Strategie. Während dessen sammeln Wettbewerber Lernkurven, Datenpipelines und organisatorische Fähigkeit – die nicht durch ein besseres Modell ersetzt werden können."
+              }
+            ],
+            "explanation": "Die Kernaussage von Block 1: AI scheitert nicht an AI. AI scheitert an Organisationen, die sie wie ein Tool behandeln – statt wie ein Betriebsmittel für Wertschöpfung."
+          },
+          {
+            "type": "reflect",
+            "id": "b1-reflect-prozesse",
+            "prompt": "Identifizieren Sie in Ihrem eigenen Unternehmen drei Prozesse mit hoher Wiederholung, hohem Dokumentenanteil und klaren Entscheidungslogiken. Für welchen davon können Sie *heute* eine Wirkungsthese formulieren – also eine messbare Veränderung in Kosten, Zeit, Qualität, Skalierung oder Topline? Welcher Prozess hat *aktuell keinen* benennbaren Owner, und was bedeutet das für eine mögliche AI-Initiative?",
+            "guidance": "Halten Sie Ihre Antworten stichwortartig fest – Sie kommen in Modul 8 darauf zurück, wenn die Prozesslandkarte systematisch aufgebaut wird."
+          },
+          {
+            "type": "callout",
+            "id": "b1-konsequenz",
+            "variant": "insight",
+            "body": "**Konsequenz für C-Level:** Keine AI-Initiative ohne Business Case. Kein Pilot ohne Skalierungshypothese. Keine Toolentscheidung ohne Prozessbezug. Keine Automatisierung ohne Verantwortlichkeit. Keine Produktivität ohne Integration."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -6,6 +6,7 @@ import ResultPage from './pages/ResultPage'
 import StatisticsPage from './pages/StatisticsPage'
 import AwardVotePage from './pages/AwardVotePage'
 import AwardResultsPage from './pages/AwardResultsPage'
+import TrainingApp from './training/TrainingApp'
 import { apiBaseUrl, contactEmail } from './config/configuration'
 import './App.css'
 
@@ -106,6 +107,7 @@ function App() {
           <Route path="/statistics" element={<StatisticsPage />} />
           <Route path="/award" element={<AwardVotePage />} />
           <Route path="/award-results" element={<AwardResultsPage />} />
+          <Route path="/training/*" element={<TrainingApp />} />
         </Routes>
       </main>
 

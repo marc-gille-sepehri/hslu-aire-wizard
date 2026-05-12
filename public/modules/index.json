@@ -1,0 +1,7 @@
+{
+  "modules": [
+    { "id": "modul-1", "title": "Modul 1 — AI in Real Estate: Einführung", "file": "modul-1.json" },
+    { "id": "modul-2", "title": "Transformation Circle", "file":
+  "tc1.json" }
+  ]
+}

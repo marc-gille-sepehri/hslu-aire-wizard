@@ -1,0 +1,22 @@
+// German UI labels. Centralized so they can be swapped later.
+export const labels = {
+  appTitle: 'Training',
+  loading: 'Wird geladen…',
+  noModules: 'Keine Module verfügbar.',
+  moduleSelectLabel: 'Modul wählen',
+  resetProgress: 'Fortschritt zurücksetzen',
+  resetConfirm: 'Fortschritt wirklich zurücksetzen? Antworten und Notizen gehen verloren.',
+  progressOf: (done: number, total: number) => `${done} / ${total} Abschnitte`,
+  objectives: 'Lernziele',
+  prev: 'Zurück',
+  next: 'Weiter',
+  submit: 'Antwort prüfen',
+  tryAgain: 'Erneut versuchen',
+  correct: 'Richtig',
+  incorrect: 'Falsch',
+  savedHint: 'gespeichert',
+  validationError: 'Modul-JSON ist ungültig.',
+  loadError: 'Modul konnte nicht geladen werden.',
+  missingResource: (id: string) => `Ressource fehlt: ${id}`,
+  missingAlt: 'Alternativtext fehlt',
+} as const
