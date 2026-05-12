@@ -243,7 +243,11 @@ function AwardVotePage() {
                 <p className="award-vote-modal-choice">
                   <strong>{selected.companyName}</strong>
                   {selected.description && (
-                    <span className="award-vote-modal-company">{selected.description}</span>
+                    <span className="award-vote-modal-company">
+                      {selected.description.length > 50
+                        ? `${selected.description.slice(0, 50).trimEnd()}…`
+                        : selected.description}
+                    </span>
                   )}
                 </p>
 
