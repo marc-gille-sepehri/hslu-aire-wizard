@@ -926,8 +926,25 @@
 }
 
 @media (max-width: 768px) {
+  .site-header {
+    padding: 1rem 0;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .header-content {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+    justify-content: center;
+  }
+
   .logo-container {
     gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
   }
 
   .site-logo span {
@@ -948,7 +965,10 @@
   }
 
   .site-nav {
-    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
     font-size: 0.9rem;
   }
 
