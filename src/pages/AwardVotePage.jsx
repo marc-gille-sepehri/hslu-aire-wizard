@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { apiBaseUrl } from '../config/configuration'
-import { fetchAwardCandidates } from '../api/awardApi'
+import { fetchAwardCandidates, fetchVotingState } from '../api/awardApi'
 import { getYoutubeEmbedSrc, getLoomEmbedSrc } from '../utils/youtubeEmbed'
 import './AwardVotePage.css'
 
@@ -15,6 +15,8 @@ function AwardVotePage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
+  const [closed, setClosed] = useState(false)
+  const [votingStopped, setVotingStopped] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -39,12 +41,28 @@ function AwardVotePage() {
     }
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const state = await fetchVotingState()
+        if (!cancelled) setVotingStopped(state.votingStopped)
+      } catch {
+        /* non-fatal: server still enforces closed voting on submit */
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   const openVote = (candidate) => {
     setSelected(candidate)
     setEmail('')
     setWantsUpdates(false)
     setError(null)
     setSuccess(false)
+    setClosed(false)
     setModalOpen(true)
   }
 
@@ -85,6 +103,10 @@ function AwardVotePage() {
         throw new Error(data.error || 'Stimme konnte nicht gespeichert werden.')
       }
 
+      if (data.code === 'VOTING_CLOSED') {
+        setClosed(true)
+        setVotingStopped(true)
+      }
       setSuccess(true)
     } catch (err) {
       setError(err.message || 'Es ist ein Fehler aufgetreten.')
@@ -100,6 +122,13 @@ function AwardVotePage() {
         <p className="award-vote-intro">
           Stimme für einen der folgenden Kandidaten. Nach Eingabe deiner E-Mail erhältst du eine Bestätigung.
         </p>
+
+        {votingStopped && (
+          <p className="award-vote-closed-banner">
+            Die Abstimmung ist beendet. Stimmen können nicht mehr gezählt werden – du kannst dich aber
+            weiterhin für Updates zu AI@RE eintragen.
+          </p>
+        )}
 
         <div className="award-vote-back award-vote-back--top">
           <a
@@ -228,11 +257,21 @@ function AwardVotePage() {
 
             {success ? (
               <div className="award-vote-success">
-                <h2 id="award-vote-modal-title">Vielen Dank</h2>
-                <p>
-                  Deine Stimme wurde registriert. Du erhältst in Kürze eine Bestätigung an{' '}
-                  <strong>{email.trim()}</strong>.
-                </p>
+                <h2 id="award-vote-modal-title">
+                  {closed ? 'Abstimmung beendet' : 'Vielen Dank'}
+                </h2>
+                {closed ? (
+                  <p>
+                    Die Abstimmung ist inzwischen beendet, daher konnte deine Stimme nicht mehr
+                    gezählt werden. Eine Information dazu senden wir an{' '}
+                    <strong>{email.trim()}</strong>.
+                  </p>
+                ) : (
+                  <p>
+                    Deine Stimme wurde registriert. Du erhältst in Kürze eine Bestätigung an{' '}
+                    <strong>{email.trim()}</strong>.
+                  </p>
+                )}
                 <button type="button" className="award-vote-button" onClick={closeModal}>
                   Schließen
                 </button>

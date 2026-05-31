@@ -28,6 +28,41 @@ export async function fetchAwardVoteStats() {
 }
 
 /**
+ * Current voting control state: whether voting is stopped and whether votes count double.
+ */
+export async function fetchVotingState() {
+  const res = await fetch(`${apiBaseUrl}/voting-state`)
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(data.error || 'Status konnte nicht geladen werden.')
+  }
+  return {
+    votingStopped: Boolean(data.votingStopped),
+    doubleCount: Boolean(data.doubleCount),
+  }
+}
+
+/**
+ * Admin: change voting state. `patch` may include `votingStopped` and/or `doubleCount`.
+ * `code` is the panel access code, verified server-side.
+ */
+export async function updateVotingState(patch, code) {
+  const res = await fetch(`${apiBaseUrl}/voting-state`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...patch, code }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(data.error || 'Status konnte nicht aktualisiert werden.')
+  }
+  return {
+    votingStopped: Boolean(data.votingStopped),
+    doubleCount: Boolean(data.doubleCount),
+  }
+}
+
+/**
  * Bar chart data: list + order from GET /award-candidates; votes from GET /award-vote-stats.
  * If stats fail, still returns all nominees with votes 0.
  */

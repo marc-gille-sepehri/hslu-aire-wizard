@@ -1,7 +1,11 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { FaPlay } from 'react-icons/fa'
-import { fetchAwardResultsForChart } from '../api/awardApi'
+import {
+  fetchAwardResultsForChart,
+  fetchVotingState,
+  updateVotingState,
+} from '../api/awardApi'
 import './AwardResultsPage.css'
 
 const ANIM_MS = 2200
@@ -24,7 +28,7 @@ function AwardResultsLocked() {
   )
 }
 
-function AwardResultsContent() {
+function AwardResultsContent({ code }) {
   const [candidates, setCandidates] = useState([])
   const [totalVotes, setTotalVotes] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -33,6 +37,45 @@ function AwardResultsContent() {
   const [animKey, setAnimKey] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [showWinner, setShowWinner] = useState(false)
+  const [votingStopped, setVotingStopped] = useState(false)
+  const [doubleCount, setDoubleCount] = useState(false)
+  const [adminBusy, setAdminBusy] = useState(false)
+  const [adminError, setAdminError] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const state = await fetchVotingState()
+        if (!cancelled) {
+          setVotingStopped(state.votingStopped)
+          setDoubleCount(state.doubleCount)
+        }
+      } catch {
+        /* non-fatal: admin controls just start from defaults */
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const applyVotingState = useCallback(
+    async (patch) => {
+      setAdminBusy(true)
+      setAdminError(null)
+      try {
+        const state = await updateVotingState(patch, code)
+        setVotingStopped(state.votingStopped)
+        setDoubleCount(state.doubleCount)
+      } catch (e) {
+        setAdminError(e.message || 'Aktualisierung fehlgeschlagen.')
+      } finally {
+        setAdminBusy(false)
+      }
+    },
+    [code],
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -60,6 +103,27 @@ function AwardResultsContent() {
       cancelled = true
     }
   }, [])
+
+  // Silently refresh counts without touching reveal/animation state.
+  const refreshCounts = useCallback(async () => {
+    try {
+      const { candidates: rows, totalVotes: sum, statsFailed } =
+        await fetchAwardResultsForChart()
+      setCandidates(rows)
+      setTotalVotes(sum)
+      setStatsWarning(Boolean(statsFailed))
+    } catch {
+      /* keep last known counts on a failed poll */
+    }
+  }, [])
+
+  // Poll every 5s, but never while the reveal animation runs or the winner is
+  // shown — so counts stay current in the background without exposing the result.
+  useEffect(() => {
+    if (loading || playing || showWinner) return undefined
+    const id = setInterval(refreshCounts, 5000)
+    return () => clearInterval(id)
+  }, [loading, playing, showWinner, refreshCounts])
 
   const maxVotes = useMemo(() => {
     if (!candidates.length) return 0
@@ -113,6 +177,39 @@ function AwardResultsContent() {
             Stimmenzahlen vorübergehend nicht verfügbar — Balken zeigen 0.
           </p>
         )}
+
+        <div className="award-results-admin">
+          <div className="award-results-admin-buttons">
+            <button
+              type="button"
+              className={`award-results-admin-btn${votingStopped ? ' is-active' : ''}`}
+              onClick={() => applyVotingState({ votingStopped: !votingStopped })}
+              disabled={adminBusy}
+            >
+              {votingStopped ? 'Voting neu starten' : 'Voting stoppen'}
+            </button>
+            {!votingStopped && (
+              <button
+                type="button"
+                className={`award-results-admin-btn${doubleCount ? ' is-active' : ''}`}
+                onClick={() => applyVotingState({ doubleCount: !doubleCount })}
+                disabled={adminBusy}
+              >
+                {doubleCount ? 'Doppelzählung deaktivieren' : 'Doppelzählung aktivieren'}
+              </button>
+            )}
+          </div>
+          <p className="award-results-admin-state">
+            Voting: <strong>{votingStopped ? 'gestoppt' : 'aktiv'}</strong>
+            {!votingStopped && (
+              <>
+                {' '}
+                · Doppelzählung: <strong>{doubleCount ? 'an' : 'aus'}</strong>
+              </>
+            )}
+          </p>
+          {adminError && <p className="award-results-error">{adminError}</p>}
+        </div>
 
         {loading && <p className="award-results-status">Laden …</p>}
         {error && <p className="award-results-error">{error}</p>}
@@ -197,7 +294,7 @@ function AwardResultsPage() {
   if (code !== AWARD_RESULTS_CODE) {
     return <AwardResultsLocked />
   }
-  return <AwardResultsContent />
+  return <AwardResultsContent code={code} />
 }
 
 export default AwardResultsPage
