@@ -59,7 +59,21 @@
   font-size: 1.6rem;
   font-weight: 700;
   letter-spacing: -0.3px;
+  margin: 0 0 0.4rem;
+}
+
+.award-results-refreshing {
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.85rem;
   margin: 0 0 2rem;
+  min-height: 1.1em;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.award-results-refreshing.is-visible {
+  opacity: 1;
 }
 
 .award-results-status {

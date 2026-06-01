@@ -41,6 +41,7 @@ function AwardResultsContent({ code }) {
   const [doubleCount, setDoubleCount] = useState(false)
   const [adminBusy, setAdminBusy] = useState(false)
   const [adminError, setAdminError] = useState(null)
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -106,14 +107,20 @@ function AwardResultsContent({ code }) {
 
   // Silently refresh counts without touching reveal/animation state.
   const refreshCounts = useCallback(async () => {
+    setRefreshing(true)
     try {
-      const { candidates: rows, totalVotes: sum, statsFailed } =
-        await fetchAwardResultsForChart()
+      // Keep the "Aktualisieren …" hint visible for at least a moment, even on a fast response.
+      const [{ candidates: rows, totalVotes: sum, statsFailed }] = await Promise.all([
+        fetchAwardResultsForChart(),
+        new Promise((resolve) => setTimeout(resolve, 600)),
+      ])
       setCandidates(rows)
       setTotalVotes(sum)
       setStatsWarning(Boolean(statsFailed))
     } catch {
       /* keep last known counts on a failed poll */
+    } finally {
+      setRefreshing(false)
     }
   }, [])
 
@@ -170,6 +177,13 @@ function AwardResultsContent({ code }) {
           {totalVotes === 1
             ? '1 abgegebene Stimme'
             : `${totalVotes} abgegebene Stimmen`}
+        </p>
+
+        <p
+          className={`award-results-refreshing${refreshing ? ' is-visible' : ''}`}
+          aria-live="polite"
+        >
+          Aktualisieren …
         </p>
 
         {statsWarning && (
