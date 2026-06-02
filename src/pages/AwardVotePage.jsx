@@ -212,15 +212,6 @@ function AwardVotePage() {
                         </a>
                       )}
                     </div>
-                    <div className="award-vote-actions">
-                      <button
-                        type="button"
-                        className="award-vote-button"
-                        onClick={() => openVote(c)}
-                      >
-                        Für diese Lösung stimmen
-                      </button>
-                    </div>
                   </div>
                 </div>
                 {c.description && (

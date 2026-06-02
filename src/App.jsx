@@ -89,7 +89,6 @@ function App() {
             </div>
             <nav className="site-nav">
               <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link>
-              <Link to="/award">Award</Link>
               <Link to="/statistics">Statistiken</Link>
               {location.pathname === '/' && (
                 <a href="#contact" onClick={(e) => { e.preventDefault(); const element = document.getElementById('contact'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Kontakt</a>
@@ -122,8 +121,6 @@ function App() {
               <h4>Navigation</h4>
               <ul>
                 <li><Link to="/">Home</Link></li>
-                <li><Link to="/award">Award</Link></li>
-                <li><Link to="/award-results">Award-Ergebnisse</Link></li>
                 <li><Link to="/statistics">Statistiken</Link></li>
                 {location.pathname === '/' && (
                   <li><a href="#contact">Kontakt</a></li>

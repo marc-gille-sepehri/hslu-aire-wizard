@@ -11,17 +11,17 @@ function HomePage({ onContactSubmit }) {
       <section id="home" className="hero-section">
         <div className="container">
           <div className="hero-content">
-            <p className="hero-eyebrow">Die erste reine AI-Konferenz für den Real Estate im DACH-Raum</p>
-            <h2 className="hero-title">Reprogramming Real Estate: Wie AI die Branche neu definiert</h2>
-            <p className="hero-subtitle">
-              <strong>1. Juni 2026, 08:00–17:00 Uhr</strong> · IFZ Campus Zug-Rotkreuz · CHF 590.–
-            </p>
-            <p className="hero-subline">
-              Konferenz zu KI-Wertschöpfung, Live-Solution-Labs, IFZ AI-Readiness Report 2026 und Best AI Use Case Award. Für Entscheider/innen aus Immobilien, PropTech und Beratung.
-            </p>
+            <div className="hero-award-block">
+              <h3 className="hero-award-title">Rückblick: AI@RE 2026</h3>
+              <p className="hero-award-text">
+                Die AI@RE-Konferenz hat stattgefunden. Über 150 Teilnehmer. Inspirierende
+                Keynotes. Spannende Deep Dives. Intensive Break-out Sessions. Und beeindruckende
+                AI@RE Award Winners. Danke allen und vor allem unseren Sponsoren.
+              </p>
+            </div>
 
             <div className="hero-sponsors">
-              <p className="hero-sponsors-label">Partner</p>
+              <p className="hero-sponsors-label">Unsere Partner waren</p>
               <div className="hero-sponsors-logos">
                 <a href="https://www.gefma.de" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="GEFMA">
                   <img src="/gefma.png" alt="GEFMA" className="hero-sponsor-logo" />
@@ -61,19 +61,9 @@ function HomePage({ onContactSubmit }) {
               </div>
             </div>
 
-            <div className="hero-award-block">
-              <h3 className="hero-award-title">HSLU Best AI@RE Use Case Award 2026</h3>
-              <p className="hero-award-timeline">
-                Die Jury hat getagt. Die finalen Kandidaten stehen fest.
-              </p>
-              <Link to="/award" className="cta-button">
-                Jetzt abstimmen!
-              </Link>
-            </div>
-
             <div className="hero-cta-buttons">
-              <a href="https://www.hslu.ch/de-ch/wirtschaft/agenda/veranstaltungen/2026/06/01/reprogramming-real-estate-wie-ai-die-branche-neu-definiert/" target="_blank" rel="noopener noreferrer" className="cta-button">
-                Zur Konferenz anmelden
+              <a href="https://www.hslu.ch/de-ch/wirtschaft/agenda/veranstaltungen/2027/06/07/reprogramming-real-estate-wie-ai-die-branche-neu-definiert/" target="_blank" rel="noopener noreferrer" className="cta-button">
+                Nach der Konferenz ist vor der Konferenz: AI@RE, Rotkreuz, 7.6.2027
               </a>
               <Link to="/check" className="cta-button cta-button-secondary">
                 Readiness Check starten
