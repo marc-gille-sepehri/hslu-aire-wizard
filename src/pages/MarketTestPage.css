@@ -1,0 +1,19 @@
+.market-test-section {
+  padding: 2rem 0 4rem;
+}
+
+.market-test-section .container {
+  max-width: 1100px;
+}
+
+.market-disclaimer {
+  margin-bottom: 1rem;
+}
+
+.market-controls {
+  margin-top: 1rem;
+}
+
+.market-result-card {
+  height: 100%;
+}

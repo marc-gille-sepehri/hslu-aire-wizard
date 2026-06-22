@@ -6,6 +6,7 @@ import ResultPage from './pages/ResultPage'
 import StatisticsPage from './pages/StatisticsPage'
 import AwardVotePage from './pages/AwardVotePage'
 import AwardResultsPage from './pages/AwardResultsPage'
+import MarketTestPage from './pages/MarketTestPage'
 import TrainingApp from './training/TrainingApp'
 import { apiBaseUrl, contactEmail } from './config/configuration'
 import './App.css'
@@ -90,6 +91,7 @@ function App() {
             <nav className="site-nav">
               <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link>
               <Link to="/statistics">Statistiken</Link>
+              <Link to="/market-test">Marktdaten</Link>
               {location.pathname === '/' && (
                 <a href="#contact" onClick={(e) => { e.preventDefault(); const element = document.getElementById('contact'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Kontakt</a>
               )}
@@ -106,6 +108,7 @@ function App() {
           <Route path="/statistics" element={<StatisticsPage />} />
           <Route path="/award" element={<AwardVotePage />} />
           <Route path="/award-results" element={<AwardResultsPage />} />
+          <Route path="/market-test" element={<MarketTestPage />} />
           <Route path="/training/*" element={<TrainingApp />} />
         </Routes>
       </main>
