@@ -177,6 +177,14 @@ function MarketTestPage() {
     }
   }, [])
 
+  // After the results row mounts, nudge ApexCharts to re-measure its container
+  // width so the trend line paints immediately (not only after a hover/resize).
+  useEffect(() => {
+    if (!trend?.data) return undefined
+    const raf = requestAnimationFrame(() => window.dispatchEvent(new Event('resize')))
+    return () => cancelAnimationFrame(raf)
+  }, [trend])
+
   const buildLocationArgs = () => {
     if (typeof lat === 'number' && typeof lon === 'number') return { lat, lon }
     if (address && address.trim().length >= 3) return { address: address.trim() }
@@ -271,7 +279,15 @@ function MarketTestPage() {
           },
         ],
         options: {
-          chart: { id: 'price-trend', toolbar: { show: false }, fontFamily: 'inherit' },
+          chart: {
+            id: 'price-trend',
+            toolbar: { show: false },
+            fontFamily: 'inherit',
+            // The line is drawn via a dashoffset reveal animation; if the chart
+            // mounts before its container has a settled width the reveal never
+            // completes and the line stays hidden until a hover/resize. Disable it.
+            animations: { enabled: false },
+          },
           colors: ['#1677ff'],
           stroke: { curve: 'smooth', width: 2 },
           dataLabels: { enabled: false },
@@ -594,6 +610,7 @@ function MarketTestPage() {
                         options={trendChart.options}
                         series={trendChart.series}
                         type="line"
+                        width="100%"
                         height={320}
                       />
                     </>
