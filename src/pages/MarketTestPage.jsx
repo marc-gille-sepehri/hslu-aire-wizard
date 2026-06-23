@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Chart from 'react-apexcharts'
 import {
   Alert,
@@ -54,6 +54,46 @@ function ResultCard({ title, error, children }) {
     <Card title={title} className="market-result-card" size="small">
       {error ? <Alert type="error" showIcon message={error} /> : children}
     </Card>
+  )
+}
+
+// Price-trend line chart. The `.apexcharts-wrapper` wrapper is REQUIRED: the global
+// SVG-icon reset in index.css hides every <rect> inside an SVG and only restores them
+// under `.apexcharts-wrapper .apexcharts-canvas …`. Without it the chart's clip-path
+// rect stays hidden, the series gets clipped away, and only the hover tooltip shows.
+// (Same convention the Statistics page uses on its chart wrappers.)
+function TrendChart({ points, metric }) {
+  const chart = useMemo(
+    () => ({
+      series: [
+        {
+          name: metric === 'sale' ? 'CHF/m²' : 'CHF/m²/Monat',
+          data: points.map((p) => p.valueChfPerM2),
+        },
+      ],
+      options: {
+        chart: {
+          id: 'price-trend',
+          toolbar: { show: false },
+          fontFamily: 'inherit',
+          animations: { enabled: false },
+        },
+        colors: ['#1677ff'],
+        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: { enabled: false },
+        xaxis: { categories: points.map((p) => p.month), tickAmount: 8 },
+        yaxis: { labels: { formatter: (v) => fmtChf(v) } },
+        tooltip: { y: { formatter: (v) => `CHF ${fmtChf(v)}` } },
+        grid: { borderColor: '#eee' },
+      },
+    }),
+    [points, metric],
+  )
+
+  return (
+    <div className="apexcharts-wrapper">
+      <Chart options={chart.options} series={chart.series} type="line" width="100%" height={320} />
+    </div>
   )
 }
 
@@ -162,6 +202,9 @@ function MarketTestPage() {
   const [snap, setSnap] = useState(null)
   const [offers, setOffers] = useState(null)
   const [trend, setTrend] = useState(null)
+  // Bumped per query so the trend chart fully remounts (avoids ApexCharts' buggy
+  // in-place update path that can leave the line unpainted until a hover).
+  const [runId, setRunId] = useState(0)
 
   // Tool metadata from the MCP server (tools/list), loaded once on mount.
   const [tools, setTools] = useState(null)
@@ -176,14 +219,6 @@ function MarketTestPage() {
       active = false
     }
   }, [])
-
-  // After the results row mounts, nudge ApexCharts to re-measure its container
-  // width so the trend line paints immediately (not only after a hover/resize).
-  useEffect(() => {
-    if (!trend?.data) return undefined
-    const raf = requestAnimationFrame(() => window.dispatchEvent(new Event('resize')))
-    return () => cancelAnimationFrame(raf)
-  }, [trend])
 
   const buildLocationArgs = () => {
     if (typeof lat === 'number' && typeof lon === 'number') return { lat, lon }
@@ -217,6 +252,7 @@ function MarketTestPage() {
     }
     setGlobalError(null)
     setLoading(true)
+    setRunId((n) => n + 1)
     const offeringsArgs = {
       ...loc,
       transaction,
@@ -270,37 +306,6 @@ function MarketTestPage() {
   ]
 
   const trendData = trend?.data
-  const trendChart = trendData
-    ? {
-        series: [
-          {
-            name: trendData.metric === 'sale' ? 'CHF/m²' : 'CHF/m²/Monat',
-            data: trendData.points.map((p) => p.valueChfPerM2),
-          },
-        ],
-        options: {
-          chart: {
-            id: 'price-trend',
-            toolbar: { show: false },
-            fontFamily: 'inherit',
-            // The line is drawn via a dashoffset reveal animation; if the chart
-            // mounts before its container has a settled width the reveal never
-            // completes and the line stays hidden until a hover/resize. Disable it.
-            animations: { enabled: false },
-          },
-          colors: ['#1677ff'],
-          stroke: { curve: 'smooth', width: 2 },
-          dataLabels: { enabled: false },
-          xaxis: {
-            categories: trendData.points.map((p) => p.month),
-            tickAmount: 8,
-          },
-          yaxis: { labels: { formatter: (v) => fmtChf(v) } },
-          tooltip: { y: { formatter: (v) => `CHF ${fmtChf(v)}` } },
-          grid: { borderColor: '#eee' },
-        },
-      }
-    : null
 
   return (
     <section className="market-test-section">
@@ -591,7 +596,7 @@ function MarketTestPage() {
 
               <Col xs={24}>
                 <ResultCard title="market_get_price_trend" error={trend?.error}>
-                  {trendData && trendChart && (
+                  {trendData && (
                     <>
                       <Space wrap size="large" style={{ marginBottom: 8 }}>
                         <Statistic
@@ -606,12 +611,10 @@ function MarketTestPage() {
                         />
                         <Statistic title="CAGR %" value={trendData.cagrPct} />
                       </Space>
-                      <Chart
-                        options={trendChart.options}
-                        series={trendChart.series}
-                        type="line"
-                        width="100%"
-                        height={320}
+                      <TrendChart
+                        key={runId}
+                        points={trendData.points}
+                        metric={trendData.metric}
                       />
                     </>
                   )}
