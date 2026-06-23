@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Chart from 'react-apexcharts'
 import {
   Alert,
   Button,
   Card,
   Col,
+  Collapse,
   Divider,
   Form,
   Input,
@@ -12,12 +13,14 @@ import {
   Row,
   Select,
   Space,
+  Spin,
   Statistic,
   Table,
   Tag,
   Typography,
 } from 'antd'
 import {
+  listMcpTools,
   marketGeocode,
   marketSnapshot,
   marketListOfferings,
@@ -39,11 +42,102 @@ const EXAMPLES = [
 
 const tierColor = { prime: 'magenta', urban: 'blue', suburban: 'green', rural: 'gold' }
 
+const resolvedByMeta = {
+  coordinates: { label: 'Koordinaten', color: 'green' },
+  'city-name': { label: 'Stadtname', color: 'green' },
+  'postal-code': { label: 'PLZ', color: 'cyan' },
+  hash: { label: 'Hash (unsicher)', color: 'red' },
+}
+
 function ResultCard({ title, error, children }) {
   return (
     <Card title={title} className="market-result-card" size="small">
       {error ? <Alert type="error" showIcon message={error} /> : children}
     </Card>
+  )
+}
+
+const ANNOTATION_LABELS = {
+  readOnlyHint: 'read-only',
+  idempotentHint: 'idempotent',
+  openWorldHint: 'open-world',
+  destructiveHint: 'destructive',
+}
+
+// Flatten a JSON Schema's top-level properties into table rows.
+function schemaParamRows(schema) {
+  if (!schema || !schema.properties) return []
+  const required = new Set(schema.required || [])
+  return Object.entries(schema.properties).map(([name, prop]) => ({
+    key: name,
+    name,
+    type: prop.enum ? prop.enum.join(' | ') : prop.type || '–',
+    required: required.has(name),
+    default: prop.default,
+    description: prop.description || '',
+  }))
+}
+
+const paramColumns = [
+  {
+    title: 'Feld',
+    dataIndex: 'name',
+    key: 'name',
+    render: (v, r) => (
+      <Space size={4}>
+        <Text code>{v}</Text>
+        {r.required && <Tag color="red">required</Tag>}
+      </Space>
+    ),
+  },
+  { title: 'Typ', dataIndex: 'type', key: 'type', render: (v) => <Text code>{v}</Text> },
+  {
+    title: 'Default',
+    dataIndex: 'default',
+    key: 'default',
+    render: (v) => (v === undefined ? '–' : <Text code>{String(v)}</Text>),
+  },
+  { title: 'Beschreibung', dataIndex: 'description', key: 'description' },
+]
+
+function ToolMetadata({ tool }) {
+  const inputRows = schemaParamRows(tool.inputSchema)
+  const outputRows = schemaParamRows(tool.outputSchema)
+  return (
+    <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+      <Paragraph style={{ marginBottom: 0 }}>{tool.description}</Paragraph>
+      {tool.annotations && (
+        <Space wrap>
+          {Object.entries(tool.annotations).map(([k, v]) => (
+            <Tag key={k} color={v ? 'geekblue' : 'default'}>
+              {ANNOTATION_LABELS[k] || k}: {String(v)}
+            </Tag>
+          ))}
+        </Space>
+      )}
+      <div>
+        <Text strong>Eingabe (inputSchema)</Text>
+        <Table
+          size="small"
+          rowKey="key"
+          columns={paramColumns}
+          dataSource={inputRows}
+          pagination={false}
+          style={{ marginTop: 6 }}
+        />
+      </div>
+      <div>
+        <Text strong>Ausgabe (outputSchema)</Text>
+        <Table
+          size="small"
+          rowKey="key"
+          columns={paramColumns}
+          dataSource={outputRows}
+          pagination={false}
+          style={{ marginTop: 6 }}
+        />
+      </div>
+    </Space>
   )
 }
 
@@ -68,6 +162,20 @@ function MarketTestPage() {
   const [snap, setSnap] = useState(null)
   const [offers, setOffers] = useState(null)
   const [trend, setTrend] = useState(null)
+
+  // Tool metadata from the MCP server (tools/list), loaded once on mount.
+  const [tools, setTools] = useState(null)
+  const [toolsError, setToolsError] = useState(null)
+
+  useEffect(() => {
+    let active = true
+    listMcpTools()
+      .then((list) => active && setTools(list))
+      .catch((err) => active && setToolsError(err.message || String(err)))
+    return () => {
+      active = false
+    }
+  }, [])
 
   const buildLocationArgs = () => {
     if (typeof lat === 'number' && typeof lon === 'number') return { lat, lon }
@@ -196,6 +304,30 @@ function MarketTestPage() {
             message={disclaimer}
           />
         )}
+
+        <Card
+          title={`Verfügbare Tools${tools ? ` (${tools.length})` : ''} · tools/list`}
+          className="market-controls"
+          size="small"
+        >
+          {toolsError && <Alert type="error" showIcon message={toolsError} />}
+          {!tools && !toolsError && <Spin />}
+          {tools && (
+            <Collapse
+              accordion
+              items={tools.map((tool) => ({
+                key: tool.name,
+                label: (
+                  <Space wrap>
+                    <Text strong>{tool.title || tool.name}</Text>
+                    <Text code>{tool.name}</Text>
+                  </Space>
+                ),
+                children: <ToolMetadata tool={tool} />,
+              }))}
+            />
+          )}
+        </Card>
 
         <Card title="Standort & Parameter" className="market-controls">
           <Form layout="vertical">
@@ -358,11 +490,21 @@ function MarketTestPage() {
                         </Text>
                         <Tag color={tierColor[geo.data.tier]}>{geo.data.tier}</Tag>
                         <Text type="secondary">BFS {geo.data.bfsId}</Text>
+                        <Tag color={resolvedByMeta[geo.data.resolvedBy]?.color || 'default'}>
+                          {resolvedByMeta[geo.data.resolvedBy]?.label || geo.data.resolvedBy}
+                        </Tag>
                       </Space>
                       <Text>
                         Koordinaten: {geo.data.lat}, {geo.data.lon} · Distanz zur Referenz:{' '}
                         {fmtChf(geo.data.matchDistanceM)} m
                       </Text>
+                      {geo.data.resolvedBy === 'hash' && (
+                        <Alert
+                          type="warning"
+                          showIcon
+                          message="Adresse nicht erkannt – zufällige Referenzstadt (deterministisch). Für ein verlässliches Resultat Stadtname/PLZ oder Koordinaten angeben."
+                        />
+                      )}
                     </Space>
                   )}
                 </ResultCard>
