@@ -1,7 +1,7 @@
 .statistics-container {
   min-height: 100vh;
   padding: 2rem 0;
-  background: #f8f9fa;
+  background: var(--color-bg);
 }
 
 .statistics-header {
@@ -12,15 +12,16 @@
 }
 
 .statistics-title {
+  font-family: var(--font-display);
   font-size: 2.5rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: var(--color-heading);
   margin-bottom: 0.5rem;
 }
 
 .statistics-subtitle {
   font-size: 1.2rem;
-  color: #6c757d;
+  color: var(--color-text);
   margin-bottom: 2rem;
 }
 
@@ -32,7 +33,7 @@
   border-radius: 0;
   box-shadow: none;
   text-align: left;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .filter-group {
@@ -43,7 +44,7 @@
 
 .filter-group label {
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--color-heading);
   font-size: 0.9rem;
   width: 180px;
   min-width: 180px;
@@ -61,20 +62,23 @@
 
 .statistics-mock-banner {
   font-size: 0.9rem;
-  color: #856404;
-  background: #fff3cd;
+  color: var(--aire-navy);
+  background: var(--color-warning-bg);
   padding: 0.35rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid #ffc107;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-warning);
 }
 
 .statistics-total {
   font-size: 1rem;
-  color: #6c757d;
+  color: var(--color-text);
 }
 
 .statistics-total strong {
-  color: #5a9fb2;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-heading);
   font-size: 1.2rem;
 }
 
@@ -106,23 +110,24 @@
 .legend-color {
   width: 20px;
   height: 20px;
-  border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(11, 36, 71, 0.12);
   flex-shrink: 0;
 }
 
 .legend-label {
   font-size: 0.9rem;
-  color: #495057;
+  color: var(--color-text);
 }
 
 .statistics-content {
   max-width: 1100px;
   margin: 0 auto;
   padding: 1.5rem 2rem;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .charts-grid {
@@ -149,7 +154,7 @@
   max-width: 100%;
   margin: 0 auto 0.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-border);
   width: 100%;
 }
 
@@ -159,9 +164,10 @@
 }
 
 .gesamtbewertung-title {
+  font-family: var(--font-display);
   font-size: 1.25rem;
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: 700;
+  color: var(--color-heading);
   text-align: center;
   margin: 0 0 0.5rem;
 }
@@ -210,49 +216,167 @@
 }
 
 .stacked-bar-title {
+  font-family: var(--font-display);
   font-size: 1.25rem;
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: 700;
+  color: var(--color-heading);
   margin: 0 0 1rem;
 }
 
 /* Ensure ApexCharts can use its colors - no interference from global rules */
 /* Charts should not be affected by the icon SVG rules above */
 
+/* ApexCharts im AI@RE-Look: Mist-Gitter, Slate-Achsen, Navy-Tooltip.
+   Serien bleiben Navy — Gold ist allein dem Gesamtwert vorbehalten. */
+.chart-card .apexcharts-gridline,
+.chart-card .apexcharts-grid line,
+.chart-card .apexcharts-radar-series line,
+.chart-card .apexcharts-radar-series polygon {
+  stroke: var(--color-border);
+}
+
+.chart-card .apexcharts-xaxis line,
+.chart-card .apexcharts-yaxis line,
+.chart-card .apexcharts-xaxis-tick {
+  stroke: var(--color-border-strong);
+}
+
+.chart-card .apexcharts-text,
+.chart-card .apexcharts-xaxis-label,
+.chart-card .apexcharts-yaxis-label,
+.chart-card .apexcharts-datalabel-label,
+.chart-card .apexcharts-legend-text {
+  fill: var(--color-text);
+  color: var(--color-text) !important;
+  font-family: var(--font-body) !important;
+}
+
+.chart-card .apexcharts-datalabel-value,
+.chart-card .apexcharts-datalabels text {
+  fill: var(--color-heading);
+  font-family: var(--font-display) !important;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-card .apexcharts-title-text {
+  fill: var(--color-heading);
+  font-family: var(--font-display) !important;
+  font-weight: 700;
+}
+
+.chart-card .apexcharts-tooltip,
+.chart-card .apexcharts-tooltip.apexcharts-theme-light,
+.chart-card .apexcharts-tooltip.apexcharts-theme-dark {
+  background: var(--color-surface-inverse) !important;
+  color: var(--color-text-inverse) !important;
+  border: 1px solid var(--aire-navy) !important;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-body);
+}
+
+.chart-card .apexcharts-tooltip-title {
+  background: var(--aire-navy-light) !important;
+  color: var(--color-text-inverse) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16) !important;
+  font-weight: 600;
+}
+
+.chart-card .apexcharts-tooltip-text,
+.chart-card .apexcharts-tooltip-text-y-label,
+.chart-card .apexcharts-tooltip-text-y-value {
+  color: var(--color-text-inverse) !important;
+}
+
+/* Level-/Badge-Chips: Navy mit weisser Schrift; nur die erreichte
+   Höchststufe darf Gold auf Navy tragen. */
+.level-badge,
+.statistics-content .level-chip {
+  background: var(--color-surface-inverse);
+  color: var(--color-text-inverse);
+  border: 1px solid var(--color-surface-inverse);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+.level-badge.is-achieved,
+.statistics-content .level-chip.is-achieved {
+  background: var(--color-accent);
+  color: var(--aire-navy);
+  border-color: var(--color-accent);
+}
+
+/* Statistik-Tabellen: Cream-Kopfzeile mit Navy-Versalien, Mist-Haarlinien,
+   Slate-Fliesstext. */
+.statistics-content table {
+  border-collapse: collapse;
+  width: 100%;
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+.statistics-content thead th {
+  background: var(--color-surface-alt);
+  color: var(--color-heading);
+  font-weight: 700;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-kicker);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-strong);
+}
+
+.statistics-content tbody td {
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.statistics-content tbody td.is-numeric,
+.statistics-content tbody td strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-heading);
+}
+
 .statistics-loading,
 .statistics-error {
   max-width: 600px;
   margin: 4rem auto;
   padding: 3rem;
-  background: #ffffff;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .statistics-loading p,
 .statistics-error p {
   font-size: 1.2rem;
-  color: #6c757d;
+  color: var(--color-text);
   margin-bottom: 1.5rem;
 }
 
 .retry-button {
-  background: linear-gradient(135deg, #5a9fb2 0%, #7bb8c8 100%);
-  color: white;
-  border: none;
+  background: var(--color-surface-inverse);
+  color: var(--color-text-inverse);
+  border: 1px solid var(--color-surface-inverse);
   padding: 0.875rem 2rem;
   font-size: 1rem;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: inherit;
+  font-family: var(--font-body);
 }
 
 .retry-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(90, 159, 178, 0.3);
+  background: var(--aire-navy-light);
+  box-shadow: var(--shadow-md);
 }
 
 @media (max-width: 768px) {

@@ -71,7 +71,7 @@ function Result({ answers, onReset, onBackToHome }) {
         <div className="result-content">
           <div style={{ textAlign: 'center', padding: '2rem 0' }}>
             <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>✓</div>
-            <p style={{ fontSize: '1.2rem', color: '#6c757d', maxWidth: '600px', margin: '0 auto' }}>
+            <p style={{ fontSize: '1.2rem', color: 'var(--color-text)', maxWidth: '600px', margin: '0 auto' }}>
               Ihre Ergebnisse wurden erfolgreich verarbeitet und an Ihre E-Mail-Adresse gesendet.
             </p>
           </div>

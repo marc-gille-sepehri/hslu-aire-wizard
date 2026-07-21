@@ -5,9 +5,10 @@
 }
 
 .overview-title {
+  font-family: var(--font-display);
   font-size: 18px;
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: 700;
+  color: var(--color-heading);
   margin-bottom: 10px;
 }
 
@@ -19,26 +20,31 @@
 
 .dimension-item {
   padding: 12px;
-  background: white;
-  border-radius: 8px;
-  border: 2px solid #e9ecef;
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--color-border);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .dimension-item:hover {
-  border-color: #bae0ea;
+  border-color: var(--aire-navy);
   transform: translateX(4px);
 }
 
 .dimension-item.active {
-  border-color: #bae0ea;
-  background: #e8f6f9;
-  box-shadow: 0 2px 8px rgba(186, 224, 234, 0.2);
+  border-color: var(--aire-navy);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Ein Zentrum: der aktuelle Schritt ist das einzige Gold-Element der Liste */
+.dimension-item.active .dimension-item-icon {
+  color: var(--color-accent);
 }
 
 .dimension-item.complete {
-  border-color: #28a745;
+  border-color: var(--color-success);
 }
 
 .dimension-item-header {
@@ -50,7 +56,7 @@
 
 .dimension-item-icon {
   font-size: 20px;
-  color: #5a9fb2;
+  color: var(--aire-navy);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -89,9 +95,10 @@
 }
 
 .dimension-item-title {
+  font-family: var(--font-display);
   font-size: 13px;
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: 700;
+  color: var(--color-heading);
   flex: 1;
 }
 
@@ -104,26 +111,28 @@
 .dimension-progress-bar {
   flex: 1;
   height: 4px;
-  background: #e9ecef;
+  background: var(--color-border);
   border-radius: 2px;
   overflow: hidden;
 }
 
 .dimension-progress-fill {
   height: 100%;
-  background: linear-gradient(135deg, #bae0ea 0%, #7bb8c8 100%);
+  background: var(--aire-navy);
   transition: width 0.3s ease;
   border-radius: 2px;
 }
 
 .dimension-item.complete .dimension-progress-fill {
-  background: #28a745;
+  background: var(--color-success);
 }
 
 .dimension-progress-text {
+  font-family: var(--font-display);
   font-size: 11px;
-  color: #6c757d;
-  font-weight: 600;
+  color: var(--color-heading);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
   min-width: 35px;
   text-align: right;
 }

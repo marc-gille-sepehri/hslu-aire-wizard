@@ -71,7 +71,8 @@ function App() {
           <div className="header-content">
             <div className="logo-container">
               <Link to="/" className="site-logo-link" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                <h1 className="site-logo"><span>AI@RE</span></h1>
+                {/* CI: Wortmarke einfarbig, das "@" ist das eine Gold-Zentrum */}
+                <h1 className="site-logo"><span>AI<span className="site-logo-at">@</span>RE</span></h1>
               </Link>
               <a href="https://hub.hslu.ch/immobilienblog/category/aireal-estate/" target="_blank" rel="noopener noreferrer" className="hslu-logo-link">
                 <img 
@@ -81,9 +82,12 @@ function App() {
                 />
               </a>
               <a href="https://www.immobilienbusiness.ch/de/" target="_blank" rel="noopener noreferrer" className="ib-logo-link">
-                <img 
-                  src="/s_w530_IB_Logo_2013-web.jpg" 
-                  alt="Immobilienbranche Logo" 
+                {/* Negativ-Version für den Navy-Header. Auf dunklem Grund ist
+                    Gold der einzige Akzent — daher weiss statt Markenrot.
+                    Freigabe bei IMMOBILIEN Business noch einzuholen. */}
+                <img
+                  src="/ib-logo-white.png"
+                  alt="IMMOBILIEN Business"
                   className="ib-logo"
                 />
               </a>

@@ -30,7 +30,7 @@ function HomePage({ onContactSubmit }) {
                   <img src="/iz.png" alt="IZ" className="hero-sponsor-logo" />
                 </a>
                 <a href="https://www.immobilienbusiness.ch/de/" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="IMMOBILIEN Business">
-                  <img src="/s_w530_IB_Logo_2013-web.jpg" alt="IMMOBILIEN Business" className="hero-sponsor-logo" />
+                  <img src="/ib-logo.png" alt="IMMOBILIEN Business" className="hero-sponsor-logo" />
                 </a>
                 <a href="https://www.immopac.ch/de" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="ImmoPac">
                   <img src="/immopac.jpg" alt="ImmoPac" className="hero-sponsor-logo" />

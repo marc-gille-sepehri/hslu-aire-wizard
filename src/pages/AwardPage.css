@@ -3,9 +3,10 @@
 }
 
 .award-page-title {
+  font-family: var(--font-display);
   font-size: 2.5rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: var(--color-heading);
   text-align: center;
   margin-bottom: 2.5rem;
   letter-spacing: -0.5px;
@@ -17,30 +18,31 @@
 }
 
 .award-page-content h2 {
+  font-family: var(--font-display);
   font-size: 1.4rem;
-  color: #2c3e50;
+  color: var(--color-heading);
   margin-top: 2rem;
   margin-bottom: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .award-intro {
   font-size: 1.1rem;
-  color: #495057;
+  color: var(--color-text);
   line-height: 1.8;
   margin-bottom: 0.5rem;
 }
 
 .award-page-content p {
   font-size: 1.05rem;
-  color: #495057;
+  color: var(--color-text);
   line-height: 1.7;
   margin-bottom: 1rem;
 }
 
 .award-requirement {
   font-size: 0.95rem;
-  color: #6c757d;
+  color: var(--color-text-muted);
   font-style: italic;
 }
 
@@ -52,7 +54,7 @@
 
 .award-page-content ul li {
   font-size: 1.05rem;
-  color: #495057;
+  color: var(--color-text);
   line-height: 1.7;
   margin-bottom: 0.5rem;
   padding-left: 1.5rem;
@@ -61,7 +63,7 @@
 
 .award-page-content ul li::before {
   content: "•";
-  color: #5a9fb2;
+  color: var(--color-accent);
   font-weight: bold;
   position: absolute;
   left: 0;
@@ -72,14 +74,15 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 1.05rem;
-  color: #5a9fb2;
+  color: var(--aire-navy);
+  font-weight: 600;
   text-decoration: none;
   padding: 0.5rem 0;
   transition: color 0.2s ease;
 }
 
 .award-details-link:hover {
-  color: #7bb8c8;
+  color: var(--aire-navy-soft);
 }
 
 .award-details-icon {

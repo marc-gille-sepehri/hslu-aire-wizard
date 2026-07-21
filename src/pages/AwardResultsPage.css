@@ -12,7 +12,7 @@
 .award-results-locked-msg {
   text-align: center;
   font-size: 1.25rem;
-  color: #2c3e50;
+  color: var(--color-text);
   line-height: 1.65;
   margin: 0;
   max-width: 36rem;
@@ -21,8 +21,9 @@
 }
 
 .award-results-locked-brand {
+  font-family: var(--font-display);
   font-weight: 700;
-  background: linear-gradient(135deg, #2c3e50 0%, #5a9fb2 100%);
+  background: linear-gradient(135deg, var(--aire-navy) 0%, var(--aire-navy-light) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -39,15 +40,16 @@
   line-height: 1;
   vertical-align: -0.4rem;
   border-radius: 50%;
-  background: linear-gradient(180deg, #ffffff 0%, #e8f2f5 100%);
-  border: 2px solid #5a9fb2;
-  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.12);
+  background: var(--color-surface);
+  border: 2px solid var(--color-accent);
+  box-shadow: var(--shadow-md);
 }
 
 .award-results-title {
+  font-family: var(--font-display);
   font-size: 2rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: var(--color-heading);
   text-align: center;
   margin: 0 0 0.5rem;
   letter-spacing: -0.5px;
@@ -55,7 +57,8 @@
 
 .award-results-sub {
   text-align: center;
-  color: #2c3e50;
+  font-family: var(--font-display);
+  color: var(--color-heading);
   font-size: 1.6rem;
   font-weight: 700;
   letter-spacing: -0.3px;
@@ -64,7 +67,7 @@
 
 .award-results-refreshing {
   text-align: center;
-  color: #6c757d;
+  color: var(--color-text-muted);
   font-size: 0.85rem;
   margin: 0 0 2rem;
   min-height: 1.1em;
@@ -78,20 +81,20 @@
 
 .award-results-status {
   text-align: center;
-  color: #495057;
+  color: var(--color-text);
 }
 
 .award-results-error {
   text-align: center;
-  color: #c92a2a;
+  color: var(--color-danger);
 }
 
 .award-results-warn {
   text-align: center;
-  color: #856404;
-  background: #fff3cd;
-  border: 1px solid #ffeeba;
-  border-radius: 8px;
+  color: var(--aire-gold-dark);
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
   padding: 0.65rem 1rem;
   margin: 0 auto 1.25rem;
   max-width: 520px;
@@ -109,10 +112,11 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.65rem 1.35rem;
-  background: linear-gradient(135deg, #2c3e50 0%, #5a9fb2 100%);
-  color: #fff;
+  background: var(--color-accent);
+  color: var(--aire-navy);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -120,8 +124,14 @@
 }
 
 .award-results-play:hover:not(:disabled) {
-  opacity: 0.95;
+  background: var(--color-accent-hover);
+  opacity: 1;
   transform: translateY(-1px);
+}
+
+.award-results-play:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(242, 169, 59, 0.35);
 }
 
 .award-results-play:disabled {
@@ -141,9 +151,9 @@
   margin: 0 auto 2rem;
   padding: 1rem 1.25rem;
   max-width: 36rem;
-  border: 1px solid #e3e9ec;
-  border-radius: 10px;
-  background: #f8fafb;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
 }
 
 .award-results-admin-buttons {
@@ -155,10 +165,11 @@
 
 .award-results-admin-btn {
   padding: 0.55rem 1.1rem;
-  border: 1px solid #c4d2d8;
-  border-radius: 8px;
-  background: #fff;
-  color: #2c3e50;
+  border: 1px solid var(--aire-navy);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--aire-navy);
+  font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -166,13 +177,14 @@
 }
 
 .award-results-admin-btn:hover:not(:disabled) {
-  border-color: #5a9fb2;
+  background: var(--color-surface-alt);
+  border-color: var(--aire-navy-deep);
 }
 
 .award-results-admin-btn.is-active {
-  background: linear-gradient(135deg, #2c3e50 0%, #5a9fb2 100%);
-  color: #fff;
-  border-color: transparent;
+  background: var(--aire-navy);
+  color: var(--color-text-inverse);
+  border-color: var(--aire-navy);
 }
 
 .award-results-admin-btn:disabled {
@@ -183,11 +195,11 @@
 .award-results-admin-state {
   margin: 0;
   font-size: 0.85rem;
-  color: #6c757d;
+  color: var(--color-text-muted);
 }
 
 .award-results-admin-state strong {
-  color: #2c3e50;
+  color: var(--color-heading);
 }
 
 /* Horizontal chart: shared baseline = same track alignment for every row */
@@ -217,15 +229,16 @@
 }
 
 .award-results-solution {
+  font-family: var(--font-display);
   font-size: 0.9rem;
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: 700;
+  color: var(--color-heading);
   line-height: 1.35;
 }
 
 .award-results-company {
   font-size: 0.78rem;
-  color: #6c757d;
+  color: var(--color-text-muted);
   line-height: 1.3;
 }
 
@@ -235,18 +248,19 @@
 
 .award-results-track {
   height: 30px;
-  background: #e9ecef;
-  border-radius: 8px;
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  border: 1px solid rgba(44, 62, 80, 0.12);
+  border: 1px solid var(--color-border-strong);
 }
 
+/* Alle Balken Navy — nur der Sieger wird in Gold hervorgehoben. */
 .award-results-bar {
   height: 100%;
   width: 0%;
-  border-radius: 7px;
-  background: linear-gradient(90deg, #4a7a8a 0%, #5a9fb2 50%, #3d5a6b 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  background: var(--aire-navy);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition: width 0s linear;
 }
 
@@ -262,10 +276,10 @@
 }
 
 .award-results-bar--winner {
-  background: linear-gradient(90deg, #c9a227 0%, #e8c547 50%, #d4ac0d 100%) !important;
+  background: var(--color-accent) !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 0 0 2px rgba(201, 162, 39, 0.5);
+    0 0 0 2px rgba(242, 169, 59, 0.5);
   animation: award-results-winner-blink 0.65s ease-in-out 4;
   animation-fill-mode: forwards;
 }
@@ -276,14 +290,14 @@
     filter: brightness(1);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.2),
-      0 0 0 2px rgba(201, 162, 39, 0.45);
+      0 0 0 2px rgba(242, 169, 59, 0.45);
   }
   50% {
     filter: brightness(1.2);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.25),
-      0 0 0 2px rgba(201, 162, 39, 0.6),
-      0 0 22px rgba(232, 197, 71, 0.95);
+      0 0 0 2px rgba(242, 169, 59, 0.6),
+      0 0 22px rgba(242, 169, 59, 0.95);
   }
 }
 
@@ -293,9 +307,11 @@
 }
 
 .award-results-vote {
+  font-family: var(--font-display);
   font-size: 1.1rem;
   font-weight: 700;
-  color: #2c3e50;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-heading);
 }
 
 .award-results-vote--placeholder {

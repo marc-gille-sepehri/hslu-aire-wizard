@@ -107,14 +107,21 @@ function Statistics() {
     }
   }
 
-  // Define CI color with shades from light to dark
+  // CI: Navy ist die Hauptfarbe der Datenreihen, Gold bleibt der Hervorhebung
+  // eines einzelnen Werts vorbehalten. Sequenzielle Navy-Rampe Mist -> Navy.
   const chartColors = [
-    '#e6f2f5', // Very light (Score 1)
-    '#b8d9e3', // Light (Score 2)
-    '#8bc0d1', // Medium (Score 3)
-    '#5a9fb2', // Base color (Score 4)
-    '#3d6f7d'  // Dark (Score 5)
+    '#e4e9f2', // Mist (Score 1)
+    '#b7c4da', // (Score 2)
+    '#7e8fac', // (Score 3)
+    '#3d5578', // (Score 4)
+    '#0b2447'  // AI@RE Navy (Score 5)
   ]
+
+  // Textfarbe der Datenlabels je Rampenstufe (dunkel auf hell, weiss auf dunkel)
+  const chartLabelColors = ['#0b2447', '#0b2447', '#ffffff', '#ffffff', '#ffffff']
+
+  const CHART_FONT = "'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+  const DISPLAY_FONT = "'Space Grotesk', 'Helvetica Neue', Helvetica, sans-serif"
 
   const computeAverageScore = (counts) => {
     const total = [1, 2, 3, 4, 5].reduce((sum, score) => sum + (counts[score] || 0), 0)
@@ -149,7 +156,7 @@ function Statistics() {
           type: 'bar',
           stacked: true,
           stackType: '100%',
-          fontFamily: 'Helvetica, Arial, sans-serif',
+          fontFamily: CHART_FONT,
           toolbar: { show: false },
           animations: { enabled: true },
         },
@@ -163,7 +170,7 @@ function Statistics() {
         xaxis: { categories },
         stroke: {
           width: 1,
-          colors: ['#fff'],
+          colors: ['#ffffff'],
         },
         fill: { opacity: 1 },
         dataLabels: {
@@ -171,6 +178,11 @@ function Statistics() {
           formatter: (val) => {
             const n = Number(val)
             return !isNaN(n) && n > 5 ? `${Math.round(n)}%` : ''
+          },
+          style: {
+            fontSize: '12px',
+            fontWeight: 600,
+            colors: chartLabelColors,
           },
         },
         legend: {
@@ -200,7 +212,7 @@ function Statistics() {
       options: {
         chart: {
           type: 'radar',
-          fontFamily: 'Helvetica, Arial, sans-serif',
+          fontFamily: CHART_FONT,
           toolbar: { show: false },
           animations: { enabled: true },
           offsetY: -15,
@@ -220,7 +232,7 @@ function Statistics() {
             formatter: (val) => val.toFixed(1),
           },
         },
-        colors: ['#5a9fb2'],
+        colors: ['#0b2447'],
         stroke: { width: 2 },
         fill: { opacity: 0.2 },
         markers: { size: 4 },
@@ -229,8 +241,8 @@ function Statistics() {
           radar: {
             size: undefined,
             polygons: {
-              strokeColors: '#e9ecef',
-              connectorColors: '#e9ecef',
+              strokeColors: '#e4e9f2',
+              connectorColors: '#e4e9f2',
               fill: { colors: undefined },
             },
           },
@@ -252,7 +264,7 @@ function Statistics() {
     const options = {
       chart: {
         type: 'donut',
-        fontFamily: 'Helvetica, Arial, sans-serif',
+        fontFamily: CHART_FONT,
         toolbar: { show: false },
         animations: { enabled: true },
         offsetY: isOverall ? -20 : 0,
@@ -271,7 +283,7 @@ function Statistics() {
         style: {
           fontSize: '12px',
           fontWeight: 600,
-          colors: ['#ffffff'],
+          colors: chartLabelColors,
         },
       },
       stroke: {
@@ -290,13 +302,14 @@ function Statistics() {
                 show: true,
                 fontSize: isOverall ? '14px' : '12px',
                 fontWeight: 600,
-                color: '#2c3e50',
+                color: '#5b6b85',
               },
               value: {
                 show: true,
+                fontFamily: DISPLAY_FONT,
                 fontSize: isOverall ? '20px' : '16px',
                 fontWeight: 700,
-                color: '#5a9fb2',
+                color: '#0b2447',
                 formatter: (val) => total > 0 ? Math.round(val) : '0',
               },
               total: {
@@ -304,7 +317,7 @@ function Statistics() {
                 label: 'Total',
                 fontSize: isOverall ? '14px' : '12px',
                 fontWeight: 600,
-                color: '#6c757d',
+                color: '#5b6b85',
                 formatter: () => total.toString(),
               },
             },
@@ -316,9 +329,10 @@ function Statistics() {
         align: 'center',
         show: !!title,
         style: {
+          fontFamily: DISPLAY_FONT,
           fontSize: '16px',
-          fontWeight: 600,
-          color: '#2c3e50',
+          fontWeight: 700,
+          color: '#0b2447',
         },
       },
       tooltip: {
@@ -372,7 +386,12 @@ function Statistics() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#5a9fb2',
+          colorPrimary: '#0b2447',
+          colorLink: '#0b2447',
+          colorBorder: '#e4e9f2',
+          colorText: '#5b6b85',
+          colorTextHeading: '#0b2447',
+          fontFamily: "'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif",
           borderRadius: 8,
         },
       }}

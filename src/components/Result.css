@@ -5,9 +5,10 @@
 }
 
 .result-container {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   padding: 40px;
   display: flex;
   flex-direction: column;
@@ -17,19 +18,20 @@
 .result-header {
   text-align: center;
   padding-bottom: 20px;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .result-title {
+  font-family: var(--font-display);
   font-size: 32px;
-  color: #2c3e50;
+  color: var(--color-heading);
   margin-bottom: 10px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .result-subtitle {
   font-size: 16px;
-  color: #6c757d;
+  color: var(--color-text);
 }
 
 .result-content {
@@ -43,44 +45,55 @@
   align-items: center;
   gap: 30px;
   padding: 30px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-radius: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
 }
 
+/* Ein Zentrum: der Gesamt-Score ist der einzige Gold-Akzent der Seite. */
 .score-circle {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #bae0ea 0%, #7bb8c8 100%);
+  background: var(--color-accent);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--aire-navy);
   flex-shrink: 0;
 }
 
 .score-value {
+  font-family: var(--font-display);
   font-size: 36px;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
 .score-label {
+  font-family: var(--font-body);
   font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-kicker);
   opacity: 0.9;
   margin-top: 4px;
 }
 
 .score-description h3 {
+  font-family: var(--font-display);
   font-size: 20px;
-  color: #2c3e50;
+  font-weight: 700;
+  color: var(--color-heading);
   margin-bottom: 8px;
 }
 
 .score-description p {
   font-size: 14px;
-  color: #6c757d;
+  color: var(--color-text);
 }
 
 .dimension-scores {
@@ -90,9 +103,10 @@
 }
 
 .scores-title {
+  font-family: var(--font-display);
   font-size: 22px;
-  color: #2c3e50;
-  font-weight: 600;
+  color: var(--color-heading);
+  font-weight: 700;
 }
 
 .scores-grid {
@@ -103,8 +117,10 @@
 
 .score-item {
   padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-md);
 }
 
 .score-item-header {
@@ -117,26 +133,28 @@
 .score-item-title {
   font-size: 16px;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--color-heading);
 }
 
 .score-item-value {
+  font-family: var(--font-display);
   font-size: 14px;
-  font-weight: 600;
-  color: #5a9fb2;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-heading);
 }
 
 .score-item-bar {
   width: 100%;
   height: 8px;
-  background: #e9ecef;
+  background: var(--color-border);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .score-item-fill {
   height: 100%;
-  background: linear-gradient(135deg, #bae0ea 0%, #7bb8c8 100%);
+  background: linear-gradient(135deg, var(--aire-navy) 0%, var(--aire-navy-light) 100%);
   transition: width 0.5s ease;
   border-radius: 4px;
 }
@@ -145,16 +163,18 @@
   display: flex;
   gap: 20px;
   padding: 25px;
-  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-  border-radius: 16px;
-  border-left: 4px solid #f39c12;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--aire-navy);
 }
 
 .recommendation-icon {
   font-size: 48px;
   line-height: 1;
   flex-shrink: 0;
-  color: #5a9fb2;
+  color: var(--aire-navy);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -197,15 +217,16 @@
 }
 
 .recommendation-title {
+  font-family: var(--font-display);
   font-size: 22px;
-  color: #2c3e50;
+  color: var(--color-heading);
   margin-bottom: 10px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .recommendation-message {
   font-size: 16px;
-  color: #495057;
+  color: var(--color-text);
   line-height: 1.6;
 }
 
@@ -214,7 +235,7 @@
   justify-content: center;
   gap: 1rem;
   padding-top: 20px;
-  border-top: 2px solid #e9ecef;
+  border-top: 1px solid var(--color-border);
   flex-wrap: wrap;
 }
 
@@ -222,34 +243,36 @@
   padding: 14px 32px;
   font-size: 16px;
   font-weight: 600;
-  background: linear-gradient(135deg, #bae0ea 0%, #7bb8c8 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
+  background: var(--color-surface-inverse);
+  color: var(--color-text-inverse);
+  border: 1px solid var(--color-surface-inverse);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "FS Albert Web Regular", Helvetica, sans-serif;
+  font-family: var(--font-body);
 }
 
 .reset-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(186, 224, 234, 0.4);
+  background: var(--aire-navy-light);
+  box-shadow: var(--shadow-md);
 }
 
 .reset-button-secondary {
-  background: #e9ecef;
-  color: #495057;
+  background: transparent;
+  color: var(--aire-navy);
+  border: 1px solid var(--color-border-strong);
 }
 
 .reset-button-secondary:hover {
-  background: #dee2e6;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface-alt);
+  box-shadow: var(--shadow-sm);
 }
 
 .result-data {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 2px solid #e9ecef;
+  border-top: 1px solid var(--color-border);
 }
 
 .result-data details {
@@ -258,22 +281,23 @@
 
 .result-data summary {
   font-size: 14px;
-  color: #6c757d;
+  color: var(--color-text);
   font-weight: 500;
   padding: 10px;
-  background: #f8f9fa;
-  border-radius: 4px;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
 }
 
 .result-data pre {
   margin-top: 10px;
   padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   overflow-x: auto;
   font-size: 12px;
   line-height: 1.5;
-  color: #495057;
+  color: var(--color-text);
 }
 
 @media (max-width: 768px) {

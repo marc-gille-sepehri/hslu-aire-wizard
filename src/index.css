@@ -1,3 +1,66 @@
+/* ==========================================================================
+   AI@RE Design Tokens — see doc/AIRE-CI-Manual.pdf
+   Grundprinzipien: geschlossen statt fragmentiert · ein Zentrum · Wasser
+   trägt Metall (Navy als Grund, Gold als einziger Akzent).
+   Gold ist bewusst knapp: nur primäre CTAs, Icon-Zentrum, einzelne
+   Hervorhebungen — nie als Fläche > 15% einer Seite.
+   ========================================================================== */
+:root {
+  /* Kernfarben */
+  --aire-navy: #0b2447;
+  --aire-navy-light: #13294f;
+  --aire-gold: #f2a93b;
+  --aire-cream: #faf7f2;
+  --aire-slate: #5b6b85;
+  --aire-mist: #e4e9f2;
+  --aire-white: #ffffff;
+
+  /* Abgeleitete Töne (nur für States/Tiefe, keine neuen Markenfarben) */
+  --aire-navy-deep: #071a33;
+  --aire-navy-soft: #23385c;
+  --aire-gold-dark: #d98f1f;
+  --aire-gold-soft: #fbeddb;
+  --aire-slate-light: #8493a8;
+  --aire-slate-dark: #3c4a60;
+  --aire-cream-deep: #f1eee5;
+  --aire-mist-strong: #cfd8e6;
+
+  /* Semantische Rollen */
+  --color-bg: var(--aire-cream);
+  --color-surface: var(--aire-white);
+  --color-surface-alt: var(--aire-cream);
+  --color-surface-inverse: var(--aire-navy);
+  --color-border: var(--aire-mist);
+  --color-border-strong: var(--aire-mist-strong);
+  --color-heading: var(--aire-navy);
+  --color-text: var(--aire-slate);
+  --color-text-muted: var(--aire-slate-light);
+  --color-text-inverse: var(--aire-white);
+  --color-accent: var(--aire-gold);
+  --color-accent-hover: var(--aire-gold-dark);
+
+  /* Status */
+  --color-success: #3f7a34;
+  --color-success-bg: #f2f8f0;
+  --color-danger: #b23f2c;
+  --color-danger-bg: #fbefec;
+  --color-warning: var(--aire-gold-dark);
+  --color-warning-bg: var(--aire-gold-soft);
+
+  /* Typografie — Space Grotesk (Display) + Inter (Fliesstext/UI) */
+  --font-display: 'Space Grotesk', 'Helvetica Neue', Helvetica, sans-serif;
+  --font-body: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --tracking-kicker: 0.1em;
+
+  /* Form & Tiefe — geschlossene, volle Flächen, weiche Kanten */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(11, 36, 71, 0.06);
+  --shadow-md: 0 6px 20px rgba(11, 36, 71, 0.08);
+  --shadow-lg: 0 16px 40px rgba(11, 36, 71, 0.12);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,13 +72,45 @@ html {
 }
 
 body {
-  font-family: "FS Albert Web Regular", Helvetica, sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #ffffff;
+  background: var(--color-bg);
   min-height: 100vh;
-  color: #2c3e50;
+  color: var(--color-text);
   line-height: 1.6;
+}
+
+/* Überschriften immer Space Grotesk Bold in Navy — nie Navy für lange
+   Textblöcke (das bleibt Slate). */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-heading);
+  line-height: 1.25;
+}
+
+/* Kicker / Label — Inter Bold, Versalien, Sperrung .1em, Gold */
+.kicker {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-kicker);
+  color: var(--color-accent);
+}
+
+/* Zahlen & Statistiken (Readiness Score, Benchmark-Werte) */
+.stat-figure {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-heading);
 }
 
 #root {

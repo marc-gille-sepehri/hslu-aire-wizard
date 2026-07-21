@@ -9,10 +9,11 @@
 .company-info-container {
   width: 100%;
   max-width: 600px;
-  background: white;
-  border-radius: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: 40px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .company-info-header {
@@ -21,15 +22,17 @@
 }
 
 .company-info-title {
+  font-family: var(--font-display);
   font-size: 32px;
   font-weight: 700;
-  color: #2c3e50;
+  color: var(--color-heading);
   margin-bottom: 12px;
 }
 
 .company-info-subtitle {
+  font-family: var(--font-body);
   font-size: 16px;
-  color: #6c757d;
+  color: var(--color-text);
   line-height: 1.6;
 }
 
@@ -40,12 +43,13 @@
 }
 
 .company-info-error {
-  background: #fee;
-  color: #c33;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
   font-size: 14px;
-  border: 1px solid #fcc;
+  border: 1px solid var(--color-danger);
 }
 
 .form-group {
@@ -55,32 +59,39 @@
 }
 
 .form-group label {
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--color-heading);
+}
+
+.form-group label .required,
+.form-group label abbr[title] {
+  color: var(--color-danger);
+  text-decoration: none;
 }
 
 .form-select {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   font-size: 16px;
-  font-family: "FS Albert Web Regular", Helvetica, sans-serif;
-  color: #2c3e50;
-  background: white;
+  font-family: var(--font-body);
+  color: var(--aire-slate-dark);
+  background: var(--color-surface);
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .form-select:focus {
   outline: none;
-  border-color: #5a9fb2;
-  box-shadow: 0 0 0 3px rgba(90, 159, 178, 0.1);
+  border-color: var(--aire-navy);
+  box-shadow: 0 0 0 3px rgba(242, 169, 59, 0.35);
 }
 
 .form-select:hover {
-  border-color: #5a9fb2;
+  border-color: var(--color-border-strong);
 }
 
 .company-info-actions {
@@ -92,33 +103,40 @@
 
 .company-info-button {
   padding: 12px 24px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "FS Albert Web Regular", Helvetica, sans-serif;
+  font-family: var(--font-body);
+}
+
+.company-info-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(242, 169, 59, 0.35);
 }
 
 .company-info-button-primary {
-  background: linear-gradient(135deg, #5a9fb2 0%, #7bb8c8 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(90, 159, 178, 0.3);
+  background: var(--color-accent);
+  color: var(--aire-navy);
+  box-shadow: var(--shadow-sm);
 }
 
 .company-info-button-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(90, 159, 178, 0.4);
+  background: var(--color-accent-hover);
+  box-shadow: var(--shadow-md);
 }
 
 .company-info-button-secondary {
-  background: #e9ecef;
-  color: #495057;
+  background: transparent;
+  color: var(--aire-navy);
+  border: 1px solid var(--aire-navy);
 }
 
 .company-info-button-secondary:hover {
-  background: #dee2e6;
+  background: var(--color-surface-alt);
 }
 
 @media (max-width: 768px) {
