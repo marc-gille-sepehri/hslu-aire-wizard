@@ -97,7 +97,7 @@ function HomePage({ onContactSubmit }) {
         </div>
       </section>
 
-      <section className="content-section">
+      <section className="content-section content-section-textured">
         <div className="container">
           <div className="section-content">
             <h2 className="section-title">Der Readiness Check ist Ihre 7-Minuten-Standortbestimmung.</h2>

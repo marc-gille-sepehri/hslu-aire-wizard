@@ -395,6 +395,38 @@
   background: var(--color-surface);
 }
 
+/* Einfarbige, sehr zurückgenommene Bildtextur als Sektionsgrund. Das Bild ist
+   auf Navy reduziert (Alpha folgt der Bildhelligkeit) und läuft weit unter der
+   Textschwelle mit — Fliesstext behält vollen Kontrast. */
+.content-section-textured {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Die Ebene hat exakt das Seitenverhältnis des Bildes (3:4) und sitzt rechts
+   bündig — so greift der Verlauf genau auf der Bildkante und nicht daneben.
+   Der Navy-Ton ist bereits ins JPEG gerechnet (48% Navy auf Weiss), deshalb
+   hier weder opacity noch Maske: das spart gegenüber einem Alpha-PNG rund
+   900 KB. Andere Deckkraft oder ein anderer Grund heisst: JPEG neu rendern. */
+.content-section-textured::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  aspect-ratio: 3 / 4;
+  background:
+    linear-gradient(to right, var(--color-surface) 0%, rgba(255, 255, 255, 0) 88%),
+    url(/hslu-umbrella-navy.jpg) right center / cover no-repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.content-section-textured > .container {
+  position: relative;
+  z-index: 1;
+}
+
 .section-content {
   max-width: 800px;
   margin: 0 auto;
