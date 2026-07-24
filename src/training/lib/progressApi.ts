@@ -50,6 +50,7 @@ export type Interaction =
   | { type: 'prompt'; prompt: string; model?: string }
   | { type: 'reflect'; text: string }
   | { type: 'bpmn'; xml: string }
+  | { type: 'mcp'; url?: string; toolName?: string; urlEntered: boolean; toolFired: boolean }
 
 export interface UserProgress {
   moduleId: string

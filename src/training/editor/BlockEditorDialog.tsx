@@ -6,6 +6,7 @@ import type {
   CalloutArtifact,
   LabSelectArtifact,
   LlmPromptArtifact,
+  McpInspectorArtifact,
   MCQArtifact,
   MediaArtifact,
   ProseArtifact,
@@ -206,6 +207,23 @@ function BpmnEditor({ draft, set }: { draft: BpmnArtifact; set: (d: BpmnArtifact
   )
 }
 
+function McpInspectorEditor({ draft, set }: { draft: McpInspectorArtifact; set: (d: McpInspectorArtifact) => void }) {
+  return (
+    <div className="space-y-4">
+      <Field label={t.fTitle}>
+        <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
+      </Field>
+      <Field label={t.fInstructions}>
+        <TextArea value={draft.instructions ?? ''} rows={2} onChange={(v) => set({ ...draft, instructions: v || undefined })} />
+      </Field>
+      <Field label={t.fMcpDefaultUrl}>
+        <TextInput value={draft.defaultUrl ?? ''} onChange={(v) => set({ ...draft, defaultUrl: v || undefined })} />
+      </Field>
+      <p className="text-xs text-slate-500">{t.mcpEditorHint}</p>
+    </div>
+  )
+}
+
 function ReflectEditor({ draft, set }: { draft: ReflectArtifact; set: (d: ReflectArtifact) => void }) {
   return (
     <div className="space-y-4">
@@ -361,6 +379,8 @@ export default function BlockEditorDialog({
         return <LlmPromptEditor draft={draft} set={setDraft} />
       case 'bpmn':
         return <BpmnEditor draft={draft} set={setDraft} />
+      case 'mcp_inspector':
+        return <McpInspectorEditor draft={draft} set={setDraft} />
       default:
         return null
     }

@@ -139,6 +139,29 @@ export const labels = {
     addressRequired: 'Alle Adressfelder sind erforderlich.',
   },
 
+  // MCP toolset inspector block
+  mcp: {
+    url: 'MCP-Server-URL',
+    urlPlaceholder: 'https://…/mcp',
+    connect: 'Verbinden',
+    connecting: 'Verbinde …',
+    connected: 'Verbunden',
+    disconnect: 'Trennen',
+    tools: 'Tools',
+    noTools: 'Der Server meldet keine Tools.',
+    selectToolHint: 'Wähle links ein Tool, um es auszuführen.',
+    parameters: 'Parameter',
+    noParams: 'Dieses Tool hat keine Parameter.',
+    run: 'Ausführen',
+    running: 'Wird ausgeführt …',
+    result: 'Ergebnis',
+    error: 'Fehler',
+    required: 'erforderlich',
+    stepUrl: 'Server verbunden',
+    stepTool: 'Tool ausgeführt',
+    done: 'Abgeschlossen',
+  },
+
   // Course-material chat assistant
   chat: {
     title: 'Kurs-Assistent',
@@ -285,6 +308,8 @@ export const labels = {
     bpmnExpand: 'Vollbild',
     bpmnCollapse: 'Vollbild verlassen',
     bpmnEditorHint: 'Das Diagramm zeichnen die Teilnehmenden selbst; es wird in ihrem Fortschritt gespeichert.',
+    fMcpDefaultUrl: 'Vorbelegte MCP-URL (optional)',
+    mcpEditorHint: 'Teilnehmende geben eine MCP-URL ein und führen ein Tool aus; der Block gilt als erledigt, sobald beides passiert ist.',
     fCaption: 'Bildunterschrift (optional)',
     noResources: 'Keine Ressourcen in diesem Modul definiert.',
     variantNote: 'Hinweis',

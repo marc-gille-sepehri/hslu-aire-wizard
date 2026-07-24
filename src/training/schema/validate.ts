@@ -90,6 +90,13 @@ const bpmnArtifact = baseArtifact.extend({
   starterXml: z.string().optional(),
 })
 
+const mcpInspectorArtifact = baseArtifact.extend({
+  type: z.literal('mcp_inspector'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+  defaultUrl: z.string().optional(),
+})
+
 const artifact = z.discriminatedUnion('type', [
   proseArtifact,
   bulletsArtifact,
@@ -100,6 +107,7 @@ const artifact = z.discriminatedUnion('type', [
   mediaArtifact,
   llmPromptArtifact,
   bpmnArtifact,
+  mcpInspectorArtifact,
 ])
 
 const section = z.object({

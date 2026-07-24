@@ -33,6 +33,7 @@ export type Artifact =
   | MediaArtifact
   | LlmPromptArtifact
   | BpmnArtifact
+  | McpInspectorArtifact
 
 export type BaseArtifact = {
   id: string
@@ -97,4 +98,12 @@ export type BpmnArtifact = BaseArtifact & {
   instructions?: string
   /** Initial BPMN 2.0 XML the learner starts from (a start event if omitted). */
   starterXml?: string
+}
+export type McpInspectorArtifact = BaseArtifact & {
+  type: 'mcp_inspector'
+  title?: string
+  /** Explanatory text shown above the inspector. */
+  instructions?: string
+  /** MCP server URL prefilled into the input. */
+  defaultUrl?: string
 }

@@ -48,7 +48,14 @@ function moduleTracked(mod: ModuleLike | null, interactions: Record<string, unkn
     for (const a of sec.artifacts ?? []) {
       if (a.tracked === false || !a.id) continue
       total++
-      if (interactions[a.id] != null) done++
+      const it = interactions[a.id] as { type?: string; urlEntered?: boolean; toolFired?: boolean } | undefined
+      if (it == null) continue
+      // MCP inspector needs both a URL connected and a tool fired to count as done.
+      if (it.type === 'mcp') {
+        if (it.urlEntered && it.toolFired) done++
+      } else {
+        done++
+      }
     }
   }
   return { total, done }

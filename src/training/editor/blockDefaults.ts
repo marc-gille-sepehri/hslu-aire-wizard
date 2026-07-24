@@ -23,6 +23,7 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: 'media', label: 'Medien', icon: '🖼️', hint: 'Bild / Video / YouTube per URL' },
   { type: 'llm_prompt', label: 'LLM-Prompt', icon: '🤖', hint: 'Prompt an ein Sprachmodell senden' },
   { type: 'bpmn', label: 'BPMN-Modell', icon: '🔀', hint: 'Prozess mit dem bpmn.io-Modeler zeichnen' },
+  { type: 'mcp_inspector', label: 'MCP-Inspector', icon: '🧰', hint: 'MCP-Toolset verbinden und Tools testen' },
 ]
 
 export const BLOCK_TYPE_LABEL: Record<BlockType, string> = BLOCK_TYPES.reduce(
@@ -95,6 +96,13 @@ export function makeNewArtifact(type: BlockType): Artifact {
         type,
         title: 'Prozess modellieren',
         instructions: 'Zeichne den Prozess mit dem Modeler und speichere ihn anschliessend.',
+      }
+    case 'mcp_inspector':
+      return {
+        id,
+        type,
+        title: 'MCP-Toolset erkunden',
+        instructions: 'Verbinde dich mit einem MCP-Server, sieh dir die Tools an und führe eines aus.',
       }
     default: {
       // Exhaustiveness guard — a new schema type must be handled here.
