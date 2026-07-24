@@ -158,6 +158,37 @@
   width: 100%;
 }
 
+/* Auth control in the header (name + login/logout) */
+.site-nav .nav-auth {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding-left: 1.25rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+}
+.site-nav .nav-user {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.site-nav .nav-auth-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.9);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.site-nav .nav-auth-btn:hover {
+  color: var(--aire-gold);
+  border-color: var(--aire-gold);
+}
+
 /* Main Content */
 .site-main {
   flex: 1;

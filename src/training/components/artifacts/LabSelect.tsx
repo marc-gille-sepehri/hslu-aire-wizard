@@ -2,11 +2,13 @@ import { useMemo, useState } from 'react'
 import type { LabSelectArtifact } from '../../schema/types'
 import { useInline } from '../../lib/inlineMedia'
 import { useLearner } from '../../state/LearnerStateContext'
+import { useRecordInteraction } from '../../state/ProgressContext'
 import { labels } from '../../labels'
 
 export default function LabSelect({ artifact }: { artifact: LabSelectArtifact }) {
   const inline = useInline()
   const { state, recordAnswer, markComplete } = useLearner()
+  const record = useRecordInteraction()
   const stored = state.answers[artifact.id]
   const revealAnswer = artifact.revealAnswer ?? true
   const maxAttempts = artifact.attempts ?? Infinity
@@ -29,6 +31,7 @@ export default function LabSelect({ artifact }: { artifact: LabSelectArtifact })
     setSelectedId(id)
     setLocked(true)
     recordAnswer(artifact.id, { selectedOptionId: id, correct: opt.correct })
+    record(artifact.id, { type: 'selection', selectedOptionId: id, correct: opt.correct })
     if (artifact.tracked !== false) markComplete(artifact.id)
   }
 

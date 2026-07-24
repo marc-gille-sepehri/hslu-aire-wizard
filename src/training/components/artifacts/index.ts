@@ -7,6 +7,8 @@ import MCQ from './MCQ'
 import LabSelect from './LabSelect'
 import Reflect from './Reflect'
 import Media from './Media'
+import LlmPrompt from './LlmPrompt'
+import Bpmn from './Bpmn'
 
 type ArtifactComponent<T extends Artifact = Artifact> = ComponentType<{ artifact: T }>
 
@@ -18,4 +20,6 @@ export const artifactComponents: Record<Artifact['type'], ArtifactComponent<any>
   lab_select: LabSelect,
   reflect: Reflect,
   media: Media,
+  llm_prompt: LlmPrompt,
+  bpmn: Bpmn,
 }

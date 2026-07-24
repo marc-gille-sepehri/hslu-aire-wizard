@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReflectArtifact } from '../../schema/types'
 import { useLearner } from '../../state/LearnerStateContext'
+import { useRecordInteraction } from '../../state/ProgressContext'
 import { labels } from '../../labels'
 
 const SAVE_DEBOUNCE_MS = 500
 
 export default function Reflect({ artifact }: { artifact: ReflectArtifact }) {
   const { state, updateReflect, markComplete } = useLearner()
+  const record = useRecordInteraction()
   const stored = state.answers[artifact.id]?.text ?? ''
   const [value, setValue] = useState(stored)
   const [savedAt, setSavedAt] = useState<number | null>(stored ? Date.now() : null)
@@ -20,6 +22,7 @@ export default function Reflect({ artifact }: { artifact: ReflectArtifact }) {
     if (timer.current) window.clearTimeout(timer.current)
     timer.current = window.setTimeout(() => {
       updateReflect(artifact.id, next)
+      if (next.trim().length > 0) record(artifact.id, { type: 'reflect', text: next })
       if (artifact.tracked !== false && next.trim().length > 0) markComplete(artifact.id)
       setSavedAt(Date.now())
     }, SAVE_DEBOUNCE_MS)

@@ -1,56 +1,109 @@
 import { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import './styles.css'
 import { labels } from './labels'
 import { validateModule, type ValidationFailure } from './schema/validate'
 import type { Module } from './schema/types'
 import SchemaError from './components/SchemaError'
 import ModuleView from './components/ModuleView'
-
-type ModuleIndexEntry = { id: string; title: string; file: string }
+import Catalog from './components/Catalog'
+import SeatErrorDialog from './components/SeatErrorDialog'
+import { ProgressProvider } from './state/ProgressContext'
+import { useAuth } from './auth/AuthContext'
+import LoginGate from './auth/LoginGate'
+import { EditModeProvider, useEditMode } from './editor/EditModeContext'
+import { fetchModule, type ModuleMeta } from './lib/moduleApi'
+import ChatWidget from './chat/ChatWidget'
 
 type LoadState =
   | { kind: 'loading' }
   | { kind: 'error'; message: string }
   | { kind: 'invalid'; failures: ValidationFailure[] }
-  | { kind: 'ready'; index: ModuleIndexEntry[]; selectedFile: string; mod: Module }
-
-const MODULES_BASE = '/modules'
-const INDEX_URL = `${MODULES_BASE}/index.json`
-const FALLBACK_FILE = 'modul-1.json'
+  | { kind: 'ready'; selectedId: string; mod: Module; meta: ModuleMeta }
 
 export default function TrainingApp() {
+  // AuthProvider is mounted app-wide in main.jsx.
+  return (
+    <EditModeProvider>
+      <TrainingGate />
+    </EditModeProvider>
+  )
+}
+
+/** Show the login screen until a valid session exists; then the training UI. */
+function TrainingGate() {
+  const { status } = useAuth()
+
+  if (status === 'checking') {
+    return (
+      <div className="training-root font-sans">
+        <div className="max-w-prose mx-auto px-4 py-10 text-slate-500">{labels.auth.checking}</div>
+      </div>
+    )
+  }
+
+  if (status === 'anonymous') {
+    return (
+      <div className="training-root font-sans">
+        <LoginGate />
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <TrainingHeader />
+      <TrainingContent />
+      <ChatWidget />
+    </>
+  )
+}
+
+/** Slim bar above the training content holding the admin edit toggle.
+    Name + logout now live in the main site header. */
+function TrainingHeader() {
+  const { isAdmin, editing, toggleEditing } = useEditMode()
+  if (!isAdmin) return null
+  return (
+    <div className="training-root font-sans border-b border-mist bg-cream">
+      <div className="max-w-prose mx-auto px-4 py-3 flex items-center justify-end gap-4">
+        <button
+          type="button"
+          onClick={toggleEditing}
+          aria-pressed={editing}
+          className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
+            editing
+              ? 'bg-gold text-navy hover:bg-gold-dark'
+              : 'border-2 border-navy text-navy hover:bg-navy hover:text-white'
+          }`}
+        >
+          {editing ? labels.editor.exitEditMode : labels.editor.enterEditMode}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function TrainingContent() {
+  // `/training` → catalog (offering); `/training/:courseId/:moduleId` → a module
+  // with seat-consuming progress; `/training/:moduleId` → course-less preview.
+  const { courseId, moduleId } = useParams<{ courseId?: string; moduleId?: string }>()
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' })
 
   useEffect(() => {
+    if (!moduleId) return
     let cancelled = false
+    setLoad({ kind: 'loading' })
     ;(async () => {
       try {
-        let index: ModuleIndexEntry[] = []
-        try {
-          const r = await fetch(INDEX_URL)
-          if (r.ok) {
-            const data = await r.json()
-            if (Array.isArray(data?.modules)) index = data.modules
-          }
-        } catch {
-          // ignore — index.json is optional
-        }
-        if (index.length === 0) {
-          index = [{ id: 'modul-1', title: 'Modul 1', file: FALLBACK_FILE }]
-        }
-        const selectedFile = index[0].file
-        const res = await fetch(`${MODULES_BASE}/${selectedFile}`)
-        if (!res.ok) {
-          if (!cancelled) setLoad({ kind: 'error', message: `${labels.loadError} (${res.status})` })
-          return
-        }
-        const json = await res.json()
-        const validated = validateModule(json)
+        const payload = await fetchModule(moduleId)
+        const validated = validateModule({ module: payload.module })
         if (!validated.ok) {
           if (!cancelled) setLoad({ kind: 'invalid', failures: validated.failures })
           return
         }
-        if (!cancelled) setLoad({ kind: 'ready', index, selectedFile, mod: validated.module })
+        if (!cancelled)
+          setLoad({ kind: 'ready', selectedId: moduleId, mod: validated.module, meta: payload.meta })
       } catch (e) {
         if (!cancelled) setLoad({ kind: 'error', message: (e as Error).message || labels.loadError })
       }
@@ -58,27 +111,15 @@ export default function TrainingApp() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [moduleId])
 
-  const switchModule = async (file: string) => {
-    if (load.kind !== 'ready' || file === load.selectedFile) return
-    setLoad({ kind: 'loading' })
-    try {
-      const res = await fetch(`${MODULES_BASE}/${file}`)
-      if (!res.ok) {
-        setLoad({ kind: 'error', message: `${labels.loadError} (${res.status})` })
-        return
-      }
-      const json = await res.json()
-      const validated = validateModule(json)
-      if (!validated.ok) {
-        setLoad({ kind: 'invalid', failures: validated.failures })
-        return
-      }
-      setLoad({ kind: 'ready', index: load.index, selectedFile: file, mod: validated.module })
-    } catch (e) {
-      setLoad({ kind: 'error', message: (e as Error).message || labels.loadError })
-    }
+  // No module chosen → the offering (all courses × modules).
+  if (!moduleId) {
+    return (
+      <div className="training-root font-sans">
+        <Catalog />
+      </div>
+    )
   }
 
   if (load.kind === 'loading') {
@@ -105,25 +146,26 @@ export default function TrainingApp() {
     )
   }
 
+  // key on the module id: switching modules resets the editor working copy
+  const view = <ModuleView key={load.selectedId} module={load.mod} moduleId={load.selectedId} />
+
+  // With a course, record interactions (and consume a seat) + show the seat gate.
+  // Without one (legacy preview/edit), render the module as before.
   return (
     <div className="training-root font-sans">
-      {load.index.length > 1 && (
-        <div className="max-w-prose mx-auto px-4 pt-6 -mb-6">
-          <label className="block text-xs uppercase tracking-wide text-slate-500 mb-1">
-            {labels.moduleSelectLabel}
-          </label>
-          <select
-            value={load.selectedFile}
-            onChange={(e) => switchModule(e.target.value)}
-            className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800"
-          >
-            {load.index.map((m) => (
-              <option key={m.id} value={m.file}>{m.title}</option>
-            ))}
-          </select>
-        </div>
+      {courseId ? (
+        <ProgressProvider courseId={courseId} moduleId={load.selectedId}>
+          <div className="max-w-prose mx-auto px-4 pt-6 -mb-6">
+            <Link to="/training" className="text-sm text-slate-500 hover:text-slate-800">
+              {labels.catalog.backToCatalog}
+            </Link>
+          </div>
+          {view}
+          <SeatErrorDialog />
+        </ProgressProvider>
+      ) : (
+        view
       )}
-      <ModuleView module={load.mod} />
     </div>
   )
 }

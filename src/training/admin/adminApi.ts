@@ -1,0 +1,195 @@
+// Client for the admin user-management endpoints (Administrator only).
+import { apiBaseUrl } from '../../config/configuration'
+import { getStoredToken } from '../auth/AuthContext'
+
+export interface AdminUser {
+  email: string
+  firstName: string
+  lastName: string
+  roles: string[]
+  deactivated?: boolean
+  customerId?: string
+  customerName?: string
+  createdAt?: string
+  updatedAt?: string
+  lastLoginAt?: string
+}
+
+export type CountryCode = 'DE' | 'AT' | 'CH'
+
+export interface CustomerAddress {
+  street: string
+  streetNumber: string
+  postalCode: string
+  city: string
+  country: CountryCode
+}
+
+export interface Customer {
+  id: string
+  name: string
+  address: CustomerAddress
+}
+
+export interface CustomerWithUsers extends Customer {
+  users: { email: string; firstName: string; lastName: string; deactivated?: boolean }[]
+}
+
+/** DACH countries with German display labels. */
+export const COUNTRIES: { code: CountryCode; label: string }[] = [
+  { code: 'CH', label: 'Schweiz' },
+  { code: 'DE', label: 'Deutschland' },
+  { code: 'AT', label: 'Österreich' },
+]
+
+export function countryLabel(code: CountryCode): string {
+  return COUNTRIES.find((c) => c.code === code)?.label ?? code
+}
+
+export class AdminError extends Error {
+  code?: string
+  status: number
+  constructor(message: string, status: number, code?: string) {
+    super(message)
+    this.name = 'AdminError'
+    this.status = status
+    this.code = code
+  }
+}
+
+function authHeaders(): Record<string, string> {
+  const token = getStoredToken()
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  }
+}
+
+async function parseError(res: Response): Promise<AdminError> {
+  let body: any = null
+  try {
+    body = await res.json()
+  } catch {
+    // no JSON body
+  }
+  return new AdminError(body?.error || `Fehler (${res.status})`, res.status, body?.code)
+}
+
+export async function listUsers(includeDeactivated: boolean): Promise<AdminUser[]> {
+  const res = await fetch(`${apiBaseUrl}/admin/users?includeDeactivated=${includeDeactivated}`, {
+    headers: authHeaders(),
+  })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.users as AdminUser[]
+}
+
+export interface CreateUserInput {
+  email: string
+  firstName: string
+  lastName: string
+  roles: string[]
+  /** Either an existing customer id … */
+  customerId?: string
+  /** … or a new customer to create and attach. */
+  newCustomer?: { name: string; address: CustomerAddress }
+}
+
+export async function createUser(input: CreateUserInput): Promise<AdminUser> {
+  const res = await fetch(`${apiBaseUrl}/admin/users`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.user as AdminUser
+}
+
+export async function listCustomers(): Promise<Customer[]> {
+  const res = await fetch(`${apiBaseUrl}/admin/customers`, { headers: authHeaders() })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.customers as Customer[]
+}
+
+export async function listCustomersWithUsers(): Promise<CustomerWithUsers[]> {
+  const res = await fetch(`${apiBaseUrl}/admin/customers?withUsers=true`, { headers: authHeaders() })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.customers as CustomerWithUsers[]
+}
+
+export async function createCustomer(name: string, address: CustomerAddress): Promise<Customer> {
+  const res = await fetch(`${apiBaseUrl}/admin/customers`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ name, address }),
+  })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.customer as Customer
+}
+
+export async function updateCustomer(id: string, name: string, address: CustomerAddress): Promise<Customer> {
+  const res = await fetch(`${apiBaseUrl}/admin/customers/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify({ name, address }),
+  })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.customer as Customer
+}
+
+// ── Orders ───────────────────────────────────────────────────────────────
+export interface Order {
+  id: string
+  customerId: string
+  customerName?: string
+  courseId: string
+  courseTitle?: string
+  startDate: string
+  endDate: string
+  seats: number
+  /** Consumed seats (one per user who started a module of the course). */
+  usedSeats?: number
+  createdAt: string
+}
+
+export interface CreateOrderInput {
+  courseId: string
+  customerId: string
+  startDate: string
+  endDate: string
+  seats: number
+}
+
+export async function listOrders(): Promise<Order[]> {
+  const res = await fetch(`${apiBaseUrl}/admin/orders`, { headers: authHeaders() })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.orders as Order[]
+}
+
+export async function createOrder(input: CreateOrderInput): Promise<{ id: string }> {
+  const res = await fetch(`${apiBaseUrl}/admin/orders`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.order
+}
+
+export async function setDeactivated(email: string, deactivated: boolean): Promise<AdminUser> {
+  const res = await fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(email)}/deactivated`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ deactivated }),
+  })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.user as AdminUser
+}

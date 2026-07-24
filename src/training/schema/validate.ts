@@ -66,8 +66,28 @@ const reflectArtifact = baseArtifact.extend({
 
 const mediaArtifact = baseArtifact.extend({
   type: z.literal('media'),
-  ref: z.string().min(1),
+  // Both optional: a media block may reference a library asset (ref) or carry a
+  // direct URL, or be temporarily empty (incomplete) without breaking the module.
+  ref: z.string().optional(),
+  url: z.string().optional(),
   caption_override: z.string().nullable().optional(),
+})
+
+const llmPromptArtifact = baseArtifact.extend({
+  type: z.literal('llm_prompt'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+  defaultPrompt: z.string().optional(),
+  defaultModel: z.string().optional(),
+  allowModelChoice: z.boolean().optional(),
+  allowParamEditing: z.boolean().optional(),
+})
+
+const bpmnArtifact = baseArtifact.extend({
+  type: z.literal('bpmn'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+  starterXml: z.string().optional(),
 })
 
 const artifact = z.discriminatedUnion('type', [
@@ -78,6 +98,8 @@ const artifact = z.discriminatedUnion('type', [
   labSelectArtifact,
   reflectArtifact,
   mediaArtifact,
+  llmPromptArtifact,
+  bpmnArtifact,
 ])
 
 const section = z.object({

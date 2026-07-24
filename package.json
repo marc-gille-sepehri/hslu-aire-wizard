@@ -11,6 +11,8 @@
   "dependencies": {
     "antd": "^6.3.0",
     "apexcharts": "^5.2.0",
+    "bpmn-js": "^17.11.1",
+    "marked": "^15.0.12",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
     "react-dom": "^18.2.0",

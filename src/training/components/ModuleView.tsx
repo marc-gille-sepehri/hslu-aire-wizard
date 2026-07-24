@@ -5,8 +5,23 @@ import { LearnerStateProvider } from '../state/LearnerStateContext'
 import { useLearnerState } from '../state/learnerState'
 import SectionView from './SectionView'
 import { labels } from '../labels'
+import { ModuleEditorProvider, useModuleEditor } from '../editor/ModuleEditorContext'
+import { useEditMode } from '../editor/EditModeContext'
+import BlockPalette from '../editor/BlockPalette'
 
-export default function ModuleView({ module: mod }: { module: Module }) {
+export default function ModuleView({ module, moduleId }: { module: Module; moduleId: string }) {
+  // The editor owns a working copy; the inner view renders from it so edits show
+  // live. In view mode this is a transparent pass-through of the loaded module.
+  return (
+    <ModuleEditorProvider initialModule={module} moduleId={moduleId}>
+      <ModuleViewInner />
+    </ModuleEditorProvider>
+  )
+}
+
+function ModuleViewInner() {
+  const { mod, save, saveStatus, saveError } = useModuleEditor()
+  const { editing } = useEditMode()
   const m = mod.module
   const learner = useLearnerState(m.id)
   const [sectionIndex, setSectionIndex] = useState(0)
@@ -57,7 +72,7 @@ export default function ModuleView({ module: mod }: { module: Module }) {
             </div>
             {sectionCount > 1 && (
               <nav className="mt-5">
-                <ol className="flex flex-wrap gap-2 text-xs">
+                <ol className="flex flex-wrap gap-2 text-xs list-none">
                   {m.sections.map((sec, i) => (
                     <li key={sec.id}>
                       <button
@@ -80,6 +95,31 @@ export default function ModuleView({ module: mod }: { module: Module }) {
           </header>
 
           <SectionView section={currentSection} />
+
+          {editing && currentSection && (
+            <BlockPalette
+              sectionId={currentSection.id}
+              appendIndex={currentSection.artifacts.length}
+            />
+          )}
+
+          {/* Save bar (edit mode) — upper-left, clear of the sticky header. */}
+          {editing && (
+            <div className="fixed left-4 top-24 z-40 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={save}
+                disabled={saveStatus === 'saving'}
+                className="rounded-md bg-gold px-4 py-2.5 text-sm font-semibold text-navy shadow-lg transition-colors hover:bg-gold-dark disabled:opacity-60"
+              >
+                {saveStatus === 'saving' ? labels.editor.saving : labels.editor.save}
+              </button>
+              {saveStatus === 'saved' && <span className="text-sm font-semibold text-emerald-700">{labels.editor.saved}</span>}
+              {saveStatus === 'error' && (
+                <span className="text-sm text-red-700">{saveError || labels.editor.saveError}</span>
+              )}
+            </div>
+          )}
 
           <footer className="mt-12 pt-6 border-t border-slate-200 flex justify-between">
             <button

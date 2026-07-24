@@ -143,6 +143,18 @@ svg {
   stroke: revert !important;
 }
 
+/* Restore bpmn.io modeler shapes: the hide-rect rule above also blanks BPMN
+   task / pool / subprocess bodies, which are <rect width height> inside
+   .djs-visual. Restore only the shape visuals (never the invisible .djs-hit
+   interaction rects, which live outside .djs-visual). Equal specificity to the
+   hide rule, placed after -> wins. Fill stays transparent (the canvas is white),
+   so groups and coloured elements are not masked. */
+.djs-container svg .djs-element .djs-visual > rect[width][height] {
+  display: block !important;
+  opacity: 1 !important;
+  stroke: #22242a !important;
+}
+
 /* Only remove fill from actual icon SVGs - NO !important so ApexCharts can override */
 /* Target only SVGs that are clearly icons, not charts */
 header .icon svg path,

@@ -1,3 +1,142 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Preflight is disabled project-wide, so native button/input chrome (grey button
+   backgrounds, inset borders) leaks through wherever no background or border
+   utility is set. Re-apply the essential parts of the reset, scoped to the
+   training area and at ZERO specificity (:where) so Tailwind utilities still win:
+   a bg-gold/border-2 button keeps its utility styles; a bare icon button loses
+   the native box. */
+:where(.training-root) button {
+  background-color: transparent;
+  background-image: none;
+  border: 0 solid;
+  cursor: pointer;
+}
+:where(.training-root) input,
+:where(.training-root) select,
+:where(.training-root) textarea {
+  border: 0 solid;
+}
+
+/* Rendered training markdown (Prose blocks + editor preview). Preflight is off
+   in this project, so element styles are defined explicitly here. Colours use
+   the AI@RE CI tokens defined in src/index.css. */
+.md-content > *:first-child {
+  margin-top: 0;
+}
+.md-content > *:last-child {
+  margin-bottom: 0;
+}
+.md-content p {
+  margin: 0 0 1rem;
+}
+.md-content h1,
+.md-content h2,
+.md-content h3,
+.md-content h4 {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-weight: 700;
+  color: var(--aire-navy, #0b2447);
+  line-height: 1.25;
+  margin: 1.5rem 0 0.75rem;
+}
+.md-content h1 { font-size: 1.6rem; }
+.md-content h2 { font-size: 1.3rem; }
+.md-content h3 { font-size: 1.1rem; }
+.md-content h4 { font-size: 1rem; }
+.md-content strong { font-weight: 700; }
+.md-content em { font-style: italic; }
+.md-content a {
+  color: var(--aire-navy, #0b2447);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.md-content a:hover { color: var(--aire-gold-dark, #d98f1f); }
+.md-content ul,
+.md-content ol {
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+}
+.md-content ul { list-style: disc; }
+.md-content ol { list-style: decimal; }
+.md-content li { margin: 0.25rem 0; }
+.md-content blockquote {
+  margin: 0 0 1rem;
+  padding: 0.25rem 0 0.25rem 1rem;
+  border-left: 3px solid var(--aire-gold, #f2a93b);
+  color: var(--aire-slate, #5b6b85);
+}
+.md-content code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  background: var(--aire-cream-deep, #f1eee5);
+  border: 1px solid var(--aire-mist, #e4e9f2);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+.md-content pre {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  background: var(--aire-navy, #0b2447);
+  color: #fff;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+.md-content pre code {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  padding: 0;
+}
+.md-content hr {
+  border: 0;
+  border-top: 1px solid var(--aire-mist, #e4e9f2);
+  margin: 1.5rem 0;
+}
+
+/* Compact markdown for chat answers (bullets, bold, links). Preflight is off,
+   so element styles are declared explicitly here. */
+.chat-md > *:first-child { margin-top: 0; }
+.chat-md > *:last-child { margin-bottom: 0; }
+.chat-md p { margin: 0 0 0.5rem; }
+.chat-md ul,
+.chat-md ol { margin: 0.25rem 0 0.5rem; padding-left: 1.35rem; }
+.chat-md ul { list-style: disc; }
+.chat-md ol { list-style: decimal; }
+.chat-md ul ul { list-style: circle; }
+.chat-md li { margin: 0.15rem 0; }
+.chat-md li > p { margin: 0; }
+.chat-md strong { font-weight: 700; }
+.chat-md em { font-style: italic; }
+.chat-md a {
+  color: var(--aire-navy, #0b2447);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.chat-md h1,
+.chat-md h2,
+.chat-md h3,
+.chat-md h4 {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin: 0.5rem 0 0.25rem;
+  color: var(--aire-navy, #0b2447);
+}
+.chat-md code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  background: var(--aire-cream-deep, #f1eee5);
+  border-radius: 3px;
+  padding: 0.05em 0.3em;
+}
+.chat-md pre {
+  margin: 0 0 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--aire-navy, #0b2447);
+  color: #fff;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+.chat-md pre code { background: transparent; color: inherit; padding: 0; }

@@ -1,5 +1,7 @@
 import type { MediaArtifact } from '../../schema/types'
 import { useResource } from '../../state/ResourcesContext'
+import { useEditMode } from '../../editor/EditModeContext'
+import { detectMedia } from '../../lib/media'
 import { labels } from '../../labels'
 
 // Used both as an artifact (with full props) and inline via [[media:id]]
@@ -8,10 +10,26 @@ import { labels } from '../../labels'
 type Props = { artifact: MediaArtifact } | { ref_: string; caption_override?: string | null }
 
 export default function Media(props: Props) {
-  const ref = 'artifact' in props ? props.artifact.ref : props.ref_
-  const captionOverride =
-    'artifact' in props ? props.artifact.caption_override : props.caption_override
-  const resource = useResource(ref)
+  const isArtifact = 'artifact' in props
+  const ref = isArtifact ? props.artifact.ref : props.ref_
+  const url = isArtifact ? props.artifact.url : undefined
+  const captionOverride = isArtifact ? props.artifact.caption_override : props.caption_override
+  // Always call hooks unconditionally (rules of hooks); '' resolves to undefined.
+  const resource = useResource(ref ?? '')
+  const { editing } = useEditMode()
+
+  const caption = captionOverride === null ? undefined : captionOverride ?? undefined
+
+  // A direct URL takes precedence over a library reference.
+  if (url && url.trim()) {
+    return <UrlMedia url={url.trim()} caption={caption} />
+  }
+
+  // No URL and no (valid) reference: nothing to show. In edit mode, surface a
+  // placeholder so the admin can tell the empty block is there and editable.
+  if (!ref) {
+    return editing ? <EmptyPlaceholder /> : null
+  }
 
   if (!resource) {
     console.warn(`[training] media artifact references missing resource: ${ref}`)
@@ -22,7 +40,7 @@ export default function Media(props: Props) {
     )
   }
 
-  const caption =
+  const resCaption =
     captionOverride === null
       ? undefined
       : captionOverride ?? ('caption' in resource ? resource.caption : undefined)
@@ -39,7 +57,7 @@ export default function Media(props: Props) {
         >
           {resource.captions && <track kind="captions" src={resource.captions} default />}
         </video>
-        {caption && <figcaption className="text-sm text-slate-600 mt-2">{caption}</figcaption>}
+        {resCaption && <figcaption className="text-sm text-slate-600 mt-2">{resCaption}</figcaption>}
       </figure>
     )
   }
@@ -64,7 +82,64 @@ export default function Media(props: Props) {
           {labels.missingAlt}
         </div>
       )}
+      {resCaption && <figcaption className="text-sm text-slate-600 mt-2">{resCaption}</figcaption>}
+    </figure>
+  )
+}
+
+/** Render a direct media URL, classified by {@link detectMedia}. */
+function UrlMedia({ url, caption }: { url: string; caption?: string }) {
+  const media = detectMedia(url)
+  if (!media) return null
+
+  if (media.kind === 'youtube' || media.kind === 'vimeo') {
+    return (
+      <figure className="my-2">
+        <div className="relative w-full overflow-hidden rounded-md bg-black" style={{ aspectRatio: '16 / 9' }}>
+          <iframe
+            src={media.embedUrl}
+            title={caption ?? 'Video'}
+            className="absolute inset-0 h-full w-full"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        </div>
+        {caption && <figcaption className="text-sm text-slate-600 mt-2">{caption}</figcaption>}
+      </figure>
+    )
+  }
+
+  if (media.kind === 'video') {
+    return (
+      <figure className="my-2">
+        <video src={media.src} controls preload="metadata" className="w-full rounded-md bg-black" />
+        {caption && <figcaption className="text-sm text-slate-600 mt-2">{caption}</figcaption>}
+      </figure>
+    )
+  }
+
+  // image or unknown → best-effort image
+  return (
+    <figure className="my-2">
+      <img
+        src={media.src}
+        alt={caption ?? ''}
+        className="w-full rounded-md border border-slate-200"
+        onError={(e) => {
+          console.warn(`[training] failed to load media url: ${media.src}`)
+          ;(e.currentTarget as HTMLImageElement).style.display = 'none'
+        }}
+      />
       {caption && <figcaption className="text-sm text-slate-600 mt-2">{caption}</figcaption>}
     </figure>
+  )
+}
+
+function EmptyPlaceholder() {
+  return (
+    <div className="my-2 rounded-md border border-dashed border-mist bg-cream/40 px-3 py-6 text-center text-sm text-slate-400">
+      {labels.editor.mediaEmpty}
+    </div>
   )
 }

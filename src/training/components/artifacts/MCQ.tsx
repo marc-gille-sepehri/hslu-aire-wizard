@@ -2,11 +2,13 @@ import { useMemo, useState } from 'react'
 import type { MCQArtifact } from '../../schema/types'
 import { useInline } from '../../lib/inlineMedia'
 import { useLearner } from '../../state/LearnerStateContext'
+import { useRecordInteraction } from '../../state/ProgressContext'
 import { labels } from '../../labels'
 
 export default function MCQ({ artifact }: { artifact: MCQArtifact }) {
   const inline = useInline()
   const { state, recordAnswer, markComplete } = useLearner()
+  const record = useRecordInteraction()
   const stored = state.answers[artifact.id]
   const revealAnswer = artifact.revealAnswer ?? true
   const maxAttempts = artifact.attempts ?? Infinity
@@ -30,6 +32,7 @@ export default function MCQ({ artifact }: { artifact: MCQArtifact }) {
     setLocked(true)
     const correct = artifact.options[idx].correct
     recordAnswer(artifact.id, { selectedIndex: idx, correct })
+    record(artifact.id, { type: 'selection', selectedIndex: idx, correct })
     if (artifact.tracked !== false) markComplete(artifact.id)
   }
 

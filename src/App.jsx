@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Routes, Route, Link, useLocation } from 'react-router-dom'
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import WizardPage from './pages/WizardPage'
 import ResultPage from './pages/ResultPage'
@@ -8,6 +8,8 @@ import AwardVotePage from './pages/AwardVotePage'
 import AwardResultsPage from './pages/AwardResultsPage'
 import MarketTestPage from './pages/MarketTestPage'
 import TrainingApp from './training/TrainingApp'
+import AdminApp from './training/admin/AdminApp'
+import { useAuth } from './training/auth/AuthContext'
 import { apiBaseUrl, contactEmail } from './config/configuration'
 import './App.css'
 
@@ -15,6 +17,9 @@ function App() {
   const [showImprint, setShowImprint] = useState(false)
   const [showPrivacy, setShowPrivacy] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
+  const { status, user, logout } = useAuth()
+  const isAdmin = !!user?.roles?.includes('Administrator')
 
   const handleContactSubmit = async (e) => {
     e.preventDefault()
@@ -96,9 +101,21 @@ function App() {
               <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link>
               <Link to="/statistics">Statistiken</Link>
               <Link to="/market-test">Marktdaten</Link>
+              {status === 'authenticated' && user && <Link to="/training">Training</Link>}
+              {isAdmin && <Link to="/admin">Administration</Link>}
               {location.pathname === '/' && (
                 <a href="#contact" onClick={(e) => { e.preventDefault(); const element = document.getElementById('contact'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Kontakt</a>
               )}
+              {status === 'authenticated' && user ? (
+                <span className="nav-auth">
+                  <span className="nav-user">{`${user.firstName} ${user.lastName}`.trim()}</span>
+                  <button type="button" className="nav-auth-btn" onClick={logout}>Abmelden</button>
+                </span>
+              ) : status === 'anonymous' ? (
+                <span className="nav-auth">
+                  <button type="button" className="nav-auth-btn" onClick={() => navigate('/training')}>Anmelden</button>
+                </span>
+              ) : null}
             </nav>
           </div>
         </div>
@@ -113,7 +130,10 @@ function App() {
           <Route path="/award" element={<AwardVotePage />} />
           <Route path="/award-results" element={<AwardResultsPage />} />
           <Route path="/market-test" element={<MarketTestPage />} />
-          <Route path="/training/*" element={<TrainingApp />} />
+          <Route path="/training" element={<TrainingApp />} />
+          <Route path="/training/:moduleId" element={<TrainingApp />} />
+          <Route path="/training/:courseId/:moduleId" element={<TrainingApp />} />
+          <Route path="/admin" element={<AdminApp />} />
         </Routes>
       </main>
 

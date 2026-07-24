@@ -31,6 +31,8 @@ export type Artifact =
   | LabSelectArtifact
   | ReflectArtifact
   | MediaArtifact
+  | LlmPromptArtifact
+  | BpmnArtifact
 
 export type BaseArtifact = {
   id: string
@@ -67,6 +69,32 @@ export type ReflectArtifact = BaseArtifact & {
 }
 export type MediaArtifact = BaseArtifact & {
   type: 'media'
-  ref: string
+  /** Reference into module.resources (the asset library). Optional now that a
+   *  direct URL is also supported; at most one of ref/url is used, url wins. */
+  ref?: string
+  /** Direct URL to an image or video (incl. YouTube / Vimeo). */
+  url?: string
   caption_override?: string | null
+}
+export type LlmPromptArtifact = BaseArtifact & {
+  type: 'llm_prompt'
+  title?: string
+  /** Explanatory text shown above the widget. */
+  instructions?: string
+  /** Prompt prefilled into the input. */
+  defaultPrompt?: string
+  /** Model id preselected (must match a server model id). */
+  defaultModel?: string
+  /** Whether participants may switch the model (default true). */
+  allowModelChoice?: boolean
+  /** Whether participants may edit parameters like temperature (default true). */
+  allowParamEditing?: boolean
+}
+export type BpmnArtifact = BaseArtifact & {
+  type: 'bpmn'
+  title?: string
+  /** Explanatory text shown above the modeler. */
+  instructions?: string
+  /** Initial BPMN 2.0 XML the learner starts from (a start event if omitted). */
+  starterXml?: string
 }
