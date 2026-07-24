@@ -155,6 +155,16 @@ svg {
   stroke: #22242a !important;
 }
 
+/* Also un-hide the invisible .djs-hit interaction rects — these capture the
+   clicks/drags on individual elements. Without them only empty-canvas panning
+   works (elements become unselectable/unmovable). They stay transparent (we do
+   not restore fill/stroke), just present. Equal specificity to the hide rule,
+   placed after -> wins. */
+.djs-container svg .djs-element rect.djs-hit[width][height] {
+  display: block !important;
+  opacity: 1 !important;
+}
+
 /* Only remove fill from actual icon SVGs - NO !important so ApexCharts can override */
 /* Target only SVGs that are clearly icons, not charts */
 header .icon svg path,
