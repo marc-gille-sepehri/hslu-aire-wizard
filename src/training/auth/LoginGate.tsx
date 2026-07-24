@@ -141,9 +141,11 @@ export default function LoginGate() {
                   inputMode="numeric"
                   autoComplete="one-time-code"
                   autoFocus
-                  maxLength={6}
+                  // No maxLength: the browser would truncate a pasted, space-
+                  // separated code ("1 2 3 4 5 6") to 6 raw chars *before* we
+                  // strip the spaces, leaving only 3 digits. Strip first, then cap.
                   value={code}
-                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   placeholder={t.codePlaceholder}
                   className="w-full rounded-md border border-mist bg-white px-3 py-2.5 text-center text-2xl tracking-[0.5em] font-semibold text-navy outline-none focus:border-navy focus:ring-4 focus:ring-gold/30"
                 />
