@@ -31,6 +31,16 @@ export const labels = {
     backToCatalog: '← Alle Kurse',
   },
 
+  // Learner progress dashboard (top of the catalog)
+  dashboard: {
+    completedCourses: 'Abgeschlossene Kurse',
+    ofCourses: (done: number, total: number) => `${done} von ${total} Kursen`,
+    certificates: 'Zertifikate',
+    inProgressHeading: 'In Bearbeitung',
+    completedTag: 'Abgeschlossen',
+    noStarted: 'Noch keine Kurse begonnen — wähle unten einen Kurs, um zu starten.',
+  },
+
   // Seat / order gate (shown when the first interaction cannot claim a seat)
   seat: {
     title: 'Kein Zugang zu diesem Kurs',
