@@ -40,7 +40,8 @@ export default function Catalog() {
     return () => {
       cancelled = true
     }
-  }, [viewAs?.email])
+    // Reload when leaving edit mode so inline course/module edits show in the view.
+  }, [viewAs?.email, editing])
 
   const hasAnyModule = useMemo(
     () => state.kind === 'ready' && state.summary.catalog.some((c) => c.modules.length > 0),
