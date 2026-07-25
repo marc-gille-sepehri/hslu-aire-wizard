@@ -34,6 +34,7 @@ export type Artifact =
   | LlmPromptArtifact
   | BpmnArtifact
   | McpInspectorArtifact
+  | OntologyArtifact
 
 export type BaseArtifact = {
   id: string
@@ -106,4 +107,10 @@ export type McpInspectorArtifact = BaseArtifact & {
   instructions?: string
   /** MCP server URL prefilled into the input. */
   defaultUrl?: string
+}
+export type OntologyArtifact = BaseArtifact & {
+  type: 'ontology'
+  title?: string
+  /** Explanatory text shown above the explorer. */
+  instructions?: string
 }

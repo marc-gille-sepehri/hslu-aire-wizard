@@ -9,6 +9,7 @@ import type {
   McpInspectorArtifact,
   MCQArtifact,
   MediaArtifact,
+  OntologyArtifact,
   ProseArtifact,
   ReflectArtifact,
 } from '../schema/types'
@@ -224,6 +225,20 @@ function McpInspectorEditor({ draft, set }: { draft: McpInspectorArtifact; set: 
   )
 }
 
+function OntologyEditor({ draft, set }: { draft: OntologyArtifact; set: (d: OntologyArtifact) => void }) {
+  return (
+    <div className="space-y-4">
+      <Field label={t.fTitle}>
+        <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
+      </Field>
+      <Field label={t.fInstructions}>
+        <TextArea value={draft.instructions ?? ''} rows={2} onChange={(v) => set({ ...draft, instructions: v || undefined })} />
+      </Field>
+      <p className="text-xs text-slate-500">{t.ontologyEditorHint}</p>
+    </div>
+  )
+}
+
 function ReflectEditor({ draft, set }: { draft: ReflectArtifact; set: (d: ReflectArtifact) => void }) {
   return (
     <div className="space-y-4">
@@ -381,6 +396,8 @@ export default function BlockEditorDialog({
         return <BpmnEditor draft={draft} set={setDraft} />
       case 'mcp_inspector':
         return <McpInspectorEditor draft={draft} set={setDraft} />
+      case 'ontology':
+        return <OntologyEditor draft={draft} set={setDraft} />
       default:
         return null
     }

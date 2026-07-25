@@ -208,6 +208,21 @@ export const labels = {
     done: 'Abgeschlossen',
   },
 
+  // Ontology explorer block (data-room metamodel)
+  ontologyBlock: {
+    classes: 'Klassen',
+    relationships: 'Beziehungen',
+    node: 'Knoten',
+    edge: 'Kante',
+    erpCore: 'ERP-Kern',
+    extensions: 'Erweiterungen',
+    erpTag: 'ERP',
+    extensionTag: 'geplant',
+    attributes: 'Attribute',
+    relOut: 'Beziehungen (ausgehend)',
+    relIn: 'Beziehungen (eingehend)',
+  },
+
   // Course-material chat assistant
   chat: {
     title: 'Kurs-Assistent',
@@ -358,6 +373,7 @@ export const labels = {
     bpmnEditorHint: 'Das Diagramm zeichnen die Teilnehmenden selbst; es wird in ihrem Fortschritt gespeichert.',
     fMcpDefaultUrl: 'Vorbelegte MCP-URL (optional)',
     mcpEditorHint: 'Teilnehmende geben eine MCP-URL ein und führen ein Tool aus; der Block gilt als erledigt, sobald beides passiert ist.',
+    ontologyEditorHint: 'Das Metamodell kommt live aus dem Datenraum; der Block gilt als erledigt, sobald eine Klasse geöffnet wurde.',
     fCaption: 'Bildunterschrift (optional)',
     noResources: 'Keine Ressourcen in diesem Modul definiert.',
     variantNote: 'Hinweis',

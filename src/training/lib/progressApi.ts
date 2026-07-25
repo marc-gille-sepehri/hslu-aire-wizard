@@ -55,6 +55,7 @@ export type Interaction =
   | { type: 'reflect'; text: string }
   | { type: 'bpmn'; xml: string }
   | { type: 'mcp'; url?: string; toolName?: string; urlEntered: boolean; toolFired: boolean }
+  | { type: 'ontology'; explored: boolean }
 
 export interface ModuleProgressRecord {
   moduleKey: string

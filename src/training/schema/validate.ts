@@ -97,6 +97,12 @@ const mcpInspectorArtifact = baseArtifact.extend({
   defaultUrl: z.string().optional(),
 })
 
+const ontologyArtifact = baseArtifact.extend({
+  type: z.literal('ontology'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+})
+
 const artifact = z.discriminatedUnion('type', [
   proseArtifact,
   bulletsArtifact,
@@ -108,6 +114,7 @@ const artifact = z.discriminatedUnion('type', [
   llmPromptArtifact,
   bpmnArtifact,
   mcpInspectorArtifact,
+  ontologyArtifact,
 ])
 
 const section = z.object({

@@ -24,6 +24,7 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: 'llm_prompt', label: 'LLM-Prompt', icon: '🤖', hint: 'Prompt an ein Sprachmodell senden' },
   { type: 'bpmn', label: 'BPMN-Modell', icon: '🔀', hint: 'Prozess mit dem bpmn.io-Modeler zeichnen' },
   { type: 'mcp_inspector', label: 'MCP-Inspector', icon: '🧰', hint: 'MCP-Toolset verbinden und Tools testen' },
+  { type: 'ontology', label: 'Ontologie', icon: '🕸️', hint: 'Datenraum-Metamodell erkunden' },
 ]
 
 export const BLOCK_TYPE_LABEL: Record<BlockType, string> = BLOCK_TYPES.reduce(
@@ -103,6 +104,13 @@ export function makeNewArtifact(type: BlockType): Artifact {
         type,
         title: 'MCP-Toolset erkunden',
         instructions: 'Verbinde dich mit einem MCP-Server, sieh dir die Tools an und führe eines aus.',
+      }
+    case 'ontology':
+      return {
+        id,
+        type,
+        title: 'Datenraum-Ontologie erkunden',
+        instructions: 'Wähle eine Klasse, um ihre Attribute und Beziehungen zu sehen. Folge den Beziehungen, um das Modell zu erkunden.',
       }
     default: {
       // Exhaustiveness guard — a new schema type must be handled here.

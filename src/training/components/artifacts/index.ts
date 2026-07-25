@@ -10,6 +10,7 @@ import Media from './Media'
 import LlmPrompt from './LlmPrompt'
 import Bpmn from './Bpmn'
 import McpInspector from './McpInspector'
+import Ontology from './Ontology'
 
 type ArtifactComponent<T extends Artifact = Artifact> = ComponentType<{ artifact: T }>
 
@@ -24,4 +25,5 @@ export const artifactComponents: Record<Artifact['type'], ArtifactComponent<any>
   llm_prompt: LlmPrompt,
   bpmn: Bpmn,
   mcp_inspector: McpInspector,
+  ontology: Ontology,
 }
