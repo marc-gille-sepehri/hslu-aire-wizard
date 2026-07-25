@@ -43,8 +43,8 @@ export default function Catalog() {
     // Reload when leaving edit mode so inline course/module edits show in the view.
   }, [viewAs?.email, editing])
 
-  const hasAnyModule = useMemo(
-    () => state.kind === 'ready' && state.summary.catalog.some((c) => c.modules.length > 0),
+  const hasPublished = useMemo(
+    () => state.kind === 'ready' && state.summary.catalog.some((c) => c.published),
     [state],
   )
 
@@ -75,11 +75,11 @@ export default function Catalog() {
         <CatalogEditor />
       ) : (
         <>
-      {!hasAnyModule && <p className="text-slate-500">{labels.catalog.empty}</p>}
+      {!hasPublished && <p className="text-slate-500">{labels.catalog.empty}</p>}
 
       <div className="space-y-8">
         {summary.catalog
-          .filter((c) => c.modules.length > 0)
+          .filter((c) => c.published)
           .map((course) => (
             <section key={course.id}>
               <div className="flex items-center justify-between gap-3">

@@ -8,6 +8,7 @@ export interface CourseWithModules {
   id: string
   title: string
   description?: string
+  published: boolean
   modules: ModuleSummary[]
 }
 
@@ -77,7 +78,7 @@ export async function deleteCourse(id: string): Promise<void> {
 }
 
 /** Rename / re-describe a course. */
-export async function updateCourse(id: string, patch: { title?: string; description?: string }): Promise<CourseWithModules> {
+export async function updateCourse(id: string, patch: { title?: string; description?: string; published?: boolean }): Promise<CourseWithModules> {
   const res = await fetch(`${apiBaseUrl}/admin/courses/${encodeURIComponent(id)}`, {
     method: 'PUT',
     headers: authHeaders(),

@@ -68,6 +68,11 @@ export default function CatalogEditor() {
     updateCourse(id, { title }).catch(fail)
   }
 
+  const togglePublished = (id: string, published: boolean) => {
+    patch(id, (c) => ({ ...c, published }))
+    updateCourse(id, { published }).catch(fail)
+  }
+
   const addModule = async (courseId: string) => {
     try {
       const { id } = await createModule({ title: t.newModuleTitle })
@@ -123,6 +128,7 @@ export default function CatalogEditor() {
           key={course.id}
           course={course}
           onRenameCourse={(title) => renameCourse(course.id, title)}
+          onTogglePublished={(p) => togglePublished(course.id, p)}
           onDeleteCourse={() => removeCourse(course)}
           onAddModule={() => addModule(course.id)}
           onRemoveModule={(mid) => removeModule(course.id, mid)}
@@ -145,6 +151,7 @@ export default function CatalogEditor() {
 function CourseCard({
   course,
   onRenameCourse,
+  onTogglePublished,
   onDeleteCourse,
   onAddModule,
   onRemoveModule,
@@ -153,6 +160,7 @@ function CourseCard({
 }: {
   course: CourseWithModules
   onRenameCourse: (title: string) => void
+  onTogglePublished: (published: boolean) => void
   onDeleteCourse: () => void
   onAddModule: () => void
   onRemoveModule: (moduleId: string) => void
@@ -181,6 +189,18 @@ function CourseCard({
           placeholder={t.courseTitlePlaceholder}
           className="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-2 py-1.5 text-lg font-semibold text-navy outline-none hover:border-mist focus:border-navy focus:bg-white"
         />
+        <label
+          className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-mist px-2 py-1.5 text-xs font-medium text-navy"
+          title={t.publishedHint}
+        >
+          <input
+            type="checkbox"
+            checked={course.published}
+            onChange={(e) => onTogglePublished(e.target.checked)}
+            className="h-4 w-4 accent-navy"
+          />
+          {t.published}
+        </label>
         <button
           type="button"
           onClick={onDeleteCourse}

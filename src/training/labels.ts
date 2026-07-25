@@ -48,6 +48,8 @@ export const labels = {
   // Inline course/module editing in the catalog's Bearbeiten mode
   catalogEdit: {
     addCourse: 'Kurs hinzufügen',
+    published: 'Veröffentlicht',
+    publishedHint: 'Nur veröffentlichte Kurse erscheinen für Teilnehmende.',
     deleteCourse: 'Kurs löschen',
     deleteCourseConfirm: (title: string) => `Kurs „${title}" wirklich löschen?`,
     courseTitlePlaceholder: 'Kurstitel',

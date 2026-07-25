@@ -32,6 +32,7 @@ export interface CatalogCourse {
   id: string
   title: string
   description?: string
+  published: boolean
   modules: ModuleSummary[]
 }
 
