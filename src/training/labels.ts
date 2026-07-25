@@ -235,6 +235,16 @@ export const labels = {
     noRows: 'Keine Zeilen — passe die Bedingungen an.',
   },
 
+  // Document → Markdown converter block
+  docConvert: {
+    drop: 'Datei hierher ziehen oder klicken',
+    formats: 'PDF, PPTX, DOCX, Bilder → Markdown · Excel → Markdown + Serialisierung + Analyse',
+    converting: 'Konvertiere …',
+    raw: 'Rohtext',
+    rendered: 'Gerendert',
+    tab: { markdown: 'Markdown', serialized: 'Serialisiert', analysis: 'Analyse' },
+  },
+
   // Data-room object-graph explorer block
   objectGraph: {
     seed: 'Start:',
@@ -401,6 +411,7 @@ export const labels = {
     dataQueryEditorHint: 'Teilnehmende schreiben eine SELECT-Abfrage gegen den Datenraum; der Block gilt als erledigt, sobald eine Abfrage lief.',
     fStartType: 'Start-Klasse (z. B. Site)',
     objectGraphEditorHint: 'Der Graph kommt live aus dem Datenraum; der Block gilt als erledigt, sobald ein Knoten expandiert wurde.',
+    docConvertEditorHint: 'Teilnehmende laden eine Datei hoch; der Block gilt als erledigt, sobald eine Konvertierung lief. Der Dokumentendienst muss serverseitig konfiguriert sein.',
     fCaption: 'Bildunterschrift (optional)',
     noResources: 'Keine Ressourcen in diesem Modul definiert.',
     variantNote: 'Hinweis',

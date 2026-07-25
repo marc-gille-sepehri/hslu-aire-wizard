@@ -27,6 +27,7 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: 'ontology', label: 'Ontologie', icon: '🕸️', hint: 'Datenraum-Metamodell erkunden' },
   { type: 'data_query', label: 'Datenabfrage', icon: '🗄️', hint: 'SQL gegen den Datenraum ausführen' },
   { type: 'object_graph', label: 'Objekt-Graph', icon: '🕸️', hint: 'Datenraum als Graph erkunden' },
+  { type: 'doc_convert', label: 'Dokument → Markdown', icon: '📄', hint: 'PDF/PPT/Excel nach Markdown konvertieren' },
 ]
 
 export const BLOCK_TYPE_LABEL: Record<BlockType, string> = BLOCK_TYPES.reduce(
@@ -129,6 +130,13 @@ export function makeNewArtifact(type: BlockType): Artifact {
         title: 'Datenraum als Graph',
         instructions: 'Klicke einen Knoten, um seine Nachbarn zu laden, und erkunde so das Beziehungsnetz.',
         startType: 'Site',
+      }
+    case 'doc_convert':
+      return {
+        id,
+        type,
+        title: 'Dokument nach Markdown konvertieren',
+        instructions: 'Lade ein Dokument (PDF, PPTX, DOCX, Bild) oder eine Excel-Datei hoch und sieh dir die Umwandlung an.',
       }
     default: {
       // Exhaustiveness guard — a new schema type must be handled here.

@@ -13,6 +13,7 @@ import McpInspector from './McpInspector'
 import Ontology from './Ontology'
 import DataQuery from './DataQuery'
 import ObjectGraph from './ObjectGraph'
+import DocConvert from './DocConvert'
 
 type ArtifactComponent<T extends Artifact = Artifact> = ComponentType<{ artifact: T }>
 
@@ -30,4 +31,5 @@ export const artifactComponents: Record<Artifact['type'], ArtifactComponent<any>
   ontology: Ontology,
   data_query: DataQuery,
   object_graph: ObjectGraph,
+  doc_convert: DocConvert,
 }

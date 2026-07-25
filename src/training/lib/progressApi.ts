@@ -58,6 +58,7 @@ export type Interaction =
   | { type: 'ontology'; explored: boolean }
   | { type: 'dataquery'; ran: boolean }
   | { type: 'graphview'; expanded: boolean }
+  | { type: 'docconvert'; converted: boolean }
 
 export interface ModuleProgressRecord {
   moduleKey: string

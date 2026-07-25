@@ -7,6 +7,7 @@ import type {
   LabSelectArtifact,
   LlmPromptArtifact,
   DataQueryArtifact,
+  DocConvertArtifact,
   McpInspectorArtifact,
   MCQArtifact,
   MediaArtifact,
@@ -275,6 +276,20 @@ function ObjectGraphEditor({ draft, set }: { draft: ObjectGraphArtifact; set: (d
   )
 }
 
+function DocConvertEditor({ draft, set }: { draft: DocConvertArtifact; set: (d: DocConvertArtifact) => void }) {
+  return (
+    <div className="space-y-4">
+      <Field label={t.fTitle}>
+        <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
+      </Field>
+      <Field label={t.fInstructions}>
+        <TextArea value={draft.instructions ?? ''} rows={2} onChange={(v) => set({ ...draft, instructions: v || undefined })} />
+      </Field>
+      <p className="text-xs text-slate-500">{t.docConvertEditorHint}</p>
+    </div>
+  )
+}
+
 function ReflectEditor({ draft, set }: { draft: ReflectArtifact; set: (d: ReflectArtifact) => void }) {
   return (
     <div className="space-y-4">
@@ -438,6 +453,8 @@ export default function BlockEditorDialog({
         return <DataQueryEditor draft={draft} set={setDraft} />
       case 'object_graph':
         return <ObjectGraphEditor draft={draft} set={setDraft} />
+      case 'doc_convert':
+        return <DocConvertEditor draft={draft} set={setDraft} />
       default:
         return null
     }

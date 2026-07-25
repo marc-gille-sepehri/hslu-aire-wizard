@@ -37,6 +37,7 @@ export type Artifact =
   | OntologyArtifact
   | DataQueryArtifact
   | ObjectGraphArtifact
+  | DocConvertArtifact
 
 export type BaseArtifact = {
   id: string
@@ -131,4 +132,10 @@ export type ObjectGraphArtifact = BaseArtifact & {
   instructions?: string
   /** Ontology class to seed the graph with (default Site). */
   startType?: string
+}
+export type DocConvertArtifact = BaseArtifact & {
+  type: 'doc_convert'
+  title?: string
+  /** Explanatory text shown above the converter. */
+  instructions?: string
 }

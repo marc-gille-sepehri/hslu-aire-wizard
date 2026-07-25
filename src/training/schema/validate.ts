@@ -117,6 +117,12 @@ const objectGraphArtifact = baseArtifact.extend({
   startType: z.string().optional(),
 })
 
+const docConvertArtifact = baseArtifact.extend({
+  type: z.literal('doc_convert'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+})
+
 const artifact = z.discriminatedUnion('type', [
   proseArtifact,
   bulletsArtifact,
@@ -131,6 +137,7 @@ const artifact = z.discriminatedUnion('type', [
   ontologyArtifact,
   dataQueryArtifact,
   objectGraphArtifact,
+  docConvertArtifact,
 ])
 
 const section = z.object({
