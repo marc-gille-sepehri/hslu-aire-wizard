@@ -12,6 +12,7 @@ import { ProgressProvider } from './state/ProgressContext'
 import { useAuth } from './auth/AuthContext'
 import LoginGate from './auth/LoginGate'
 import { EditModeProvider, useEditMode } from './editor/EditModeContext'
+import { ViewAsProvider, useViewAs } from './state/ViewAsContext'
 import { fetchModule, type ModuleMeta } from './lib/moduleApi'
 import ChatWidget from './chat/ChatWidget'
 
@@ -51,11 +52,36 @@ function TrainingGate() {
   }
 
   return (
-    <>
+    <ViewAsProvider>
       <TrainingHeader />
+      <ViewAsBanner />
       <TrainingContent />
       <ChatWidget />
-    </>
+    </ViewAsProvider>
+  )
+}
+
+/** Sticky notice while an admin views another learner's progress (read-only). */
+function ViewAsBanner() {
+  const { viewAs, setViewAs } = useViewAs()
+  if (!viewAs) return null
+  return (
+    <div className="training-root font-sans">
+      <div className="border-b border-gold-dark/40 bg-gold/90">
+        <div className="max-w-prose mx-auto flex items-center justify-between gap-3 px-4 py-2 text-sm text-navy">
+          <span className="min-w-0 truncate font-semibold">
+            👁 {labels.viewAs.banner(viewAs.label)} · <span className="font-normal">{labels.viewAs.readOnly}</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setViewAs(null)}
+            className="shrink-0 rounded-md border border-navy/40 px-3 py-1 text-xs font-semibold text-navy transition-colors hover:bg-navy hover:text-white"
+          >
+            {labels.viewAs.exit}
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
 

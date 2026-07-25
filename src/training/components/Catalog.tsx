@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { loadCourseProgress, type ProgressSummary } from '../lib/courseProgress'
 import { useEditMode } from '../editor/EditModeContext'
+import { useViewAs } from '../state/ViewAsContext'
 import ProgressDashboard from './ProgressDashboard'
+import ParticipantsDialog from './ParticipantsDialog'
 import { labels } from '../labels'
 
 type State =
@@ -17,15 +19,18 @@ type State =
  * (view mode only). Modules the user already has progress on are marked.
  */
 export default function Catalog() {
-  const { editing } = useEditMode()
+  const { editing, isAdmin } = useEditMode()
+  const { viewAs } = useViewAs()
   const [state, setState] = useState<State>({ kind: 'loading' })
+  const [participantsFor, setParticipantsFor] = useState<{ id: string; title: string } | null>(null)
 
   useEffect(() => {
     let cancelled = false
     setState({ kind: 'loading' })
     ;(async () => {
       try {
-        const summary = await loadCourseProgress()
+        // In Teilnehmeransicht the dashboard reflects the selected learner.
+        const summary = await loadCourseProgress(viewAs?.email)
         if (!cancelled) setState({ kind: 'ready', summary })
       } catch (e) {
         if (!cancelled) setState({ kind: 'error', message: (e as Error).message || labels.catalog.loadError })
@@ -34,7 +39,7 @@ export default function Catalog() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [viewAs?.email])
 
   const hasAnyModule = useMemo(
     () => state.kind === 'ready' && state.summary.catalog.some((c) => c.modules.length > 0),
@@ -70,7 +75,23 @@ export default function Catalog() {
           .filter((c) => c.modules.length > 0)
           .map((course) => (
             <section key={course.id}>
-              <h2 className="text-lg font-semibold text-slate-800">{course.title}</h2>
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-slate-800">{course.title}</h2>
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => setParticipantsFor({ id: course.id, title: course.title })}
+                    aria-label={labels.viewAs.open}
+                    title={labels.viewAs.open}
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-300 text-slate-500 transition-colors hover:border-navy hover:text-navy"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-3-3.87M9 21v-2a4 4 0 0 1 3-3.87M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
+                      <path d="M17 11a3 3 0 1 0 0-6" />
+                    </svg>
+                  </button>
+                )}
+              </div>
               {course.description && <p className="text-sm text-slate-500 mt-0.5">{course.description}</p>}
               <ul className="mt-3 space-y-2 list-none">
                 {course.modules.map((m) => (
@@ -96,6 +117,14 @@ export default function Catalog() {
             </section>
           ))}
       </div>
+
+      {participantsFor && (
+        <ParticipantsDialog
+          courseId={participantsFor.id}
+          courseTitle={participantsFor.title}
+          onClose={() => setParticipantsFor(null)}
+        />
+      )}
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { fetchUserProgress, recordInteraction, SeatError, type Interaction } from '../lib/progressApi'
+import { useViewAs } from './ViewAsContext'
 
 interface ProgressContextValue {
   courseId: string
@@ -33,21 +34,24 @@ export function ProgressProvider({
   moduleId: string
   children: ReactNode
 }) {
+  const { viewAs } = useViewAs()
+  const viewAsEmail = viewAs?.email ?? null
   const [seatError, setSeatError] = useState<SeatError | null>(null)
   const [saved, setSaved] = useState<Record<string, unknown>>({})
   const [savedLoaded, setSavedLoaded] = useState(false)
 
-  // Load this user's saved interactions for the module so blocks can restore
-  // their input (e.g. a BPMN block re-hydrates its diagram from ModuleProgress).
+  // Load the (viewed) learner's saved interactions for the module so blocks can
+  // restore their input. In Teilnehmeransicht this loads the selected student's
+  // work (server-restoring blocks like BPMN / MCP reflect it read-only).
   useEffect(() => {
     let cancelled = false
     setSaved({})
     setSavedLoaded(false)
-    fetchUserProgress()
+    fetchUserProgress(viewAsEmail ?? undefined)
       .then((records) => {
         if (cancelled) return
-        const rec = records.find((r) => r.moduleId === moduleId)
-        setSaved(rec?.interactions ?? {})
+        const rec = records.find((r) => r.courseId === courseId)
+        setSaved(rec?.modules?.[moduleId]?.interactions ?? {})
       })
       .catch(() => {
         // Best-effort: on failure blocks just start from their defaults.
@@ -58,10 +62,12 @@ export function ProgressProvider({
     return () => {
       cancelled = true
     }
-  }, [moduleId])
+  }, [moduleId, courseId, viewAsEmail])
 
   const record = useCallback(
     (artifactId: string, interaction: Interaction) => {
+      // Teilnehmeransicht is read-only: never record as the viewed learner.
+      if (viewAsEmail) return
       void recordInteraction({ courseId, moduleId, artifactId, interaction }).catch((e) => {
         if (e instanceof SeatError) {
           setSeatError(e)
@@ -71,7 +77,7 @@ export function ProgressProvider({
         }
       })
     },
-    [courseId, moduleId],
+    [courseId, moduleId, viewAsEmail],
   )
 
   const value = useMemo<ProgressContextValue>(

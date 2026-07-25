@@ -31,6 +31,20 @@ export const labels = {
     backToCatalog: '← Alle Kurse',
   },
 
+  // Teilnehmeransicht (admin views a learner's progress/work)
+  viewAs: {
+    open: 'Teilnehmeransicht',
+    title: 'Teilnehmeransicht',
+    subtitle: 'Fortschritt einer teilnehmenden Person ansehen.',
+    ownView: 'Meine Ansicht',
+    noParticipants: 'Noch keine Teilnehmenden mit Fortschritt in diesem Kurs.',
+    banner: (name: string) => `Teilnehmeransicht: ${name}`,
+    readOnly: 'schreibgeschützt',
+    exit: 'Zurück zu meiner Ansicht',
+    loadError: 'Teilnehmende konnten nicht geladen werden.',
+    close: 'Schliessen',
+  },
+
   // Learner progress dashboard (top of the catalog)
   dashboard: {
     completedCourses: 'Abgeschlossene Kurse',

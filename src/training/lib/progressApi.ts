@@ -52,21 +52,42 @@ export type Interaction =
   | { type: 'bpmn'; xml: string }
   | { type: 'mcp'; url?: string; toolName?: string; urlEntered: boolean; toolFired: boolean }
 
-export interface UserProgress {
-  moduleId: string
-  courseId: string
+export interface ModuleProgressRecord {
   moduleKey: string
   version: number
   interactions: Record<string, unknown>
+}
+/** One learner's progress in one course: module version _id → its progress. */
+export interface CourseProgressRecord {
+  courseId: string
   updatedAt: string
+  modules: Record<string, ModuleProgressRecord>
 }
 
-/** The current user's progress records (to mark in-progress modules). */
-export async function fetchUserProgress(): Promise<UserProgress[]> {
-  const res = await fetch(`${apiBaseUrl}/training/progress`, { headers: authHeaders() })
+/**
+ * A learner's course-progress records. Administrators may pass `asEmail` to read
+ * another learner's progress (Teilnehmeransicht; global for now).
+ */
+export async function fetchUserProgress(asEmail?: string): Promise<CourseProgressRecord[]> {
+  const q = asEmail ? `?asEmail=${encodeURIComponent(asEmail)}` : ''
+  const res = await fetch(`${apiBaseUrl}/training/progress${q}`, { headers: authHeaders() })
   if (!res.ok) throw new Error(await errorMessage(res))
   const body = await res.json()
-  return body.progress as UserProgress[]
+  return body.progress as CourseProgressRecord[]
+}
+
+export interface CourseParticipant {
+  email: string
+  firstName?: string
+  lastName?: string
+}
+
+/** Learners enrolled in a course (admin only) — for the Teilnehmeransicht picker. */
+export async function fetchCourseParticipants(courseId: string): Promise<CourseParticipant[]> {
+  const res = await fetch(`${apiBaseUrl}/admin/courses/${courseId}/participants`, { headers: authHeaders() })
+  if (!res.ok) throw new Error(await errorMessage(res))
+  const body = await res.json()
+  return body.participants as CourseParticipant[]
 }
 
 /** A 409 from the seat gate — no order or no free seats for the course. */

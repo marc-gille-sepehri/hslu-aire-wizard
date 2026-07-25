@@ -61,15 +61,29 @@ function moduleTracked(mod: ModuleLike | null, interactions: Record<string, unkn
   return { total, done }
 }
 
-/** Load the catalog + the user's progress and compute per-course completion. */
-export async function loadCourseProgress(): Promise<ProgressSummary> {
+/**
+ * Load the catalog + a learner's course progress and compute per-course
+ * completion. Pass `asEmail` (admin only) to compute for another learner
+ * (Teilnehmeransicht).
+ */
+export async function loadCourseProgress(asEmail?: string): Promise<ProgressSummary> {
   const [courses, progress] = await Promise.all([
     fetchCatalog(),
-    fetchUserProgress().catch(() => []),
+    fetchUserProgress(asEmail).catch(() => []),
   ])
 
   const offered = courses.filter((c) => c.modules.length > 0)
-  const progByModule = new Map(progress.map((p) => [p.moduleId, p]))
+  // Flatten the nested course→module progress into a moduleId→interactions map.
+  const interactionsByModule = new Map<string, Record<string, unknown>>()
+  const startedModuleIds = new Set<string>()
+  const startedCourseIds = new Set<string>()
+  for (const rec of progress) {
+    startedCourseIds.add(rec.courseId)
+    for (const [mid, m] of Object.entries(rec.modules ?? {})) {
+      interactionsByModule.set(mid, m.interactions ?? {})
+      startedModuleIds.add(mid)
+    }
+  }
 
   // Fetch each distinct module's content once (needed to count tracked blocks).
   const moduleIds = [...new Set(offered.flatMap((c) => c.modules.map((m) => m.id)))]
@@ -86,7 +100,7 @@ export async function loadCourseProgress(): Promise<ProgressSummary> {
     let total = 0
     let done = 0
     for (const m of c.modules) {
-      const interactions = (progByModule.get(m.id)?.interactions as Record<string, unknown>) ?? {}
+      const interactions = interactionsByModule.get(m.id) ?? {}
       const s = moduleTracked(contentById.get(m.id) ?? null, interactions)
       total += s.total
       done += s.done
@@ -99,7 +113,7 @@ export async function loadCourseProgress(): Promise<ProgressSummary> {
       totalTracked: total,
       completedTracked: done,
       pct,
-      started: c.modules.some((m) => progByModule.has(m.id)),
+      started: startedCourseIds.has(c.id),
       completed: total > 0 && done >= total,
     }
   })
@@ -111,7 +125,7 @@ export async function loadCourseProgress(): Promise<ProgressSummary> {
     completedCount,
     certificates: completedCount,
     startedCourses: cps.filter((c) => c.started),
-    startedModuleIds: new Set(progress.map((p) => p.moduleId)),
+    startedModuleIds,
     catalog: courses,
   }
 }
