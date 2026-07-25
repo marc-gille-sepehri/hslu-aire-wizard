@@ -240,6 +240,10 @@ export const labels = {
     seed: 'Start:',
     hint: 'Klicke einen Knoten, um Nachbarn zu laden',
     nodeCount: (n: number) => `${n} Knoten`,
+    cypherRun: 'Abfragen',
+    cypherClear: 'Zurücksetzen',
+    cypherPlaceholder: "MATCH (a:Liegenschaft)<-[:liegt_in]-(u:Einheit) RETURN a, u",
+    matchCount: (n: number) => `${n} Treffer hervorgehoben`,
   },
 
   // Course-material chat assistant

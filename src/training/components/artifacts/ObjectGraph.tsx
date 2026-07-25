@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import cytoscape from 'cytoscape'
 import type { ObjectGraphArtifact } from '../../schema/types'
-import { fetchGraphStart, fetchGraphNeighbors, fetchGraphTypes, fetchOntology, type GraphData } from '../../lib/dataroomApi'
+import { fetchGraphStart, fetchGraphNeighbors, fetchGraphTypes, fetchOntology, runCypher, type GraphData } from '../../lib/dataroomApi'
 import { useRecordInteraction } from '../../state/ProgressContext'
 import { useLearner } from '../../state/LearnerStateContext'
 import { labels } from '../../labels'
@@ -10,6 +10,13 @@ import { Markdown } from '../../lib/markdown'
 const t = labels.objectGraph
 
 const PALETTE = ['#0f2540', '#e0a63c', '#2a7d6f', '#b5533b', '#5b6bbf', '#7a8a3c', '#a7568f', '#3f8fb0', '#8a6d3b', '#556070']
+
+const CYPHER_EXAMPLES = [
+  "MATCH (u:Einheit)-[:liegt_in]->(s:Liegenschaft) WHERE s.city = 'Luzern' RETURN u, s",
+  "MATCH (t:Mieter)-[:Mietverhältnis]->(u:Einheit) RETURN t, u",
+  "MATCH (c:Schadensfall)-[:an]->(s:Liegenschaft) WHERE c.status = 'open' RETURN c, s",
+  "MATCH (t:Mieter)-[:Mietverhältnis]->(u:Einheit)-[:liegt_in]->(s:Liegenschaft) RETURN t, u, s",
+]
 const colorFor = (type: string): string =>
   PALETTE[[...type].reduce((a, c) => a + c.charCodeAt(0), 0) % PALETTE.length]
 
@@ -35,6 +42,10 @@ export default function ObjectGraph({ artifact }: { artifact: ObjectGraphArtifac
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [nodeCount, setNodeCount] = useState(0)
+  const [cypher, setCypher] = useState('')
+  const [cyResult, setCyResult] = useState<{ rows: Record<string, unknown>[]; columns: string[]; matchCount: number } | null>(null)
+  const [cyError, setCyError] = useState<string | null>(null)
+  const [cyRunning, setCyRunning] = useState(false)
 
   const runLayout = () => cyRef.current?.layout({ name: 'cose', animate: false, fit: true, padding: 24 }).run()
 
@@ -59,21 +70,58 @@ export default function ObjectGraph({ artifact }: { artifact: ObjectGraphArtifac
     runLayout()
   }
 
+  const markDone = () => {
+    if (!expandedOnce.current) {
+      expandedOnce.current = true
+      record(artifact.id, { type: 'graphview', expanded: true })
+      if (artifact.tracked !== false) markComplete(artifact.id)
+    }
+  }
+
+  const clearHighlight = () => {
+    cyRef.current?.elements().removeClass('dim match')
+    setCyResult(null)
+    setCyError(null)
+  }
+
   const expand = async (id: string) => {
+    clearHighlight()
     try {
       const data = await fetchGraphNeighbors(id)
       addElements(data)
       cyRef.current?.$id(id).addClass('expanded')
-      if (!expandedOnce.current) {
-        expandedOnce.current = true
-        record(artifact.id, { type: 'graphview', expanded: true })
-        if (artifact.tracked !== false) markComplete(artifact.id)
-      }
+      markDone()
     } catch (e) {
       setError((e as Error).message)
     }
   }
   expandRef.current = expand
+
+  const runQuery = async () => {
+    if (!cypher.trim() || cyRunning) return
+    setCyRunning(true)
+    setCyError(null)
+    try {
+      const res = await runCypher(cypher)
+      addElements(res)
+      const cy = cyRef.current
+      if (cy) {
+        cy.elements().addClass('dim')
+        let matched = cy.collection()
+        for (const n of res.nodes) matched = matched.union(cy.$id(n.id))
+        for (const e of res.edges) matched = matched.union(cy.$id(e.id))
+        matched.removeClass('dim').addClass('match')
+        if (matched.length) cy.animate({ fit: { eles: matched, padding: 40 }, duration: 300 })
+      }
+      setCyResult({ rows: res.rows, columns: res.columns, matchCount: res.matchCount })
+      markDone()
+    } catch (e) {
+      setCyError((e as Error).message)
+      setCyResult(null)
+    } finally {
+      setCyRunning(false)
+    }
+  }
 
   // Init cytoscape once.
   useEffect(() => {
@@ -98,6 +146,9 @@ export default function ObjectGraph({ artifact }: { artifact: ObjectGraphArtifac
           },
         },
         { selector: 'node.expanded', style: { 'border-width': 3, 'border-color': '#e0a63c' } },
+        { selector: '.dim', style: { opacity: 0.12 } },
+        { selector: 'node.match', style: { 'border-width': 3, 'border-color': '#e0a63c', opacity: 1 } },
+        { selector: 'edge.match', style: { 'line-color': '#e0a63c', 'target-arrow-color': '#e0a63c', width: 2.5, color: '#0f2540', opacity: 1 } },
         {
           selector: 'edge',
           style: {
@@ -177,6 +228,57 @@ export default function ObjectGraph({ artifact }: { artifact: ObjectGraphArtifac
         </label>
         <span className="text-xs text-slate-400">{loading ? labels.loading : t.hint}</span>
         <span className="ml-auto text-xs text-slate-500">{t.nodeCount(nodeCount)}</span>
+      </div>
+
+      {/* Cypher query panel */}
+      <div className="space-y-2 border-b border-mist px-4 py-2">
+        <div className="flex flex-wrap gap-1.5">
+          {CYPHER_EXAMPLES.map((ex, i) => (
+            <button key={i} type="button" onClick={() => setCypher(ex)}
+              className="max-w-full truncate rounded-full border border-mist bg-cream px-2.5 py-1 font-mono text-[11px] text-slate-600 transition-colors hover:border-navy hover:text-navy">
+              {ex}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-start gap-2">
+          <textarea
+            value={cypher}
+            onChange={(e) => setCypher(e.target.value)}
+            onKeyDown={(e) => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); runQuery() } }}
+            rows={2}
+            spellCheck={false}
+            placeholder={t.cypherPlaceholder}
+            className="min-w-0 flex-1 resize-y rounded-md border border-mist bg-navy/95 px-3 py-2 font-mono text-xs text-cream outline-none focus:border-gold"
+          />
+          <div className="flex shrink-0 flex-col gap-1">
+            <button type="button" onClick={runQuery} disabled={cyRunning}
+              className="rounded-md bg-gold px-3 py-1.5 text-xs font-semibold text-navy transition-colors hover:bg-gold-dark disabled:opacity-60">
+              {cyRunning ? labels.loading : t.cypherRun}
+            </button>
+            <button type="button" onClick={clearHighlight}
+              className="rounded-md border border-mist px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:border-navy hover:text-navy">
+              {t.cypherClear}
+            </button>
+          </div>
+        </div>
+        {cyError && <p className="text-xs text-red-700">{cyError}</p>}
+        {cyResult && (
+          <div className="text-xs text-slate-600">
+            <span className="font-semibold text-navy">{t.matchCount(cyResult.matchCount)}</span>
+            {cyResult.columns.length > 0 && cyResult.rows.length > 0 && (
+              <div className="mt-1 max-h-40 overflow-auto rounded-md border border-mist">
+                <table className="w-full text-left">
+                  <thead className="bg-cream"><tr>{cyResult.columns.map((c) => <th key={c} className="px-2 py-1 font-semibold">{c}</th>)}</tr></thead>
+                  <tbody>
+                    {cyResult.rows.map((r, i) => (
+                      <tr key={i} className="border-t border-mist">{cyResult.columns.map((c) => <td key={c} className="px-2 py-1">{String(r[c] ?? '—')}</td>)}</tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {error && <div className="mx-4 mt-3 rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800">{error}</div>}

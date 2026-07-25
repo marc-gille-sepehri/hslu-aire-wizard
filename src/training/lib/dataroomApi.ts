@@ -93,3 +93,21 @@ export async function fetchGraphNeighbors(id: string, limit = 40): Promise<Graph
   if (!res.ok) throw new Error(`Nachbarn konnten nicht geladen werden (${res.status})`)
   return await res.json()
 }
+
+export interface CypherResult extends GraphData {
+  rows: Record<string, unknown>[]
+  columns: string[]
+  matchCount: number
+}
+
+/** Run a bounded Cypher query over the in-memory graph; returns the matched subgraph. */
+export async function runCypher(cypher: string): Promise<CypherResult> {
+  const res = await fetch(`${apiBaseUrl}/dataroom/graph/query`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ cypher }),
+  })
+  const body = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(body.error || `Abfrage fehlgeschlagen (${res.status})`)
+  return body as CypherResult
+}
