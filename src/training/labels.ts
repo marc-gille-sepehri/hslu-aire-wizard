@@ -254,10 +254,10 @@ export const labels = {
     cancel: 'Abbrechen',
   },
 
-  // Admin: Kurs Durchführung tab
+  // Admin: Kursdurchführung tab
   adminInstances: {
-    tab: 'Kurs Durchführung',
-    heading: 'Kurs Durchführungen',
+    tab: 'Kursdurchführung',
+    heading: 'Kursdurchführungen',
     colCourse: 'Kurs',
     colTrainers: 'Trainer',
     colParticipants: 'Teilnehmer',
