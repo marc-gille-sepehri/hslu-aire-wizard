@@ -282,6 +282,14 @@ export const labels = {
     cancel: 'Abbrechen',
   },
 
+  // Admin: Claude Skill tab
+  adminSkill: {
+    tab: 'Claude Skill',
+    download: 'Skill herunterladen (.zip)',
+    copied: 'Kopiert',
+    copy: 'Kopieren',
+  },
+
   // Admin: Kunden tab
   adminCustomers: {
     tab: 'Kunden',
