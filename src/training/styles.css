@@ -95,6 +95,14 @@
   border-top: 1px solid var(--aire-mist, #e4e9f2);
   margin: 1.5rem 0;
 }
+/* Uploaded / embedded images never exceed the reading column. */
+.md-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+}
 
 /* Compact markdown for chat answers (bullets, bold, links). Preflight is off,
    so element styles are declared explicitly here. */
