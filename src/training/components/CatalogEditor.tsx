@@ -6,7 +6,7 @@ import {
   updateCourse,
   setCourseModules,
   createModule,
-  renameModule,
+  updateModule,
   cloneCourse,
   setActiveCourseVersion,
   type CourseWithModules,
@@ -89,6 +89,11 @@ export default function CatalogEditor() {
     updateCourse(id, { title }).catch(fail)
   }
 
+  const describeCourse = (id: string, description: string) => {
+    patch(id, (c) => ({ ...c, description }))
+    updateCourse(id, { description }).catch(fail)
+  }
+
   const togglePublished = (id: string, published: boolean) => {
     patch(id, (c) => ({ ...c, published }))
     updateCourse(id, { published }).catch(fail)
@@ -141,13 +146,21 @@ export default function CatalogEditor() {
     setCourseModules(courseId, orderedIds).catch(fail)
   }
 
-  const renameMod = (moduleId: string, title: string) => {
+  // module ids are unique per course version (clones deep-copy), so only one course holds it.
+  const patchModule = (moduleId: string, up: (m: ModuleSummary) => ModuleSummary) =>
     patch(
-      // module ids are unique per course version (clones deep-copy), so only one course holds it.
       courses?.find((c) => c.modules.some((m) => m.id === moduleId))?.id ?? '',
-      (c) => ({ ...c, modules: c.modules.map((m) => (m.id === moduleId ? { ...m, title } : m)) }),
+      (c) => ({ ...c, modules: c.modules.map((m) => (m.id === moduleId ? up(m) : m)) }),
     )
-    renameModule(moduleId, title).catch(fail)
+
+  const renameMod = (moduleId: string, title: string) => {
+    patchModule(moduleId, (m) => ({ ...m, title }))
+    updateModule(moduleId, { title }).catch(fail)
+  }
+
+  const describeMod = (moduleId: string, description: string) => {
+    patchModule(moduleId, (m) => ({ ...m, description }))
+    updateModule(moduleId, { description }).catch(fail)
   }
 
   if (error && !courses) {
@@ -173,12 +186,14 @@ export default function CatalogEditor() {
             onClone={() => clone(course.id)}
             onActivate={() => activate(course.id, course.familyId)}
             onRenameCourse={(title) => renameCourse(course.id, title)}
+            onDescribeCourse={(desc) => describeCourse(course.id, desc)}
             onTogglePublished={(p) => togglePublished(course.id, p)}
             onDeleteCourse={() => removeCourse(course)}
             onAddModule={() => addModule(course.id)}
             onRemoveModule={(mid) => removeModule(course.id, mid)}
             onReorder={(ids) => reorderModules(course.id, ids)}
             onRenameModule={renameMod}
+            onDescribeModule={describeMod}
           />
         )
       })}
@@ -201,12 +216,14 @@ function FamilyCard({
   onClone,
   onActivate,
   onRenameCourse,
+  onDescribeCourse,
   onTogglePublished,
   onDeleteCourse,
   onAddModule,
   onRemoveModule,
   onReorder,
   onRenameModule,
+  onDescribeModule,
 }: {
   family: CourseWithModules[]
   course: CourseWithModules
@@ -214,12 +231,14 @@ function FamilyCard({
   onClone: () => void
   onActivate: () => void
   onRenameCourse: (title: string) => void
+  onDescribeCourse: (description: string) => void
   onTogglePublished: (published: boolean) => void
   onDeleteCourse: () => void
   onAddModule: () => void
   onRemoveModule: (moduleId: string) => void
   onReorder: (orderedIds: string[]) => void
   onRenameModule: (moduleId: string, title: string) => void
+  onDescribeModule: (moduleId: string, description: string) => void
 }) {
   const [dragId, setDragId] = useState<string | null>(null)
 
@@ -299,6 +318,14 @@ function FamilyCard({
         placeholder={t.courseTitlePlaceholder}
         className="w-full rounded-md border border-transparent bg-transparent px-2 py-1.5 text-lg font-semibold text-navy outline-none hover:border-mist focus:border-navy focus:bg-white"
       />
+      <DebouncedInput
+        multiline
+        allowEmpty
+        value={course.description ?? ''}
+        onCommit={onDescribeCourse}
+        placeholder={t.courseDescPlaceholder}
+        className="mt-1 w-full resize-y rounded-md border border-transparent bg-transparent px-2 py-1.5 text-sm text-slate-600 outline-none hover:border-mist focus:border-navy focus:bg-white"
+      />
 
       <ul className="mt-3 space-y-2 list-none">
         {course.modules.length === 0 && <li className="px-2 text-sm text-slate-400">{t.noModules}</li>}
@@ -307,7 +334,7 @@ function FamilyCard({
             key={m.id}
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => onDrop(m.id)}
-            className={`flex items-center gap-2 rounded-md border border-mist bg-cream/40 px-2 py-1.5 ${dragId === m.id ? 'opacity-50' : ''}`}
+            className={`flex items-start gap-2 rounded-md border border-mist bg-cream/40 px-2 py-1.5 ${dragId === m.id ? 'opacity-50' : ''}`}
           >
             <span
               draggable
@@ -319,22 +346,32 @@ function FamilyCard({
               onDragEnd={() => setDragId(null)}
               title={t.dragToReorder}
               aria-label={t.dragToReorder}
-              className="shrink-0 cursor-grab px-1 text-slate-400 active:cursor-grabbing"
+              className="mt-1.5 shrink-0 cursor-grab px-1 text-slate-400 active:cursor-grabbing"
             >
               <GripIcon />
             </span>
-            <DebouncedInput
-              value={m.title}
-              onCommit={(title) => onRenameModule(m.id, title)}
-              placeholder={t.moduleTitlePlaceholder}
-              className="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-2 py-1 text-sm font-medium text-navy outline-none hover:border-mist focus:border-navy focus:bg-white"
-            />
+            <div className="min-w-0 flex-1">
+              <DebouncedInput
+                value={m.title}
+                onCommit={(title) => onRenameModule(m.id, title)}
+                placeholder={t.moduleTitlePlaceholder}
+                className="w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-sm font-medium text-navy outline-none hover:border-mist focus:border-navy focus:bg-white"
+              />
+              <DebouncedInput
+                multiline
+                allowEmpty
+                value={m.description ?? ''}
+                onCommit={(desc) => onDescribeModule(m.id, desc)}
+                placeholder={t.moduleDescPlaceholder}
+                className="w-full resize-y rounded-md border border-transparent bg-transparent px-2 py-1 text-xs text-slate-500 outline-none hover:border-mist focus:border-navy focus:bg-white"
+              />
+            </div>
             <button
               type="button"
               onClick={() => onRemoveModule(m.id)}
               title={t.removeModule}
               aria-label={t.removeModule}
-              className="shrink-0 rounded p-1 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-700"
+              className="mt-1 shrink-0 rounded p-1 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-700"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M18 6 6 18M6 6l12 12" />
@@ -355,17 +392,25 @@ function FamilyCard({
   )
 }
 
-/** Text input that commits (debounced) on change and immediately on blur. */
+/**
+ * Text input/textarea that commits (debounced) on change and immediately on blur.
+ * `allowEmpty` lets a value be cleared (for optional fields like descriptions);
+ * otherwise an empty value is ignored (titles must stay non-empty).
+ */
 function DebouncedInput({
   value,
   onCommit,
   placeholder,
   className,
+  multiline = false,
+  allowEmpty = false,
 }: {
   value: string
   onCommit: (v: string) => void
   placeholder?: string
   className?: string
+  multiline?: boolean
+  allowEmpty?: boolean
 }) {
   const [text, setText] = useState(value)
   const timer = useRef<number | null>(null)
@@ -376,24 +421,40 @@ function DebouncedInput({
 
   const commit = (v: string) => {
     const trimmed = v.trim()
-    if (trimmed && trimmed !== value.trim()) onCommit(trimmed)
+    if (trimmed === value.trim()) return
+    if (!trimmed && !allowEmpty) return
+    onCommit(trimmed)
   }
 
+  const onChange = (v: string) => {
+    setText(v)
+    if (timer.current) window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(() => commit(v), 700)
+  }
+  const onBlur = () => {
+    if (timer.current) window.clearTimeout(timer.current)
+    commit(text)
+  }
+
+  if (multiline) {
+    return (
+      <textarea
+        value={text}
+        placeholder={placeholder}
+        className={className}
+        rows={2}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+      />
+    )
+  }
   return (
     <input
       value={text}
       placeholder={placeholder}
       className={className}
-      onChange={(e) => {
-        const v = e.target.value
-        setText(v)
-        if (timer.current) window.clearTimeout(timer.current)
-        timer.current = window.setTimeout(() => commit(v), 700)
-      }}
-      onBlur={() => {
-        if (timer.current) window.clearTimeout(timer.current)
-        commit(text)
-      }}
+      onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur}
     />
   )
 }

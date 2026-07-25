@@ -143,9 +143,12 @@ export default function Catalog() {
                       className="flex items-center justify-between gap-3 rounded-md border border-slate-200 px-4 py-3 text-slate-800 transition-colors hover:border-slate-400"
                     >
                       <span>
-                        <span className="text-slate-500">{course.title}</span>
-                        <span className="mx-2 text-slate-300">—</span>
-                        <span className="font-medium">{m.title}</span>
+                        <span className="block">
+                          <span className="text-slate-500">{course.title}</span>
+                          <span className="mx-2 text-slate-300">—</span>
+                          <span className="font-medium">{m.title}</span>
+                        </span>
+                        {m.description && <span className="mt-0.5 block text-sm text-slate-500">{m.description}</span>}
                       </span>
                       {summary.startedModuleIds.has(m.id) && (
                         <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">

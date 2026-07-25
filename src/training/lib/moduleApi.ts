@@ -6,6 +6,7 @@ export interface ModuleSummary {
   id: string
   moduleKey: string
   title: string
+  description?: string
   updatedAt: string
 }
 

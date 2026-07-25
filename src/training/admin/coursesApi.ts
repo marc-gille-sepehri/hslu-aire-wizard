@@ -106,12 +106,12 @@ export async function setActiveCourseVersion(id: string): Promise<CourseWithModu
   return body.course as CourseWithModules
 }
 
-/** Rename a module (title only). */
-export async function renameModule(id: string, title: string): Promise<void> {
+/** Update a module's title and/or description. */
+export async function updateModule(id: string, patch: { title?: string; description?: string }): Promise<void> {
   const res = await fetch(`${apiBaseUrl}/admin/modules/${encodeURIComponent(id)}`, {
     method: 'PUT',
     headers: authHeaders(),
-    body: JSON.stringify({ title }),
+    body: JSON.stringify(patch),
   })
   if (!res.ok) throw await parseError(res)
 }
