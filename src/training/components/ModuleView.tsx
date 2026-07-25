@@ -9,11 +9,11 @@ import { ModuleEditorProvider, useModuleEditor } from '../editor/ModuleEditorCon
 import { useEditMode } from '../editor/EditModeContext'
 import BlockPalette from '../editor/BlockPalette'
 
-export default function ModuleView({ module, moduleId }: { module: Module; moduleId: string }) {
+export default function ModuleView({ module, moduleId, courseId }: { module: Module; moduleId: string; courseId?: string }) {
   // The editor owns a working copy; the inner view renders from it so edits show
   // live. In view mode this is a transparent pass-through of the loaded module.
   return (
-    <ModuleEditorProvider initialModule={module} moduleId={moduleId}>
+    <ModuleEditorProvider initialModule={module} moduleId={moduleId} courseId={courseId}>
       <ModuleViewInner />
     </ModuleEditorProvider>
   )

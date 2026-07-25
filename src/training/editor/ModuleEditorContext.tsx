@@ -14,6 +14,8 @@ export type DragState =
 
 interface ModuleEditorState {
   mod: Module
+  /** The course this module belongs to (for document uploads). */
+  courseId?: string
   /** Replace an artifact in place (used by the edit dialog on save). */
   updateArtifact: (sectionId: string, artifactId: string, next: Artifact) => void
   deleteArtifact: (sectionId: string, artifactId: string) => void
@@ -51,10 +53,12 @@ function replaceSectionArtifacts(
 export function ModuleEditorProvider({
   initialModule,
   moduleId,
+  courseId,
   children,
 }: {
   initialModule: Module
   moduleId: string
+  courseId?: string
   children: ReactNode
 }) {
   // Deep clone so edits never mutate the loaded (immutable) module object.
@@ -119,6 +123,7 @@ export function ModuleEditorProvider({
 
     return {
       mod,
+      courseId,
       updateArtifact,
       deleteArtifact,
       insertNewArtifact,
@@ -129,7 +134,7 @@ export function ModuleEditorProvider({
       saveStatus,
       saveError,
     }
-  }, [mod, dragState, moduleId, saveStatus, saveError])
+  }, [mod, dragState, moduleId, courseId, saveStatus, saveError])
 
   return <ModuleEditorContext.Provider value={value}>{children}</ModuleEditorContext.Provider>
 }

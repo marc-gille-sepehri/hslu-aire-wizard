@@ -67,10 +67,10 @@ function StringListEditor({ items, onChange }: { items: string[]; onChange: (ite
 }
 
 // ── Per-type editors ──────────────────────────────────────────────────────
-function ProseEditor({ draft, set }: { draft: ProseArtifact; set: (d: ProseArtifact) => void }) {
+function ProseEditor({ draft, set, courseId }: { draft: ProseArtifact; set: (d: ProseArtifact) => void; courseId?: string }) {
   return (
     <Field label={t.fBody}>
-      <MarkdownEditor value={draft.body} onChange={(v) => set({ ...draft, body: v })} />
+      <MarkdownEditor value={draft.body} onChange={(v) => set({ ...draft, body: v })} courseId={courseId} />
     </Field>
   )
 }
@@ -343,7 +343,7 @@ export default function BlockEditorDialog({
   artifact: Artifact
   onClose: () => void
 }) {
-  const { updateArtifact, mod } = useModuleEditor()
+  const { updateArtifact, mod, courseId } = useModuleEditor()
   const [draft, setDraft] = useState<Artifact>(() => structuredClone(artifact))
   const resourceKeys = Object.keys(mod.module.resources ?? {})
 
@@ -362,7 +362,7 @@ export default function BlockEditorDialog({
   const body = (() => {
     switch (draft.type) {
       case 'prose':
-        return <ProseEditor draft={draft} set={setDraft} />
+        return <ProseEditor draft={draft} set={setDraft} courseId={courseId} />
       case 'bullets':
         return <BulletsEditor draft={draft} set={setDraft} />
       case 'callout':

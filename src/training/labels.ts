@@ -385,5 +385,8 @@ export const labels = {
     mdLink: 'Link',
     mdCode: 'Code',
     mdMedia: 'Medien einfügen',
+    mdUpload: 'Datei hochladen',
+    mdDropHint: 'Dateien hier ablegen zum Hochladen',
+    mdUploading: 'Lädt hoch …',
   },
 } as const

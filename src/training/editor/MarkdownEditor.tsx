@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { Markdown } from '../lib/markdown'
+import { uploadCourseDocument } from '../lib/documentApi'
 import { labels } from '../labels'
 
 const t = labels.editor
@@ -80,13 +81,20 @@ const TOOLBAR: ToolItem[] = [
 export default function MarkdownEditor({
   value,
   onChange,
+  courseId,
 }: {
   value: string
   onChange: (v: string) => void
+  /** When set, drag & drop / paste / the upload button store files under the course. */
+  courseId?: string
 }) {
   const [tab, setTab] = useState<Tab>('edit')
   const taRef = useRef<HTMLTextAreaElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
   const pendingSel = useRef<PendingSel>(null)
+  const [dragActive, setDragActive] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
   // Restore caret/selection after a toolbar edit re-renders the controlled value.
   useLayoutEffect(() => {
@@ -105,6 +113,33 @@ export default function MarkdownEditor({
     const res = item.apply(value, s, e)
     pendingSel.current = { start: res.start, end: res.end }
     onChange(res.value)
+  }
+
+  /** Upload dropped/pasted/picked files and insert their markdown at the caret. */
+  const handleFiles = async (files: File[]) => {
+    if (!courseId || files.length === 0 || uploading) return
+    const ta = taRef.current
+    const at = ta ? ta.selectionStart : value.length
+    setUploading(true)
+    setUploadError(null)
+    try {
+      const snippets: string[] = []
+      for (const file of files) {
+        const up = await uploadCourseDocument(courseId, file)
+        snippets.push(up.isImage ? `![${up.filename}](${up.url})` : `[${up.filename}](${up.url})`)
+      }
+      const block = snippets.join('\n\n')
+      const needLead = at > 0 && value[at - 1] !== '\n'
+      const needTrail = at < value.length && value[at] !== '\n'
+      const insert = (needLead ? '\n\n' : '') + block + (needTrail ? '\n\n' : '\n')
+      const caret = at + insert.length
+      pendingSel.current = { start: caret, end: caret }
+      onChange(value.slice(0, at) + insert + value.slice(at))
+    } catch (err) {
+      setUploadError((err as Error).message)
+    } finally {
+      setUploading(false)
+    }
   }
 
   return (
@@ -141,15 +176,79 @@ export default function MarkdownEditor({
                 {item.render}
               </button>
             ))}
+            {courseId && (
+              <button
+                type="button"
+                title={t.mdUpload}
+                aria-label={t.mdUpload}
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                className="ml-auto flex h-8 items-center gap-1.5 rounded border border-mist bg-white px-2 text-navy transition-colors hover:border-navy hover:bg-cream disabled:opacity-60"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                </svg>
+                <span className="text-xs font-semibold">{uploading ? t.mdUploading : t.mdUpload}</span>
+              </button>
+            )}
+            <input
+              ref={fileRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                handleFiles([...(e.target.files ?? [])])
+                e.target.value = ''
+              }}
+            />
           </div>
-          <textarea
-            ref={taRef}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            rows={12}
-            spellCheck={false}
-            className="w-full resize-y bg-white px-3 py-2 font-mono text-sm leading-relaxed text-slate-800 outline-none"
-          />
+          {/* Drag & drop zone around the textarea. */}
+          <div
+            className="relative"
+            onDragOver={(e) => {
+              if (!courseId) return
+              e.preventDefault()
+              setDragActive(true)
+            }}
+            onDragLeave={(e) => {
+              if (e.currentTarget === e.target) setDragActive(false)
+            }}
+            onDrop={(e) => {
+              if (!courseId) return
+              e.preventDefault()
+              setDragActive(false)
+              const files = [...e.dataTransfer.files]
+              if (files.length) handleFiles(files)
+            }}
+          >
+            <textarea
+              ref={taRef}
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              onPaste={(e) => {
+                if (!courseId) return
+                const files = [...e.clipboardData.files]
+                if (files.length) {
+                  e.preventDefault()
+                  handleFiles(files)
+                }
+              }}
+              rows={12}
+              spellCheck={false}
+              className="w-full resize-y bg-white px-3 py-2 font-mono text-sm leading-relaxed text-slate-800 outline-none"
+            />
+            {dragActive && (
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded border-2 border-dashed border-navy bg-navy/5 text-sm font-semibold text-navy">
+                {t.mdDropHint}
+              </div>
+            )}
+            {uploading && (
+              <div className="pointer-events-none absolute right-3 top-2 rounded bg-navy px-2 py-0.5 text-xs font-semibold text-white">
+                {t.mdUploading}
+              </div>
+            )}
+          </div>
+          {uploadError && <p className="border-t border-mist bg-red-50 px-3 py-1.5 text-xs text-red-700">{uploadError}</p>}
         </div>
       ) : (
         <div className="min-h-[12rem] px-4 py-3 font-serif text-[1.05rem] leading-relaxed text-slate-800">
