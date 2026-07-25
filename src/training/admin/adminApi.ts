@@ -183,6 +183,48 @@ export async function createOrder(input: CreateOrderInput): Promise<{ id: string
   return body.order
 }
 
+// ── Course instances (Durchführungen) ──────────────────────────────────────
+export interface InstancePerson {
+  email: string
+  name: string
+}
+
+export interface CourseInstance {
+  id: string
+  courseId: string
+  courseTitle?: string
+  courseVersion?: number
+  participants: InstancePerson[]
+  trainers: InstancePerson[]
+  startDate: string
+  createdAt: string
+}
+
+export interface CreateInstanceInput {
+  courseId: string
+  participantEmails: string[]
+  trainerEmails: string[]
+  startDate: string
+}
+
+export async function listCourseInstances(): Promise<CourseInstance[]> {
+  const res = await fetch(`${apiBaseUrl}/admin/course-instances`, { headers: authHeaders() })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.instances as CourseInstance[]
+}
+
+export async function createCourseInstance(input: CreateInstanceInput): Promise<{ id: string }> {
+  const res = await fetch(`${apiBaseUrl}/admin/course-instances`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.instance
+}
+
 export async function setDeactivated(email: string, deactivated: boolean): Promise<AdminUser> {
   const res = await fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(email)}/deactivated`, {
     method: 'POST',

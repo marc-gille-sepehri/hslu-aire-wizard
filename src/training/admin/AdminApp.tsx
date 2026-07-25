@@ -17,6 +17,7 @@ import {
 } from './adminApi'
 import CustomersTab from './CustomersTab'
 import OrdersTab from './OrdersTab'
+import InstancesTab from './InstancesTab'
 
 const t = labels.admin
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -54,7 +55,7 @@ export default function AdminApp() {
 }
 
 function AdminPanel() {
-  const [tab, setTab] = useState<'users' | 'customers' | 'orders'>('users')
+  const [tab, setTab] = useState<'users' | 'customers' | 'orders' | 'instances'>('users')
 
   const tabCls = (active: boolean) =>
     active
@@ -76,14 +77,19 @@ function AdminPanel() {
           <button type="button" onClick={() => setTab('orders')} className={tabCls(tab === 'orders')}>
             {labels.adminOrders.tab}
           </button>
+          <button type="button" onClick={() => setTab('instances')} className={tabCls(tab === 'instances')}>
+            {labels.adminInstances.tab}
+          </button>
         </div>
 
         {tab === 'users' ? (
           <UsersTab />
         ) : tab === 'customers' ? (
           <CustomersTab />
-        ) : (
+        ) : tab === 'orders' ? (
           <OrdersTab />
+        ) : (
+          <InstancesTab />
         )}
       </div>
     </div>

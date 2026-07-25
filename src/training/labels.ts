@@ -254,6 +254,34 @@ export const labels = {
     cancel: 'Abbrechen',
   },
 
+  // Admin: Kurs Durchführung tab
+  adminInstances: {
+    tab: 'Kurs Durchführung',
+    heading: 'Kurs Durchführungen',
+    colCourse: 'Kurs',
+    colTrainers: 'Trainer',
+    colParticipants: 'Teilnehmer',
+    colStart: 'Startdatum',
+    noInstances: 'Noch keine Durchführungen vorhanden.',
+    loadError: 'Durchführungen konnten nicht geladen werden.',
+    count: (n: number) => `${n} ${n === 1 ? 'Person' : 'Personen'}`,
+    // action + dialog
+    add: 'Durchführung anlegen',
+    newInstance: 'Neue Durchführung',
+    fCourse: 'Kurs',
+    fParticipants: 'Teilnehmer',
+    fTrainers: 'Trainer',
+    fStart: 'Startdatum',
+    version: (n: number) => `Version ${n}`,
+    noCourses: 'Bitte zuerst einen Kurs anlegen.',
+    searchPlaceholder: 'Nach Name oder E-Mail filtern …',
+    noneSelected: 'Niemand ausgewählt',
+    noMatches: 'Keine Treffer',
+    create: 'Anlegen',
+    creating: 'Wird angelegt …',
+    cancel: 'Abbrechen',
+  },
+
   // Admin: Kunden tab
   adminCustomers: {
     tab: 'Kunden',
