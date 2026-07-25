@@ -57,6 +57,7 @@ export type Interaction =
   | { type: 'mcp'; url?: string; toolName?: string; urlEntered: boolean; toolFired: boolean }
   | { type: 'ontology'; explored: boolean }
   | { type: 'dataquery'; ran: boolean }
+  | { type: 'graphview'; expanded: boolean }
 
 export interface ModuleProgressRecord {
   moduleKey: string

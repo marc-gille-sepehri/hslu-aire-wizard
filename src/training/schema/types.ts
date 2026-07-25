@@ -36,6 +36,7 @@ export type Artifact =
   | McpInspectorArtifact
   | OntologyArtifact
   | DataQueryArtifact
+  | ObjectGraphArtifact
 
 export type BaseArtifact = {
   id: string
@@ -122,4 +123,12 @@ export type DataQueryArtifact = BaseArtifact & {
   instructions?: string
   /** SQL prefilled into the editor. */
   defaultQuery?: string
+}
+export type ObjectGraphArtifact = BaseArtifact & {
+  type: 'object_graph'
+  title?: string
+  /** Explanatory text shown above the graph. */
+  instructions?: string
+  /** Ontology class to seed the graph with (default Site). */
+  startType?: string
 }

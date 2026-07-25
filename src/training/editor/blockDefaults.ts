@@ -26,6 +26,7 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: 'mcp_inspector', label: 'MCP-Inspector', icon: '🧰', hint: 'MCP-Toolset verbinden und Tools testen' },
   { type: 'ontology', label: 'Ontologie', icon: '🕸️', hint: 'Datenraum-Metamodell erkunden' },
   { type: 'data_query', label: 'Datenabfrage', icon: '🗄️', hint: 'SQL gegen den Datenraum ausführen' },
+  { type: 'object_graph', label: 'Objekt-Graph', icon: '🕸️', hint: 'Datenraum als Graph erkunden' },
 ]
 
 export const BLOCK_TYPE_LABEL: Record<BlockType, string> = BLOCK_TYPES.reduce(
@@ -120,6 +121,14 @@ export function makeNewArtifact(type: BlockType): Artifact {
         title: 'Datenraum abfragen (SQL)',
         instructions: 'Schreibe eine SELECT-Abfrage gegen den Datenraum und sieh dir die Ergebnistabelle an.',
         defaultQuery: "SELECT street, city, postalCode FROM Site ORDER BY city LIMIT 20",
+      }
+    case 'object_graph':
+      return {
+        id,
+        type,
+        title: 'Datenraum als Graph',
+        instructions: 'Klicke einen Knoten, um seine Nachbarn zu laden, und erkunde so das Beziehungsnetz.',
+        startType: 'Site',
       }
     default: {
       // Exhaustiveness guard — a new schema type must be handled here.

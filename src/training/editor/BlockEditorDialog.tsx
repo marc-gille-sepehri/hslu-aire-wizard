@@ -10,6 +10,7 @@ import type {
   McpInspectorArtifact,
   MCQArtifact,
   MediaArtifact,
+  ObjectGraphArtifact,
   OntologyArtifact,
   ProseArtifact,
   ReflectArtifact,
@@ -257,6 +258,23 @@ function DataQueryEditor({ draft, set }: { draft: DataQueryArtifact; set: (d: Da
   )
 }
 
+function ObjectGraphEditor({ draft, set }: { draft: ObjectGraphArtifact; set: (d: ObjectGraphArtifact) => void }) {
+  return (
+    <div className="space-y-4">
+      <Field label={t.fTitle}>
+        <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
+      </Field>
+      <Field label={t.fInstructions}>
+        <TextArea value={draft.instructions ?? ''} rows={2} onChange={(v) => set({ ...draft, instructions: v || undefined })} />
+      </Field>
+      <Field label={t.fStartType}>
+        <TextInput value={draft.startType ?? ''} onChange={(v) => set({ ...draft, startType: v || undefined })} />
+      </Field>
+      <p className="text-xs text-slate-500">{t.objectGraphEditorHint}</p>
+    </div>
+  )
+}
+
 function ReflectEditor({ draft, set }: { draft: ReflectArtifact; set: (d: ReflectArtifact) => void }) {
   return (
     <div className="space-y-4">
@@ -418,6 +436,8 @@ export default function BlockEditorDialog({
         return <OntologyEditor draft={draft} set={setDraft} />
       case 'data_query':
         return <DataQueryEditor draft={draft} set={setDraft} />
+      case 'object_graph':
+        return <ObjectGraphEditor draft={draft} set={setDraft} />
       default:
         return null
     }

@@ -67,3 +67,29 @@ export async function runQuery(sql: string): Promise<QueryResult> {
   if (!res.ok) throw new Error(body.error || `Abfrage fehlgeschlagen (${res.status})`)
   return body as QueryResult
 }
+
+// ── Object graph ────────────────────────────────────────────────────────────
+export interface GraphNode { id: string; type: string; label: string }
+export interface GraphEdge { id: string; source: string; target: string; rel: string; label: string; via?: string }
+export interface GraphData { nodes: GraphNode[]; edges: GraphEdge[] }
+
+function authHeaders(): Record<string, string> {
+  const token = getStoredToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+export async function fetchGraphTypes(): Promise<{ type: string; count: number }[]> {
+  const res = await fetch(`${apiBaseUrl}/dataroom/graph/types`, { headers: authHeaders() })
+  if (!res.ok) throw new Error(`Graph-Typen konnten nicht geladen werden (${res.status})`)
+  return (await res.json()).types
+}
+export async function fetchGraphStart(type: string, limit = 6): Promise<GraphData> {
+  const res = await fetch(`${apiBaseUrl}/dataroom/graph/start?type=${encodeURIComponent(type)}&limit=${limit}`, { headers: authHeaders() })
+  if (!res.ok) throw new Error(`Graph konnte nicht geladen werden (${res.status})`)
+  return await res.json()
+}
+export async function fetchGraphNeighbors(id: string, limit = 40): Promise<GraphData> {
+  const res = await fetch(`${apiBaseUrl}/dataroom/graph/neighbors/${encodeURIComponent(id)}?limit=${limit}`, { headers: authHeaders() })
+  if (!res.ok) throw new Error(`Nachbarn konnten nicht geladen werden (${res.status})`)
+  return await res.json()
+}

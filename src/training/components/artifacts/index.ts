@@ -12,6 +12,7 @@ import Bpmn from './Bpmn'
 import McpInspector from './McpInspector'
 import Ontology from './Ontology'
 import DataQuery from './DataQuery'
+import ObjectGraph from './ObjectGraph'
 
 type ArtifactComponent<T extends Artifact = Artifact> = ComponentType<{ artifact: T }>
 
@@ -28,4 +29,5 @@ export const artifactComponents: Record<Artifact['type'], ArtifactComponent<any>
   mcp_inspector: McpInspector,
   ontology: Ontology,
   data_query: DataQuery,
+  object_graph: ObjectGraph,
 }

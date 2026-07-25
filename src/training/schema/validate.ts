@@ -110,6 +110,13 @@ const dataQueryArtifact = baseArtifact.extend({
   defaultQuery: z.string().optional(),
 })
 
+const objectGraphArtifact = baseArtifact.extend({
+  type: z.literal('object_graph'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+  startType: z.string().optional(),
+})
+
 const artifact = z.discriminatedUnion('type', [
   proseArtifact,
   bulletsArtifact,
@@ -123,6 +130,7 @@ const artifact = z.discriminatedUnion('type', [
   mcpInspectorArtifact,
   ontologyArtifact,
   dataQueryArtifact,
+  objectGraphArtifact,
 ])
 
 const section = z.object({

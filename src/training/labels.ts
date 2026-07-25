@@ -235,6 +235,13 @@ export const labels = {
     noRows: 'Keine Zeilen — passe die Bedingungen an.',
   },
 
+  // Data-room object-graph explorer block
+  objectGraph: {
+    seed: 'Start:',
+    hint: 'Klicke einen Knoten, um Nachbarn zu laden',
+    nodeCount: (n: number) => `${n} Knoten`,
+  },
+
   // Course-material chat assistant
   chat: {
     title: 'Kurs-Assistent',
@@ -388,6 +395,8 @@ export const labels = {
     ontologyEditorHint: 'Das Metamodell kommt live aus dem Datenraum; der Block gilt als erledigt, sobald eine Klasse geöffnet wurde.',
     fDefaultQuery: 'Vorbelegte SQL-Abfrage (optional)',
     dataQueryEditorHint: 'Teilnehmende schreiben eine SELECT-Abfrage gegen den Datenraum; der Block gilt als erledigt, sobald eine Abfrage lief.',
+    fStartType: 'Start-Klasse (z. B. Site)',
+    objectGraphEditorHint: 'Der Graph kommt live aus dem Datenraum; der Block gilt als erledigt, sobald ein Knoten expandiert wurde.',
     fCaption: 'Bildunterschrift (optional)',
     noResources: 'Keine Ressourcen in diesem Modul definiert.',
     variantNote: 'Hinweis',
