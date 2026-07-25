@@ -108,6 +108,11 @@ export default function Catalog() {
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-semibold text-slate-800">{course.title}</h2>
+                  {isAdmin && (
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                      {labels.catalogEdit.version(course.version)}
+                    </span>
+                  )}
                   {!course.published && (
                     <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
                       {labels.catalog.unpublishedTag}
