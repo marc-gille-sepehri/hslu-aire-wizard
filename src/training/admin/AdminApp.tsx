@@ -15,7 +15,6 @@ import {
   type CountryCode,
   type CustomerAddress,
 } from './adminApi'
-import CoursesTab from './CoursesTab'
 import CustomersTab from './CustomersTab'
 import OrdersTab from './OrdersTab'
 
@@ -55,7 +54,7 @@ export default function AdminApp() {
 }
 
 function AdminPanel() {
-  const [tab, setTab] = useState<'users' | 'customers' | 'courses' | 'orders'>('users')
+  const [tab, setTab] = useState<'users' | 'customers' | 'orders'>('users')
 
   const tabCls = (active: boolean) =>
     active
@@ -74,9 +73,6 @@ function AdminPanel() {
           <button type="button" onClick={() => setTab('customers')} className={tabCls(tab === 'customers')}>
             {labels.adminCustomers.tab}
           </button>
-          <button type="button" onClick={() => setTab('courses')} className={tabCls(tab === 'courses')}>
-            {labels.adminCourses.tab}
-          </button>
           <button type="button" onClick={() => setTab('orders')} className={tabCls(tab === 'orders')}>
             {labels.adminOrders.tab}
           </button>
@@ -86,8 +82,6 @@ function AdminPanel() {
           <UsersTab />
         ) : tab === 'customers' ? (
           <CustomersTab />
-        ) : tab === 'courses' ? (
-          <CoursesTab />
         ) : (
           <OrdersTab />
         )}

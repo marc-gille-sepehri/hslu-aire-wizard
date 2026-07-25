@@ -227,7 +227,10 @@ export const labels = {
     loadError: 'Bestellungen konnten nicht geladen werden.',
     // Order action + dialog
     order: 'Bestellen',
+    newOrder: 'Neue Bestellung',
     dialogTitle: (course: string) => `Bestellung: ${course}`,
+    fCourse: 'Kurs',
+    noCoursesForOrder: 'Bitte zuerst einen Kurs anlegen.',
     fCustomer: 'Kunde',
     fSeats: 'Anzahl Plätze',
     fStart: 'Startdatum',

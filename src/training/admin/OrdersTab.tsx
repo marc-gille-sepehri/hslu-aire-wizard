@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { labels } from '../labels'
 import { listOrders, type Order } from './adminApi'
+import OrderDialog from './OrderDialog'
 
 const t = labels.adminOrders
 
@@ -15,16 +16,30 @@ function fmtDate(iso: string): string {
 export default function OrdersTab() {
   const [orders, setOrders] = useState<Order[] | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
 
-  useEffect(() => {
+  const reload = useCallback(() => {
     listOrders()
       .then(setOrders)
       .catch((e) => setError((e as Error).message || t.loadError))
   }, [])
 
+  useEffect(() => {
+    reload()
+  }, [reload])
+
   return (
     <div>
-      <h2 className="mb-4 font-display text-lg font-bold text-navy">{t.heading}</h2>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="font-display text-lg font-bold text-navy">{t.heading}</h2>
+        <button
+          type="button"
+          onClick={() => setDialogOpen(true)}
+          className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-gold-dark"
+        >
+          {t.order}
+        </button>
+      </div>
 
       {error && <div className="mb-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
 
@@ -59,6 +74,16 @@ export default function OrdersTab() {
           </tbody>
         </table>
       </div>
+
+      {dialogOpen && (
+        <OrderDialog
+          onClose={() => setDialogOpen(false)}
+          onCreated={() => {
+            setDialogOpen(false)
+            reload()
+          }}
+        />
+      )}
     </div>
   )
 }

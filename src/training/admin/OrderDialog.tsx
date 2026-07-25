@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { labels } from '../labels'
 import { listCustomers, createOrder, type Customer } from './adminApi'
+import { listCourses, type CourseWithModules } from './coursesApi'
 
 const t = labels.adminOrders
 
@@ -18,20 +19,18 @@ function defaultDates(): { start: string; end: string } {
   return { start: ymd(start), end: ymd(end) }
 }
 
-/** Create an order for a given course. Customer, seats and date range are edited here. */
+/** Create an order: pick course, customer, seats and date range. */
 export default function OrderDialog({
-  courseId,
-  courseTitle,
   onClose,
   onCreated,
 }: {
-  courseId: string
-  courseTitle: string
   onClose: () => void
   onCreated: () => void
 }) {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [customerId, setCustomerId] = useState('')
+  const [courses, setCourses] = useState<CourseWithModules[]>([])
+  const [courseId, setCourseId] = useState('')
   const [seats, setSeats] = useState('1')
   const initialDates = defaultDates()
   const [startDate, setStartDate] = useState(initialDates.start)
@@ -52,10 +51,17 @@ export default function OrderDialog({
         if (list.length > 0) setCustomerId(list[0].id)
       })
       .catch(() => setCustomers([]))
+    listCourses()
+      .then((list) => {
+        setCourses(list)
+        if (list.length > 0) setCourseId(list[0].id)
+      })
+      .catch(() => setCourses([]))
   }, [])
 
   const seatsNum = Number(seats)
   const canSubmit = !!(
+    courseId &&
     customerId &&
     Number.isInteger(seatsNum) &&
     seatsNum >= 1 &&
@@ -89,7 +95,7 @@ export default function OrderDialog({
     >
       <div className="w-full max-w-md rounded-2xl border border-mist bg-white shadow-lg">
         <div className="flex items-center justify-between border-b border-mist bg-cream px-6 py-4">
-          <h2 className="font-display text-lg font-bold text-navy">{t.dialogTitle(courseTitle)}</h2>
+          <h2 className="font-display text-lg font-bold text-navy">{t.newOrder}</h2>
           <button type="button" onClick={onClose} aria-label={t.cancel} className="text-slate-400 hover:text-navy">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M18 6 6 18M6 6l12 12" />
@@ -98,6 +104,18 @@ export default function OrderDialog({
         </div>
 
         <div className="space-y-4 px-6 py-5">
+          <label className="block">
+            <span className={labelCls}>{t.fCourse}</span>
+            {courses.length === 0 ? (
+              <p className="text-sm text-amber-700">{t.noCoursesForOrder}</p>
+            ) : (
+              <select className={inputCls} value={courseId} onChange={(e) => setCourseId(e.target.value)}>
+                {courses.map((c) => (
+                  <option key={c.id} value={c.id}>{c.title}</option>
+                ))}
+              </select>
+            )}
+          </label>
           <label className="block">
             <span className={labelCls}>{t.fCustomer}</span>
             {customers.length === 0 ? (
