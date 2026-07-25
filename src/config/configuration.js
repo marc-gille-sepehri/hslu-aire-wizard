@@ -9,7 +9,7 @@ export const config = {
 
 export const apiBaseUrl =
   config.mode === 'production'
-    ? 'https://d3nr6vksmj.eu-central-1.awsapprunner.com'
+    ? 'https://api.ai-in-real-estate.ch'
     : 'http://localhost:9011'
 
 // Contact email shown in footer, imprint, privacy, contact section (e.g. use test inbox in test mode)
