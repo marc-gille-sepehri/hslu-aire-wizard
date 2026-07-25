@@ -11,6 +11,7 @@ import LlmPrompt from './LlmPrompt'
 import Bpmn from './Bpmn'
 import McpInspector from './McpInspector'
 import Ontology from './Ontology'
+import DataQuery from './DataQuery'
 
 type ArtifactComponent<T extends Artifact = Artifact> = ComponentType<{ artifact: T }>
 
@@ -26,4 +27,5 @@ export const artifactComponents: Record<Artifact['type'], ArtifactComponent<any>
   bpmn: Bpmn,
   mcp_inspector: McpInspector,
   ontology: Ontology,
+  data_query: DataQuery,
 }

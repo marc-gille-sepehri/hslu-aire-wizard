@@ -35,6 +35,7 @@ export type Artifact =
   | BpmnArtifact
   | McpInspectorArtifact
   | OntologyArtifact
+  | DataQueryArtifact
 
 export type BaseArtifact = {
   id: string
@@ -113,4 +114,12 @@ export type OntologyArtifact = BaseArtifact & {
   title?: string
   /** Explanatory text shown above the explorer. */
   instructions?: string
+}
+export type DataQueryArtifact = BaseArtifact & {
+  type: 'data_query'
+  title?: string
+  /** Explanatory text shown above the query editor. */
+  instructions?: string
+  /** SQL prefilled into the editor. */
+  defaultQuery?: string
 }

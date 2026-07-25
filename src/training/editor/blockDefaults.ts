@@ -25,6 +25,7 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: 'bpmn', label: 'BPMN-Modell', icon: '🔀', hint: 'Prozess mit dem bpmn.io-Modeler zeichnen' },
   { type: 'mcp_inspector', label: 'MCP-Inspector', icon: '🧰', hint: 'MCP-Toolset verbinden und Tools testen' },
   { type: 'ontology', label: 'Ontologie', icon: '🕸️', hint: 'Datenraum-Metamodell erkunden' },
+  { type: 'data_query', label: 'Datenabfrage', icon: '🗄️', hint: 'SQL gegen den Datenraum ausführen' },
 ]
 
 export const BLOCK_TYPE_LABEL: Record<BlockType, string> = BLOCK_TYPES.reduce(
@@ -111,6 +112,14 @@ export function makeNewArtifact(type: BlockType): Artifact {
         type,
         title: 'Datenraum-Ontologie erkunden',
         instructions: 'Wähle eine Klasse, um ihre Attribute und Beziehungen zu sehen. Folge den Beziehungen, um das Modell zu erkunden.',
+      }
+    case 'data_query':
+      return {
+        id,
+        type,
+        title: 'Datenraum abfragen (SQL)',
+        instructions: 'Schreibe eine SELECT-Abfrage gegen den Datenraum und sieh dir die Ergebnistabelle an.',
+        defaultQuery: "SELECT street, city, postalCode FROM Site ORDER BY city LIMIT 20",
       }
     default: {
       // Exhaustiveness guard — a new schema type must be handled here.

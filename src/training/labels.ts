@@ -223,6 +223,18 @@ export const labels = {
     relIn: 'Beziehungen (eingehend)',
   },
 
+  // Data-room SQL explorer block
+  dataQuery: {
+    run: 'Ausführen',
+    running: 'Läuft …',
+    hint: '⌘/Ctrl + Enter',
+    syntaxToggle: 'Unterstützte Syntax',
+    syntaxBody:
+      'Eine Tabelle (Klasse aus der Ontologie), keine JOINs. WHERE mit AND/OR und = != < <= > >= LIKE. Nur Lesezugriff.',
+    rowCount: (n: number, coll: string) => `${n} Zeile${n === 1 ? '' : 'n'} aus ${coll}`,
+    noRows: 'Keine Zeilen — passe die Bedingungen an.',
+  },
+
   // Course-material chat assistant
   chat: {
     title: 'Kurs-Assistent',
@@ -374,6 +386,8 @@ export const labels = {
     fMcpDefaultUrl: 'Vorbelegte MCP-URL (optional)',
     mcpEditorHint: 'Teilnehmende geben eine MCP-URL ein und führen ein Tool aus; der Block gilt als erledigt, sobald beides passiert ist.',
     ontologyEditorHint: 'Das Metamodell kommt live aus dem Datenraum; der Block gilt als erledigt, sobald eine Klasse geöffnet wurde.',
+    fDefaultQuery: 'Vorbelegte SQL-Abfrage (optional)',
+    dataQueryEditorHint: 'Teilnehmende schreiben eine SELECT-Abfrage gegen den Datenraum; der Block gilt als erledigt, sobald eine Abfrage lief.',
     fCaption: 'Bildunterschrift (optional)',
     noResources: 'Keine Ressourcen in diesem Modul definiert.',
     variantNote: 'Hinweis',

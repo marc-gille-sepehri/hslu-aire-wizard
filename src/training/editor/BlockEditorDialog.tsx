@@ -6,6 +6,7 @@ import type {
   CalloutArtifact,
   LabSelectArtifact,
   LlmPromptArtifact,
+  DataQueryArtifact,
   McpInspectorArtifact,
   MCQArtifact,
   MediaArtifact,
@@ -239,6 +240,23 @@ function OntologyEditor({ draft, set }: { draft: OntologyArtifact; set: (d: Onto
   )
 }
 
+function DataQueryEditor({ draft, set }: { draft: DataQueryArtifact; set: (d: DataQueryArtifact) => void }) {
+  return (
+    <div className="space-y-4">
+      <Field label={t.fTitle}>
+        <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
+      </Field>
+      <Field label={t.fInstructions}>
+        <TextArea value={draft.instructions ?? ''} rows={2} onChange={(v) => set({ ...draft, instructions: v || undefined })} />
+      </Field>
+      <Field label={t.fDefaultQuery}>
+        <TextArea value={draft.defaultQuery ?? ''} rows={3} onChange={(v) => set({ ...draft, defaultQuery: v || undefined })} />
+      </Field>
+      <p className="text-xs text-slate-500">{t.dataQueryEditorHint}</p>
+    </div>
+  )
+}
+
 function ReflectEditor({ draft, set }: { draft: ReflectArtifact; set: (d: ReflectArtifact) => void }) {
   return (
     <div className="space-y-4">
@@ -398,6 +416,8 @@ export default function BlockEditorDialog({
         return <McpInspectorEditor draft={draft} set={setDraft} />
       case 'ontology':
         return <OntologyEditor draft={draft} set={setDraft} />
+      case 'data_query':
+        return <DataQueryEditor draft={draft} set={setDraft} />
       default:
         return null
     }

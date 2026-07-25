@@ -103,6 +103,13 @@ const ontologyArtifact = baseArtifact.extend({
   instructions: z.string().optional(),
 })
 
+const dataQueryArtifact = baseArtifact.extend({
+  type: z.literal('data_query'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+  defaultQuery: z.string().optional(),
+})
+
 const artifact = z.discriminatedUnion('type', [
   proseArtifact,
   bulletsArtifact,
@@ -115,6 +122,7 @@ const artifact = z.discriminatedUnion('type', [
   bpmnArtifact,
   mcpInspectorArtifact,
   ontologyArtifact,
+  dataQueryArtifact,
 ])
 
 const section = z.object({

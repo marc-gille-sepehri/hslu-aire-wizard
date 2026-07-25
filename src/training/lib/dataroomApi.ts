@@ -46,3 +46,24 @@ export async function fetchOntology(): Promise<Ontology> {
   if (!res.ok) throw new Error(`Ontologie konnte nicht geladen werden (${res.status})`)
   return (await res.json()) as Ontology
 }
+
+export interface QueryResult {
+  collection: string
+  columns: string[]
+  rows: Record<string, unknown>[]
+  count: number
+  limit: number
+}
+
+/** Run a read-only SQL query against DATENRAUM (translated to Mongo server-side). */
+export async function runQuery(sql: string): Promise<QueryResult> {
+  const token = getStoredToken()
+  const res = await fetch(`${apiBaseUrl}/dataroom/query`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: JSON.stringify({ sql }),
+  })
+  const body = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(body.error || `Abfrage fehlgeschlagen (${res.status})`)
+  return body as QueryResult
+}
