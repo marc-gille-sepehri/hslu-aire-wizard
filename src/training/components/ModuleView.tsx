@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import type { Module } from '../schema/types'
 import { ResourcesProvider } from '../state/ResourcesContext'
 import { LearnerStateProvider } from '../state/LearnerStateContext'
@@ -20,14 +21,28 @@ export default function ModuleView({ module, moduleId, courseId }: { module: Mod
 }
 
 function ModuleViewInner() {
-  const { mod, save, saveStatus, saveError } = useModuleEditor()
+  const { mod, save, saveStatus, saveError, dirty, addSection, removeSection } = useModuleEditor()
   const { editing } = useEditMode()
   const m = mod.module
   const learner = useLearnerState(m.id)
   const [sectionIndex, setSectionIndex] = useState(0)
+  // The Save controls render into the header slot (next to "Fertig") via a portal.
+  const [toolbarSlot, setToolbarSlot] = useState<HTMLElement | null>(null)
+  useEffect(() => setToolbarSlot(document.getElementById('training-edit-toolbar')), [])
 
   const sectionCount = m.sections.length
-  const currentSection = m.sections[sectionIndex]
+  const currentSection = m.sections[Math.min(sectionIndex, sectionCount - 1)]
+
+  const onAddSection = () => {
+    addSection()
+    setSectionIndex(sectionCount) // the new section is appended at the end
+  }
+  const onRemoveSection = () => {
+    if (!currentSection || sectionCount <= 1) return
+    if (!window.confirm(labels.editor.removeSectionConfirm(currentSection.title || '—'))) return
+    removeSection(currentSection.id)
+    setSectionIndex((i) => Math.max(0, Math.min(i, sectionCount - 2)))
+  }
 
   const completedSectionCount = useMemo(() => {
     let done = 0
@@ -54,6 +69,27 @@ function ModuleViewInner() {
     <ResourcesProvider resources={m.resources}>
       <LearnerStateProvider value={learner}>
         <div className="max-w-prose mx-auto px-4 py-10 font-sans">
+          {/* Save controls (edit mode) — portalled next to "Fertig"; only shown when dirty. */}
+          {editing && toolbarSlot && createPortal(
+            <>
+              {dirty && (
+                <button
+                  type="button"
+                  onClick={save}
+                  disabled={saveStatus === 'saving'}
+                  className="rounded-md bg-gold px-3 py-1.5 text-sm font-semibold text-navy transition-colors hover:bg-gold-dark disabled:opacity-60"
+                >
+                  {saveStatus === 'saving' ? labels.editor.saving : labels.editor.save}
+                </button>
+              )}
+              {!dirty && saveStatus === 'saved' && (
+                <span className="text-sm font-semibold text-emerald-700">{labels.editor.saved}</span>
+              )}
+              {saveStatus === 'error' && <span className="text-sm text-red-700">{saveError || labels.editor.saveError}</span>}
+            </>,
+            toolbarSlot,
+          )}
+
           <header className="mb-8 pb-6 border-b border-slate-200">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
@@ -70,8 +106,8 @@ function ModuleViewInner() {
                 {labels.resetProgress}
               </button>
             </div>
-            {sectionCount > 1 && (
-              <nav className="mt-5">
+            {(editing || sectionCount > 1) && (
+              <nav className="mt-5 flex flex-wrap items-center gap-2">
                 <ol className="flex flex-wrap gap-2 text-xs list-none">
                   {m.sections.map((sec, i) => (
                     <li key={sec.id}>
@@ -90,6 +126,26 @@ function ModuleViewInner() {
                     </li>
                   ))}
                 </ol>
+                {editing && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={onAddSection}
+                      className="rounded border border-dashed border-mist px-2 py-1 text-xs font-semibold text-navy hover:border-navy hover:bg-cream"
+                    >
+                      + {labels.editor.addSection}
+                    </button>
+                    {sectionCount > 1 && (
+                      <button
+                        type="button"
+                        onClick={onRemoveSection}
+                        className="rounded border border-mist px-2 py-1 text-xs text-red-700 hover:bg-red-50"
+                      >
+                        {labels.editor.removeSection}
+                      </button>
+                    )}
+                  </>
+                )}
               </nav>
             )}
           </header>
@@ -101,24 +157,6 @@ function ModuleViewInner() {
               sectionId={currentSection.id}
               appendIndex={currentSection.artifacts.length}
             />
-          )}
-
-          {/* Save bar (edit mode) — upper-left, clear of the sticky header. */}
-          {editing && (
-            <div className="fixed left-4 top-24 z-40 flex items-center gap-3">
-              <button
-                type="button"
-                onClick={save}
-                disabled={saveStatus === 'saving'}
-                className="rounded-md bg-gold px-4 py-2.5 text-sm font-semibold text-navy shadow-lg transition-colors hover:bg-gold-dark disabled:opacity-60"
-              >
-                {saveStatus === 'saving' ? labels.editor.saving : labels.editor.save}
-              </button>
-              {saveStatus === 'saved' && <span className="text-sm font-semibold text-emerald-700">{labels.editor.saved}</span>}
-              {saveStatus === 'error' && (
-                <span className="text-sm text-red-700">{saveError || labels.editor.saveError}</span>
-              )}
-            </div>
           )}
 
           <footer className="mt-12 pt-6 border-t border-slate-200 flex justify-between">

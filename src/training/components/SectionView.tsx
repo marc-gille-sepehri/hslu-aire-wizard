@@ -3,6 +3,7 @@ import type { Artifact, Section } from '../schema/types'
 import { artifactComponents } from './artifacts'
 import { labels } from '../labels'
 import { useEditMode } from '../editor/EditModeContext'
+import { useModuleEditor } from '../editor/ModuleEditorContext'
 import EditableBlock from '../editor/EditableBlock'
 import InsertionZone from '../editor/InsertionZone'
 import BlockEditorDialog from '../editor/BlockEditorDialog'
@@ -18,12 +19,22 @@ function renderArtifact(artifact: Artifact) {
 
 export default function SectionView({ section }: { section: Section }) {
   const { editing } = useEditMode()
+  const { renameSection } = useModuleEditor()
   const [editingArtifact, setEditingArtifact] = useState<Artifact | null>(null)
 
   return (
     <section className="space-y-8">
       <header className="space-y-3">
-        <h2 className="font-sans text-2xl font-bold text-slate-800">{section.title}</h2>
+        {editing ? (
+          <input
+            value={section.title}
+            onChange={(e) => renameSection(section.id, e.target.value)}
+            placeholder={labels.editor.sectionTitlePlaceholder}
+            className="w-full rounded-md border border-transparent bg-transparent font-sans text-2xl font-bold text-slate-800 outline-none hover:border-mist focus:border-navy focus:bg-white"
+          />
+        ) : (
+          <h2 className="font-sans text-2xl font-bold text-slate-800">{section.title}</h2>
+        )}
         {section.objectives && section.objectives.length > 0 && (
           <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
             <h3 className="font-sans text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">{labels.objectives}</h3>

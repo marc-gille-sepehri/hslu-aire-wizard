@@ -24,6 +24,13 @@ interface ModuleEditorState {
   /** Move an existing block to an insertion index (0..len) within its section. */
   moveArtifact: (sectionId: string, fromIndex: number, toInsertIndex: number) => void
 
+  /** Append a new empty section. */
+  addSection: () => void
+  /** Rename a section. */
+  renameSection: (sectionId: string, title: string) => void
+  /** Remove a section (and its blocks). */
+  removeSection: (sectionId: string) => void
+
   dragState: DragState
   setDragState: (d: DragState) => void
 
@@ -31,6 +38,8 @@ interface ModuleEditorState {
   save: () => Promise<void>
   saveStatus: SaveStatus
   saveError: string | null
+  /** True when the working copy differs from the last saved state. */
+  dirty: boolean
 }
 
 const ModuleEditorContext = createContext<ModuleEditorState | null>(null)
@@ -66,6 +75,8 @@ export function ModuleEditorProvider({
   const [dragState, setDragState] = useState<DragState>(null)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const [saveError, setSaveError] = useState<string | null>(null)
+  // JSON of the last persisted state; the working copy is "dirty" when it differs.
+  const [savedSnapshot, setSavedSnapshot] = useState<string>(() => JSON.stringify(initialModule))
 
   const value = useMemo<ModuleEditorState>(() => {
     const updateArtifact = (sectionId: string, artifactId: string, next: Artifact) =>
@@ -104,6 +115,27 @@ export function ModuleEditorProvider({
         }),
       )
 
+    const addSection = () =>
+      setMod((m) => {
+        const id = `sec-${Date.now().toString(36)}`
+        return {
+          module: {
+            ...m.module,
+            sections: [...m.module.sections, { id, title: `Abschnitt ${m.module.sections.length + 1}`, artifacts: [] }],
+          },
+        }
+      })
+
+    const renameSection = (sectionId: string, title: string) =>
+      setMod((m) => ({
+        module: { ...m.module, sections: m.module.sections.map((s) => (s.id === sectionId ? { ...s, title } : s)) },
+      }))
+
+    const removeSection = (sectionId: string) =>
+      setMod((m) => ({
+        module: { ...m.module, sections: m.module.sections.filter((s) => s.id !== sectionId) },
+      }))
+
     const save = async () => {
       setSaveStatus('saving')
       setSaveError(null)
@@ -114,6 +146,7 @@ export function ModuleEditorProvider({
           resources: mod.module.resources as Record<string, unknown>,
           sections: mod.module.sections,
         })
+        setSavedSnapshot(JSON.stringify(mod))
         setSaveStatus('saved')
       } catch (e) {
         setSaveStatus('error')
@@ -121,20 +154,26 @@ export function ModuleEditorProvider({
       }
     }
 
+    const dirty = JSON.stringify(mod) !== savedSnapshot
+
     return {
       mod,
       courseId,
+      dirty,
       updateArtifact,
       deleteArtifact,
       insertNewArtifact,
       moveArtifact,
+      addSection,
+      renameSection,
+      removeSection,
       dragState,
       setDragState,
       save,
       saveStatus,
       saveError,
     }
-  }, [mod, dragState, moduleId, courseId, saveStatus, saveError])
+  }, [mod, dragState, moduleId, courseId, saveStatus, saveError, savedSnapshot])
 
   return <ModuleEditorContext.Provider value={value}>{children}</ModuleEditorContext.Provider>
 }

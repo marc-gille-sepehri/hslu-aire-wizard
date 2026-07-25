@@ -93,6 +93,8 @@ function TrainingHeader() {
   return (
     <div className="training-root font-sans border-b border-mist bg-cream">
       <div className="max-w-prose mx-auto px-4 py-3 flex items-center justify-end gap-4">
+        {/* Module editors portal their Save controls in here, next to Fertig. */}
+        <div id="training-edit-toolbar" className="flex items-center gap-3" />
         <button
           type="button"
           onClick={toggleEditing}

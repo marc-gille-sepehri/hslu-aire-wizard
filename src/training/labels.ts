@@ -413,6 +413,11 @@ export const labels = {
     fDefaultModelAuto: 'Automatisch',
     fAllowModelChoice: 'Modellwahl erlauben',
     fAllowParamEditing: 'Parameter bearbeitbar (z. B. Temperature)',
+    // Sections
+    addSection: 'Abschnitt',
+    removeSection: 'Abschnitt entfernen',
+    removeSectionConfirm: (title: string) => `Abschnitt „${title}" mit allen Blöcken entfernen?`,
+    sectionTitlePlaceholder: 'Abschnittstitel',
     // Markdown editor
     mdEdit: 'Bearbeiten',
     mdPreview: 'Vorschau',
