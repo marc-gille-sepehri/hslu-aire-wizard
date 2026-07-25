@@ -12,14 +12,6 @@ export interface CourseWithModules {
   modules: ModuleSummary[]
 }
 
-/** A module family grouping all versions of one logical module. */
-export interface ModuleFamily {
-  familyId: string
-  moduleKey: string
-  title: string
-  versions: ModuleSummary[]
-}
-
 export class CoursesError extends Error {
   code?: string
   status: number
@@ -113,13 +105,6 @@ export async function setCourseModules(id: string, moduleIds: string[]): Promise
 
 // --- Modules ---
 
-export async function listModuleFamilies(): Promise<ModuleFamily[]> {
-  const res = await fetch(`${apiBaseUrl}/admin/modules`, { headers: authHeaders() })
-  if (!res.ok) throw await parseError(res)
-  const body = await res.json()
-  return body.families as ModuleFamily[]
-}
-
 export async function createModule(input: { title: string }): Promise<{ id: string }> {
   const res = await fetch(`${apiBaseUrl}/admin/modules`, {
     method: 'POST',
@@ -129,14 +114,4 @@ export async function createModule(input: { title: string }): Promise<{ id: stri
   if (!res.ok) throw await parseError(res)
   const body = await res.json()
   return body as { id: string }
-}
-
-export async function cloneModule(id: string): Promise<{ id: string; version: number }> {
-  const res = await fetch(`${apiBaseUrl}/admin/modules/${encodeURIComponent(id)}/clone`, {
-    method: 'POST',
-    headers: authHeaders(),
-  })
-  if (!res.ok) throw await parseError(res)
-  const body = await res.json()
-  return body as { id: string; version: number }
 }

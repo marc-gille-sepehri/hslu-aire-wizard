@@ -260,43 +260,6 @@ export const labels = {
     loadError: 'Kunden konnten nicht geladen werden.',
   },
 
-  // Admin: Kurse & Module tab
-  adminCourses: {
-    tab: 'Kurse & Module',
-    // Module library (left)
-    modulesHeading: 'Module',
-    modulesSubtitle: 'Bausteine für Kurse. Zum Anhängen in einen Kurs ziehen.',
-    createModule: 'Modul erstellen',
-    createModuleTitle: 'Neues Modul erstellen',
-    fModuleTitle: 'Titel',
-    edit: 'Bearbeiten',
-    clone: 'Klonen',
-    cloning: 'Wird geklont …',
-    versionCurrent: 'aktuell',
-    noModules: 'Keine Module vorhanden.',
-    modulesLoadError: 'Module konnten nicht geladen werden.',
-    // Courses (right)
-    coursesHeading: 'Kurse',
-    coursesSubtitle: 'Module hierher ziehen, um sie einem Kurs hinzuzufügen.',
-    createCourse: 'Kurs erstellen',
-    createCourseTitle: 'Neuen Kurs erstellen',
-    fCourseTitle: 'Titel',
-    fCourseDescription: 'Beschreibung (optional)',
-    deleteCourse: 'Kurs löschen',
-    deleteCourseConfirm: 'Diesen Kurs wirklich löschen?',
-    removeModule: 'Modul entfernen',
-    dropHere: 'Modul hierher ziehen',
-    emptyCourse: 'Noch keine Module in diesem Kurs.',
-    noCourses: 'Noch keine Kurse vorhanden.',
-    coursesLoadError: 'Kurse konnten nicht geladen werden.',
-    dragToReorder: 'Zum Umordnen ziehen',
-    // Dialogs / shared
-    titleRequired: 'Ein Titel ist erforderlich.',
-    create: 'Erstellen',
-    creating: 'Wird erstellt …',
-    cancel: 'Abbrechen',
-  },
-
   // Edit mode (Administrator)
   editor: {
     enterEditMode: 'Bearbeiten',
