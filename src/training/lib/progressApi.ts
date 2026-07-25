@@ -33,6 +33,9 @@ export interface CatalogCourse {
   title: string
   description?: string
   published: boolean
+  familyId: string
+  version: number
+  active: boolean
   modules: ModuleSummary[]
 }
 
@@ -55,7 +58,6 @@ export type Interaction =
 
 export interface ModuleProgressRecord {
   moduleKey: string
-  version: number
   interactions: Record<string, unknown>
 }
 /** One learner's progress in one course: module version _id → its progress. */

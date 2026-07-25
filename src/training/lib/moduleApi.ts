@@ -4,19 +4,13 @@ import { getStoredToken } from '../auth/AuthContext'
 
 export interface ModuleSummary {
   id: string
-  familyId: string
   moduleKey: string
   title: string
-  version: number
-  current: boolean
   updatedAt: string
 }
 
 export interface ModuleMeta {
   moduleKey: string
-  familyId: string
-  version: number
-  current: boolean
 }
 
 /** Raw training-module payload: { module: {...}, meta }. */
@@ -43,15 +37,7 @@ async function errorMessage(res: Response): Promise<string> {
   return `Fehler (${res.status})`
 }
 
-/** Current version of every module (for the switcher / default). */
-export async function fetchModuleList(): Promise<ModuleSummary[]> {
-  const res = await fetch(`${apiBaseUrl}/modules`, { headers: authHeaders() })
-  if (!res.ok) throw new Error(await errorMessage(res))
-  const body = await res.json()
-  return body.modules as ModuleSummary[]
-}
-
-/** One module version's content, in the training schema shape (+ meta). */
+/** One module's content, in the training schema shape (+ meta). */
 export async function fetchModule(id: string): Promise<ModulePayload> {
   const res = await fetch(`${apiBaseUrl}/modules/${encodeURIComponent(id)}`, { headers: authHeaders() })
   if (!res.ok) throw new Error(await errorMessage(res))

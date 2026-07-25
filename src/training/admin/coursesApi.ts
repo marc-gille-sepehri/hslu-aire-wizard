@@ -9,6 +9,9 @@ export interface CourseWithModules {
   title: string
   description?: string
   published: boolean
+  familyId: string
+  version: number
+  active: boolean
   modules: ModuleSummary[]
 }
 
@@ -75,6 +78,28 @@ export async function updateCourse(id: string, patch: { title?: string; descript
     method: 'PUT',
     headers: authHeaders(),
     body: JSON.stringify(patch),
+  })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.course as CourseWithModules
+}
+
+/** Clone a course into a new inactive/unpublished version of its family. */
+export async function cloneCourse(id: string): Promise<CourseWithModules> {
+  const res = await fetch(`${apiBaseUrl}/admin/courses/${encodeURIComponent(id)}/clone`, {
+    method: 'POST',
+    headers: authHeaders(),
+  })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.course as CourseWithModules
+}
+
+/** Make a course version the active one for its family. */
+export async function setActiveCourseVersion(id: string): Promise<CourseWithModules> {
+  const res = await fetch(`${apiBaseUrl}/admin/courses/${encodeURIComponent(id)}/active`, {
+    method: 'PUT',
+    headers: authHeaders(),
   })
   if (!res.ok) throw await parseError(res)
   const body = await res.json()

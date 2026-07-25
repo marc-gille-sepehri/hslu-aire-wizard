@@ -72,8 +72,8 @@ export async function loadCourseProgress(asEmail?: string): Promise<ProgressSumm
     fetchUserProgress(asEmail).catch(() => []),
   ])
 
-  // "Offered" = what learners see: published courses.
-  const offered = courses.filter((c) => c.published)
+  // "Offered" = what learners see: the active, published version of each family.
+  const offered = courses.filter((c) => c.active && c.published)
   // Flatten the nested course→module progress into a moduleId→interactions map.
   const interactionsByModule = new Map<string, Record<string, unknown>>()
   const startedModuleIds = new Set<string>()

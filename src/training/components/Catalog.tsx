@@ -44,7 +44,7 @@ export default function Catalog() {
   }, [viewAs?.email, editing])
 
   const hasPublished = useMemo(
-    () => state.kind === 'ready' && state.summary.catalog.some((c) => c.published),
+    () => state.kind === 'ready' && state.summary.catalog.some((c) => c.active && c.published),
     [state],
   )
 
@@ -79,7 +79,7 @@ export default function Catalog() {
 
       <div className="space-y-8">
         {summary.catalog
-          .filter((c) => c.published)
+          .filter((c) => c.active && c.published)
           .map((course) => (
             <section key={course.id}>
               <div className="flex items-center justify-between gap-3">

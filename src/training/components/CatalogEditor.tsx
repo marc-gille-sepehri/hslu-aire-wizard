@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type DragEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
 import {
   listCourses,
   createCourse,
@@ -7,6 +7,8 @@ import {
   setCourseModules,
   createModule,
   renameModule,
+  cloneCourse,
+  setActiveCourseVersion,
   type CourseWithModules,
 } from '../admin/coursesApi'
 import type { ModuleSummary } from '../lib/moduleApi'
@@ -15,13 +17,15 @@ import { labels } from '../labels'
 const t = labels.catalogEdit
 
 /**
- * Inline course/module editor shown in the catalog's Bearbeiten mode. Admins can
- * add/remove courses, add/remove/reorder modules within a course (drag handles),
- * and rename courses and modules via editable inputs.
+ * Inline course editor (catalog Bearbeiten mode). Courses are versioned at the
+ * course level: versions of one family are grouped under a version dropdown.
+ * Admins can add/remove courses, clone a version (deep-copies its modules),
+ * activate a version, publish, edit modules and rename courses/modules.
  */
 export default function CatalogEditor() {
   const [courses, setCourses] = useState<CourseWithModules[] | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [selected, setSelected] = useState<Record<string, string>>({}) // familyId -> courseId
 
   const reload = async () => {
     try {
@@ -35,6 +39,16 @@ export default function CatalogEditor() {
     void reload()
   }, [])
 
+  const families = useMemo(() => {
+    if (!courses) return []
+    const map = new Map<string, CourseWithModules[]>()
+    for (const c of courses) {
+      if (!map.has(c.familyId)) map.set(c.familyId, [])
+      map.get(c.familyId)!.push(c)
+    }
+    return [...map.values()].map((vs) => vs.slice().sort((a, b) => a.version - b.version))
+  }, [courses])
+
   const patch = (id: string, fn: (c: CourseWithModules) => CourseWithModules) =>
     setCourses((cs) => (cs ? cs.map((c) => (c.id === id ? fn(c) : c)) : cs))
 
@@ -44,17 +58,24 @@ export default function CatalogEditor() {
     void reload()
   }
 
+  const selectedIdFor = (fam: CourseWithModules[]) => {
+    const famId = fam[0].familyId
+    const sel = selected[famId]
+    if (sel && fam.some((v) => v.id === sel)) return sel
+    return (fam.find((v) => v.active) ?? fam[fam.length - 1]).id
+  }
+
   const addCourse = async () => {
     try {
       const course = await createCourse({ title: t.newCourseTitle })
-      setCourses((cs) => (cs ? [...cs, course] : [course]))
+      setCourses((cs) => [...(cs ?? []), course])
     } catch (e) {
       fail(e)
     }
   }
 
   const removeCourse = async (course: CourseWithModules) => {
-    if (!window.confirm(t.deleteCourseConfirm(course.title || '—'))) return
+    if (!window.confirm(t.deleteVersionConfirm(course.title || '—', course.version))) return
     setCourses((cs) => (cs ? cs.filter((c) => c.id !== course.id) : cs))
     try {
       await deleteCourse(course.id)
@@ -73,12 +94,30 @@ export default function CatalogEditor() {
     updateCourse(id, { published }).catch(fail)
   }
 
+  const activate = async (courseId: string, familyId: string) => {
+    setCourses((cs) => (cs ? cs.map((c) => (c.familyId === familyId ? { ...c, active: c.id === courseId } : c)) : cs))
+    try {
+      await setActiveCourseVersion(courseId)
+    } catch (e) {
+      fail(e)
+    }
+  }
+
+  const clone = async (courseId: string) => {
+    try {
+      const nv = await cloneCourse(courseId)
+      setCourses((cs) => [...(cs ?? []), nv])
+      setSelected((s) => ({ ...s, [nv.familyId]: nv.id }))
+    } catch (e) {
+      fail(e)
+    }
+  }
+
   const addModule = async (courseId: string) => {
     try {
       const { id } = await createModule({ title: t.newModuleTitle })
       const course = courses?.find((c) => c.id === courseId)
-      const ids = [...(course?.modules.map((m) => m.id) ?? []), id]
-      const updated = await setCourseModules(courseId, ids)
+      const updated = await setCourseModules(courseId, [...(course?.modules.map((m) => m.id) ?? []), id])
       patch(courseId, () => updated)
     } catch (e) {
       fail(e)
@@ -103,11 +142,10 @@ export default function CatalogEditor() {
   }
 
   const renameMod = (moduleId: string, title: string) => {
-    // A module can appear in several courses — reflect the rename everywhere.
-    setCourses((cs) =>
-      cs
-        ? cs.map((c) => ({ ...c, modules: c.modules.map((m) => (m.id === moduleId ? { ...m, title } : m)) }))
-        : cs,
+    patch(
+      // module ids are unique per course version (clones deep-copy), so only one course holds it.
+      courses?.find((c) => c.modules.some((m) => m.id === moduleId))?.id ?? '',
+      (c) => ({ ...c, modules: c.modules.map((m) => (m.id === moduleId ? { ...m, title } : m)) }),
     )
     renameModule(moduleId, title).catch(fail)
   }
@@ -123,19 +161,27 @@ export default function CatalogEditor() {
     <div className="space-y-6">
       {error && <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800">{error}</div>}
 
-      {courses.map((course) => (
-        <CourseCard
-          key={course.id}
-          course={course}
-          onRenameCourse={(title) => renameCourse(course.id, title)}
-          onTogglePublished={(p) => togglePublished(course.id, p)}
-          onDeleteCourse={() => removeCourse(course)}
-          onAddModule={() => addModule(course.id)}
-          onRemoveModule={(mid) => removeModule(course.id, mid)}
-          onReorder={(ids) => reorderModules(course.id, ids)}
-          onRenameModule={renameMod}
-        />
-      ))}
+      {families.map((fam) => {
+        const selId = selectedIdFor(fam)
+        const course = fam.find((v) => v.id === selId)!
+        return (
+          <FamilyCard
+            key={fam[0].familyId}
+            family={fam}
+            course={course}
+            onSelectVersion={(id) => setSelected((s) => ({ ...s, [fam[0].familyId]: id }))}
+            onClone={() => clone(course.id)}
+            onActivate={() => activate(course.id, course.familyId)}
+            onRenameCourse={(title) => renameCourse(course.id, title)}
+            onTogglePublished={(p) => togglePublished(course.id, p)}
+            onDeleteCourse={() => removeCourse(course)}
+            onAddModule={() => addModule(course.id)}
+            onRemoveModule={(mid) => removeModule(course.id, mid)}
+            onReorder={(ids) => reorderModules(course.id, ids)}
+            onRenameModule={renameMod}
+          />
+        )
+      })}
 
       <button
         type="button"
@@ -148,8 +194,12 @@ export default function CatalogEditor() {
   )
 }
 
-function CourseCard({
+function FamilyCard({
+  family,
   course,
+  onSelectVersion,
+  onClone,
+  onActivate,
   onRenameCourse,
   onTogglePublished,
   onDeleteCourse,
@@ -158,7 +208,11 @@ function CourseCard({
   onReorder,
   onRenameModule,
 }: {
+  family: CourseWithModules[]
   course: CourseWithModules
+  onSelectVersion: (id: string) => void
+  onClone: () => void
+  onActivate: () => void
   onRenameCourse: (title: string) => void
   onTogglePublished: (published: boolean) => void
   onDeleteCourse: () => void
@@ -182,35 +236,69 @@ function CourseCard({
 
   return (
     <section className="rounded-xl border border-mist bg-white p-4">
-      <div className="flex items-center gap-2">
-        <DebouncedInput
-          value={course.title}
-          onCommit={onRenameCourse}
-          placeholder={t.courseTitlePlaceholder}
-          className="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-2 py-1.5 text-lg font-semibold text-navy outline-none hover:border-mist focus:border-navy focus:bg-white"
-        />
-        <label
-          className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-mist px-2 py-1.5 text-xs font-medium text-navy"
-          title={t.publishedHint}
-        >
-          <input
-            type="checkbox"
-            checked={course.published}
-            onChange={(e) => onTogglePublished(e.target.checked)}
-            className="h-4 w-4 accent-navy"
-          />
-          {t.published}
-        </label>
-        <button
-          type="button"
-          onClick={onDeleteCourse}
-          title={t.deleteCourse}
-          aria-label={t.deleteCourse}
-          className="shrink-0 rounded-md border border-mist p-1.5 text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700"
-        >
-          <TrashIcon />
-        </button>
+      {/* Version bar */}
+      <div className="mb-3 flex flex-wrap items-center gap-2 border-b border-mist pb-3">
+        {family.length > 1 ? (
+          <select
+            value={course.id}
+            onChange={(e) => onSelectVersion(e.target.value)}
+            className="rounded-md border border-mist bg-white px-2 py-1.5 text-sm font-medium text-navy"
+          >
+            {family.map((v) => (
+              <option key={v.id} value={v.id}>
+                {t.version(v.version)}
+                {v.active ? ` · ${t.activeTag}` : v.published ? '' : ` · ${t.draftTag}`}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span className="rounded-md bg-cream px-2 py-1.5 text-sm font-medium text-navy">{t.version(course.version)}</span>
+        )}
+
+        {course.active ? (
+          <span className="rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">{t.isActive}</span>
+        ) : (
+          <button
+            type="button"
+            onClick={onActivate}
+            className="rounded-md border border-navy/40 px-2.5 py-1 text-xs font-semibold text-navy transition-colors hover:bg-navy hover:text-white"
+          >
+            {t.setActive}
+          </button>
+        )}
+
+        <div className="ml-auto flex items-center gap-2">
+          <label className="flex cursor-pointer items-center gap-1.5 rounded-md border border-mist px-2 py-1 text-xs font-medium text-navy" title={t.publishedHint}>
+            <input type="checkbox" checked={course.published} onChange={(e) => onTogglePublished(e.target.checked)} className="h-4 w-4 accent-navy" />
+            {t.published}
+          </label>
+          <button
+            type="button"
+            onClick={onClone}
+            title={t.clone}
+            className="rounded-md border border-mist px-2.5 py-1 text-xs font-semibold text-navy transition-colors hover:border-navy hover:bg-cream"
+          >
+            {t.clone}
+          </button>
+          <button
+            type="button"
+            onClick={onDeleteCourse}
+            title={t.deleteVersion}
+            aria-label={t.deleteVersion}
+            className="rounded-md border border-mist p-1.5 text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700"
+          >
+            <TrashIcon />
+          </button>
+        </div>
       </div>
+
+      {/* Selected version content */}
+      <DebouncedInput
+        value={course.title}
+        onCommit={onRenameCourse}
+        placeholder={t.courseTitlePlaceholder}
+        className="w-full rounded-md border border-transparent bg-transparent px-2 py-1.5 text-lg font-semibold text-navy outline-none hover:border-mist focus:border-navy focus:bg-white"
+      />
 
       <ul className="mt-3 space-y-2 list-none">
         {course.modules.length === 0 && <li className="px-2 text-sm text-slate-400">{t.noModules}</li>}
@@ -219,9 +307,7 @@ function CourseCard({
             key={m.id}
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => onDrop(m.id)}
-            className={`flex items-center gap-2 rounded-md border border-mist bg-cream/40 px-2 py-1.5 ${
-              dragId === m.id ? 'opacity-50' : ''
-            }`}
+            className={`flex items-center gap-2 rounded-md border border-mist bg-cream/40 px-2 py-1.5 ${dragId === m.id ? 'opacity-50' : ''}`}
           >
             <span
               draggable
@@ -283,7 +369,6 @@ function DebouncedInput({
 }) {
   const [text, setText] = useState(value)
   const timer = useRef<number | null>(null)
-  // Keep in sync if the value changes from outside (e.g. reload) while not focused.
   useEffect(() => {
     setText(value)
   }, [value])
