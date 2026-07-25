@@ -24,6 +24,8 @@ export default function Catalog() {
   const { viewAs } = useViewAs()
   const [state, setState] = useState<State>({ kind: 'loading' })
   const [participantsFor, setParticipantsFor] = useState<{ id: string; title: string } | null>(null)
+  // Admins can preview unpublished (but active) courses by turning this off.
+  const [onlyPublished, setOnlyPublished] = useState(true)
 
   useEffect(() => {
     let cancelled = false
@@ -43,9 +45,16 @@ export default function Catalog() {
     // Reload when leaving edit mode so inline course/module edits show in the view.
   }, [viewAs?.email, editing])
 
-  const hasPublished = useMemo(
-    () => state.kind === 'ready' && state.summary.catalog.some((c) => c.active && c.published),
-    [state],
+  // What the catalog shows: the active version of each family. Learners (and the
+  // default admin view) only see published ones; an admin can reveal unpublished
+  // active versions with the "Nur Veröffentlichte" switch.
+  const showUnpublished = isAdmin && !onlyPublished
+  const visibleCourses = useMemo(
+    () =>
+      state.kind === 'ready'
+        ? state.summary.catalog.filter((c) => c.active && (c.published || showUnpublished))
+        : [],
+    [state, showUnpublished],
   )
 
   if (state.kind === 'loading') {
@@ -66,8 +75,24 @@ export default function Catalog() {
       {!editing && summary.offeredCount > 0 && <ProgressDashboard summary={summary} />}
 
       <header className="mb-8 pb-6 border-b border-slate-200">
-        <h1 className="text-3xl font-bold text-slate-800">{labels.catalog.heading}</h1>
-        <p className="text-sm text-slate-500 mt-1">{labels.catalog.intro}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-800">{labels.catalog.heading}</h1>
+            <p className="text-sm text-slate-500 mt-1">{labels.catalog.intro}</p>
+          </div>
+          {/* Admin-only: reveal unpublished (but active) course versions. */}
+          {isAdmin && !editing && (
+            <label className="flex shrink-0 cursor-pointer items-center gap-2 pt-1 text-sm text-slate-600 select-none">
+              <input
+                type="checkbox"
+                checked={onlyPublished}
+                onChange={(e) => setOnlyPublished(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-navy focus:ring-navy"
+              />
+              {labels.catalog.onlyPublished}
+            </label>
+          )}
+        </div>
       </header>
 
       {/* Edit mode: inline course/module editor (add/remove/reorder/rename). */}
@@ -75,15 +100,20 @@ export default function Catalog() {
         <CatalogEditor />
       ) : (
         <>
-      {!hasPublished && <p className="text-slate-500">{labels.catalog.empty}</p>}
+      {visibleCourses.length === 0 && <p className="text-slate-500">{labels.catalog.empty}</p>}
 
       <div className="space-y-8">
-        {summary.catalog
-          .filter((c) => c.active && c.published)
-          .map((course) => (
+        {visibleCourses.map((course) => (
             <section key={course.id}>
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-lg font-semibold text-slate-800">{course.title}</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-semibold text-slate-800">{course.title}</h2>
+                  {!course.published && (
+                    <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                      {labels.catalog.unpublishedTag}
+                    </span>
+                  )}
+                </div>
                 {isAdmin && (
                   <button
                     type="button"

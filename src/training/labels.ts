@@ -29,6 +29,8 @@ export const labels = {
     inProgress: 'In Bearbeitung',
     open: 'Öffnen',
     backToCatalog: '← Alle Kurse',
+    onlyPublished: 'Nur Veröffentlichte',
+    unpublishedTag: 'Unveröffentlicht',
   },
 
   // Teilnehmeransicht (admin views a learner's progress/work)
