@@ -5,6 +5,7 @@ import { useEditMode } from '../editor/EditModeContext'
 import { useViewAs } from '../state/ViewAsContext'
 import ProgressDashboard from './ProgressDashboard'
 import ParticipantsDialog from './ParticipantsDialog'
+import CatalogEditor from './CatalogEditor'
 import { labels } from '../labels'
 
 type State =
@@ -68,6 +69,11 @@ export default function Catalog() {
         <p className="text-sm text-slate-500 mt-1">{labels.catalog.intro}</p>
       </header>
 
+      {/* Edit mode: inline course/module editor (add/remove/reorder/rename). */}
+      {editing ? (
+        <CatalogEditor />
+      ) : (
+        <>
       {!hasAnyModule && <p className="text-slate-500">{labels.catalog.empty}</p>}
 
       <div className="space-y-8">
@@ -117,6 +123,8 @@ export default function Catalog() {
             </section>
           ))}
       </div>
+        </>
+      )}
 
       {participantsFor && (
         <ParticipantsDialog

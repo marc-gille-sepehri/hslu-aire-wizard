@@ -45,6 +45,23 @@ export const labels = {
     close: 'Schliessen',
   },
 
+  // Inline course/module editing in the catalog's Bearbeiten mode
+  catalogEdit: {
+    addCourse: 'Kurs hinzufügen',
+    deleteCourse: 'Kurs löschen',
+    deleteCourseConfirm: (title: string) => `Kurs „${title}" wirklich löschen?`,
+    courseTitlePlaceholder: 'Kurstitel',
+    addModule: 'Modul hinzufügen',
+    removeModule: 'Modul aus Kurs entfernen',
+    moduleTitlePlaceholder: 'Modultitel',
+    dragToReorder: 'Zum Umordnen ziehen',
+    newCourseTitle: 'Neuer Kurs',
+    newModuleTitle: 'Neues Modul',
+    noModules: 'Noch keine Module in diesem Kurs.',
+    loadError: 'Kurse konnten nicht geladen werden.',
+    saveError: 'Änderung konnte nicht gespeichert werden.',
+  },
+
   // Learner progress dashboard (top of the catalog)
   dashboard: {
     completedCourses: 'Abgeschlossene Kurse',

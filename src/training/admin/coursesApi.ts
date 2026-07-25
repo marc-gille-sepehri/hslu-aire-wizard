@@ -76,6 +76,28 @@ export async function deleteCourse(id: string): Promise<void> {
   if (!res.ok) throw await parseError(res)
 }
 
+/** Rename / re-describe a course. */
+export async function updateCourse(id: string, patch: { title?: string; description?: string }): Promise<CourseWithModules> {
+  const res = await fetch(`${apiBaseUrl}/admin/courses/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(patch),
+  })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.course as CourseWithModules
+}
+
+/** Rename a module (title only). */
+export async function renameModule(id: string, title: string): Promise<void> {
+  const res = await fetch(`${apiBaseUrl}/admin/modules/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify({ title }),
+  })
+  if (!res.ok) throw await parseError(res)
+}
+
 /** Set the full ordered module-id list of a course (used for add, remove, reorder). */
 export async function setCourseModules(id: string, moduleIds: string[]): Promise<CourseWithModules> {
   const res = await fetch(`${apiBaseUrl}/admin/courses/${encodeURIComponent(id)}/modules`, {
