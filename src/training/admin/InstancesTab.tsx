@@ -26,7 +26,8 @@ function People({ people }: { people: InstancePerson[] }) {
 export default function InstancesTab() {
   const [instances, setInstances] = useState<CourseInstance[] | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  // null = closed; { instance: null } = create; { instance } = edit.
+  const [dialog, setDialog] = useState<{ instance: CourseInstance | null } | null>(null)
 
   const reload = useCallback(() => {
     listCourseInstances()
@@ -44,7 +45,7 @@ export default function InstancesTab() {
         <h2 className="font-display text-lg font-bold text-navy">{t.heading}</h2>
         <button
           type="button"
-          onClick={() => setDialogOpen(true)}
+          onClick={() => setDialog({ instance: null })}
           className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-gold-dark"
         >
           {t.add}
@@ -61,6 +62,9 @@ export default function InstancesTab() {
               <th className="px-4 py-3 font-semibold">{t.colTrainers}</th>
               <th className="px-4 py-3 font-semibold">{t.colParticipants}</th>
               <th className="px-4 py-3 font-semibold">{t.colStart}</th>
+              <th className="px-4 py-3 text-right font-semibold">
+                <span className="sr-only">{t.colActions}</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -75,11 +79,25 @@ export default function InstancesTab() {
                 <td className="px-4 py-3"><People people={i.trainers} /></td>
                 <td className="px-4 py-3"><People people={i.participants} /></td>
                 <td className="px-4 py-3 text-slate-600">{fmtDate(i.startDate)}</td>
+                <td className="px-4 py-3 text-right">
+                  <button
+                    type="button"
+                    onClick={() => setDialog({ instance: i })}
+                    aria-label={t.edit}
+                    title={t.edit}
+                    className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-cream hover:text-navy"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                    </svg>
+                  </button>
+                </td>
               </tr>
             ))}
             {instances && instances.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-sm text-slate-400">
+                <td colSpan={5} className="px-4 py-8 text-center text-sm text-slate-400">
                   {t.noInstances}
                 </td>
               </tr>
@@ -88,11 +106,12 @@ export default function InstancesTab() {
         </table>
       </div>
 
-      {dialogOpen && (
+      {dialog && (
         <InstanceDialog
-          onClose={() => setDialogOpen(false)}
-          onCreated={() => {
-            setDialogOpen(false)
+          instance={dialog.instance}
+          onClose={() => setDialog(null)}
+          onSaved={() => {
+            setDialog(null)
             reload()
           }}
         />

@@ -225,6 +225,17 @@ export async function createCourseInstance(input: CreateInstanceInput): Promise<
   return body.instance
 }
 
+export async function updateCourseInstance(id: string, input: CreateInstanceInput): Promise<{ id: string }> {
+  const res = await fetch(`${apiBaseUrl}/admin/course-instances/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.instance
+}
+
 export async function setDeactivated(email: string, deactivated: boolean): Promise<AdminUser> {
   const res = await fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(email)}/deactivated`, {
     method: 'POST',

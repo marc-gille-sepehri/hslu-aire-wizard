@@ -316,6 +316,11 @@ export const labels = {
     // action + dialog
     add: 'Durchführung anlegen',
     newInstance: 'Neue Durchführung',
+    editInstance: 'Durchführung bearbeiten',
+    edit: 'Bearbeiten',
+    save: 'Speichern',
+    saving: 'Wird gespeichert …',
+    colActions: 'Aktionen',
     fCourse: 'Kurs',
     fParticipants: 'Teilnehmer',
     fTrainers: 'Trainer',

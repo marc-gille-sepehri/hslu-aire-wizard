@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { labels } from '../labels'
-import { listUsers, createCourseInstance, type AdminUser } from './adminApi'
+import {
+  listUsers,
+  createCourseInstance,
+  updateCourseInstance,
+  type AdminUser,
+  type CourseInstance,
+} from './adminApi'
 import { listCourses, type CourseWithModules } from './coursesApi'
 
 const t = labels.adminInstances
@@ -12,20 +18,27 @@ function ymd(d: Date): string {
   return `${d.getFullYear()}-${m}-${day}`
 }
 
-/** Create a course instance: pick course, participants, trainers and a start date. */
+/**
+ * Create or edit a course instance: pick course, participants, trainers and a
+ * start date. Pass `instance` to edit an existing one (fields are prefilled);
+ * omit it to create a new one.
+ */
 export default function InstanceDialog({
+  instance,
   onClose,
-  onCreated,
+  onSaved,
 }: {
+  instance?: CourseInstance | null
   onClose: () => void
-  onCreated: () => void
+  onSaved: () => void
 }) {
+  const editing = !!instance
   const [courses, setCourses] = useState<CourseWithModules[]>([])
-  const [courseId, setCourseId] = useState('')
+  const [courseId, setCourseId] = useState(instance?.courseId ?? '')
   const [users, setUsers] = useState<AdminUser[]>([])
-  const [participants, setParticipants] = useState<string[]>([])
-  const [trainers, setTrainers] = useState<string[]>([])
-  const [startDate, setStartDate] = useState(ymd(new Date()))
+  const [participants, setParticipants] = useState<string[]>(instance?.participants.map((p) => p.email) ?? [])
+  const [trainers, setTrainers] = useState<string[]>(instance?.trainers.map((p) => p.email) ?? [])
+  const [startDate, setStartDate] = useState(instance ? ymd(new Date(instance.startDate)) : ymd(new Date()))
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -39,7 +52,8 @@ export default function InstanceDialog({
     listCourses()
       .then((list) => {
         setCourses(list)
-        if (list.length > 0) setCourseId(list[0].id)
+        // Default to the first course only when creating; keep the edited one.
+        if (!editing && list.length > 0) setCourseId(list[0].id)
       })
       .catch(() => setCourses([]))
     listUsers(false)
@@ -54,13 +68,18 @@ export default function InstanceDialog({
     if (!canSubmit) return
     setBusy(true)
     try {
-      await createCourseInstance({
+      const payload = {
         courseId,
         participantEmails: participants,
         trainerEmails: trainers,
         startDate,
-      })
-      onCreated()
+      }
+      if (instance) {
+        await updateCourseInstance(instance.id, payload)
+      } else {
+        await createCourseInstance(payload)
+      }
+      onSaved()
     } catch (e) {
       setError((e as Error).message)
     } finally {
@@ -79,7 +98,7 @@ export default function InstanceDialog({
     >
       <div className="w-full max-w-md rounded-2xl border border-mist bg-white shadow-lg">
         <div className="flex items-center justify-between border-b border-mist bg-cream px-6 py-4">
-          <h2 className="font-display text-lg font-bold text-navy">{t.newInstance}</h2>
+          <h2 className="font-display text-lg font-bold text-navy">{editing ? t.editInstance : t.newInstance}</h2>
           <button type="button" onClick={onClose} aria-label={t.cancel} className="text-slate-400 hover:text-navy">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M18 6 6 18M6 6l12 12" />
@@ -131,7 +150,7 @@ export default function InstanceDialog({
             disabled={busy || !canSubmit}
             className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-gold-dark disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {busy ? t.creating : t.create}
+            {busy ? (editing ? t.saving : t.creating) : editing ? t.save : t.create}
           </button>
         </div>
       </div>
