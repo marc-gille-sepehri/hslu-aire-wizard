@@ -5,6 +5,7 @@ import { useRecordInteraction } from '../../state/ProgressContext'
 import { useLearner } from '../../state/LearnerStateContext'
 import { labels } from '../../labels'
 import { Markdown } from '../../lib/markdown'
+import MarkdownEditor from '../../editor/MarkdownEditor'
 
 const t = labels.docConvert
 
@@ -25,7 +26,9 @@ export default function DocConvert({ artifact }: { artifact: DocConvertArtifact 
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<ConvertResult | null>(null)
   const [tab, setTab] = useState<Tab>('markdown')
-  const [rawMd, setRawMd] = useState(false)
+  // Editable markdown shown in the same editor as the text block.
+  const [markdown, setMarkdown] = useState('')
+  const [copied, setCopied] = useState(false)
 
   const convert = async (file?: File) => {
     if (!file || busy) return
@@ -36,7 +39,8 @@ export default function DocConvert({ artifact }: { artifact: DocConvertArtifact 
       const res = await convertDocument(file)
       setResult(res)
       setTab('markdown')
-      setRawMd(false)
+      setMarkdown(res.kind === 'excel' ? res.excel!.markdown : res.markdown ?? '')
+      setCopied(false)
       record(artifact.id, { type: 'docconvert', converted: true })
       if (artifact.tracked !== false) markComplete(artifact.id)
     } catch (e) {
@@ -47,7 +51,16 @@ export default function DocConvert({ artifact }: { artifact: DocConvertArtifact 
   }
 
   const isExcel = result?.kind === 'excel'
-  const markdown = isExcel ? result!.excel!.markdown : result?.markdown ?? ''
+
+  const copyAll = async () => {
+    try {
+      await navigator.clipboard.writeText(markdown)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1500)
+    } catch {
+      /* clipboard unavailable — ignore */
+    }
+  }
 
   return (
     <div className="rounded-lg border border-mist bg-white">
@@ -94,21 +107,15 @@ export default function DocConvert({ artifact }: { artifact: DocConvertArtifact 
                 </div>
               )}
               {(!isExcel || tab === 'markdown') && (
-                <button type="button" onClick={() => setRawMd((v) => !v)} className="ml-auto text-xs font-medium text-slate-500 hover:text-navy">
-                  {rawMd ? t.rendered : t.raw}
+                <button type="button" onClick={copyAll} className="ml-auto text-xs font-medium text-slate-500 hover:text-navy">
+                  {copied ? t.copied : t.copyAll}
                 </button>
               )}
             </div>
 
-            {/* Markdown tab (documents + excel) */}
+            {/* Markdown tab (documents + excel) — same editor as the text block. */}
             {(!isExcel || tab === 'markdown') && (
-              rawMd ? (
-                <pre className="max-h-96 overflow-auto rounded-md border border-mist bg-navy/95 px-3 py-2 font-mono text-xs text-cream whitespace-pre-wrap">{markdown}</pre>
-              ) : (
-                <div className="max-h-96 overflow-auto rounded-md border border-mist px-3 py-2">
-                  <Markdown text={markdown} />
-                </div>
-              )
+              <MarkdownEditor value={markdown} onChange={setMarkdown} />
             )}
 
             {/* Serialized tab (excel) */}

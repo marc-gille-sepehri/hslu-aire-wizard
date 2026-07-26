@@ -242,6 +242,8 @@ export const labels = {
     converting: 'Konvertiere …',
     raw: 'Rohtext',
     rendered: 'Gerendert',
+    copyAll: 'Alles kopieren',
+    copied: 'Kopiert ✓',
     tab: { markdown: 'Markdown', serialized: 'Serialisiert', analysis: 'Analyse' },
   },
 
