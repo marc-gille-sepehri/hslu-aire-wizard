@@ -9,6 +9,8 @@ import AwardResultsPage from './pages/AwardResultsPage'
 import MarketTestPage from './pages/MarketTestPage'
 import TrainingApp from './training/TrainingApp'
 import AdminApp from './training/admin/AdminApp'
+import EnforcementSignalApp from './training/enforcement/EnforcementSignalApp'
+import { hasCoderAccess } from './training/enforcement/enforcementApi'
 import { useAuth } from './training/auth/AuthContext'
 import { apiBaseUrl, contactEmail } from './config/configuration'
 import './App.css'
@@ -20,6 +22,8 @@ function App() {
   const navigate = useNavigate()
   const { status, user, logout } = useAuth()
   const isAdmin = !!user?.roles?.includes('Administrator')
+  // Same gate as the server: coders and Administrators reach the coding route.
+  const isCoder = hasCoderAccess(user?.roles)
 
   const handleContactSubmit = async (e) => {
     e.preventDefault()
@@ -102,6 +106,7 @@ function App() {
               <Link to="/statistics">Statistiken</Link>
               <Link to="/market-test">Marktdaten</Link>
               {status === 'authenticated' && user && <Link to="/training">Training</Link>}
+              {isCoder && <Link to="/enforcement-signal">Kodierung</Link>}
               {isAdmin && <Link to="/admin">Administration</Link>}
               {location.pathname === '/' && (
                 <a href="#contact" onClick={(e) => { e.preventDefault(); const element = document.getElementById('contact'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Kontakt</a>
@@ -134,6 +139,7 @@ function App() {
           <Route path="/training/:moduleId" element={<TrainingApp />} />
           <Route path="/training/:courseId/:moduleId" element={<TrainingApp />} />
           <Route path="/admin" element={<AdminApp />} />
+          <Route path="/enforcement-signal" element={<EnforcementSignalApp />} />
         </Routes>
       </main>
 

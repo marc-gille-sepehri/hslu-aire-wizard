@@ -455,4 +455,76 @@ export const labels = {
     mdDropHint: 'Dateien hier ablegen zum Hochladen',
     mdUploading: 'Lädt hoch …',
   },
+
+  // Kodieroberfläche der Enforcement-Signal-Studie (/enforcement-signal)
+  enforcement: {
+    title: 'Kodierung Enforcement-Signal',
+    noAccess: 'Kein Zugriff — dieser Bereich ist den Kodiererinnen und Kodierern der Studie vorbehalten.',
+    noOpenStudy: 'Zurzeit läuft keine Erhebung.',
+    loading: 'Wird geladen …',
+    loadError: 'Die Sitzung konnte nicht geladen werden.',
+    retry: 'Erneut versuchen',
+
+    // Startseite
+    introHeading: 'Kodierprotokoll',
+    introLead:
+      'Bitte lesen Sie das Protokoll vollständig, bevor Sie beginnen. Es bleibt während der Kodierung jederzeit aufklappbar.',
+    acknowledge: 'Ich habe das Protokoll gelesen',
+
+    // Protokoll-Panel während der Kodierung
+    protocolPanel: 'Kodierprotokoll',
+
+    // Item-Ansicht
+    position: (n: number, total: number) => `Item ${n} von ${total}`,
+    undecidable: 'nicht entscheidbar',
+    optional: '(optional)',
+    yes: 'Ja',
+    no: 'Nein',
+    excerptTruncated: 'Der Auszug ist gekürzt.',
+    rangeHint: (min: number, max: number) => `${min}–${max}`,
+    rangeMinHint: (min: number) => `ab ${min}`,
+    rangeMaxHint: (max: number) => `bis ${max}`,
+    lookedUp: 'Ich habe über den gezeigten Text hinaus nachgeschlagen',
+    lookedUpHint: 'Nachschlagen ist erlaubt und erwünscht — es wird lediglich gezählt.',
+    commentLabel: 'Bemerkung (optional)',
+    commentPlaceholder: 'z. B. worin die Unklarheit besteht',
+    next: 'Weiter',
+    saving: 'Wird gespeichert …',
+    saveError: 'Die Antwort konnte nicht gespeichert werden. Bitte erneut versuchen.',
+    itemError: 'Das Item konnte nicht geladen werden.',
+    numberInvalid: 'Bitte eine ganze Zahl eingeben.',
+    numberMin: (min: number) => `Der Wert muss mindestens ${min} betragen.`,
+    numberMax: (max: number) => `Der Wert darf höchstens ${max} betragen.`,
+
+    // Korrekturfunktion
+    correctionsOpen: 'Frühere Antwort korrigieren',
+    correctionsHeading: 'Bereits kodierte Items',
+    correctionsIntro:
+      'Eine Korrektur ersetzt die ursprüngliche Antwort nicht, sondern wird als neue Fassung gespeichert.',
+    correctionsLocalNote:
+      'Diese Liste wird in diesem Browser geführt. An einem anderen Gerät erscheint sie leer — die Kodierungen selbst liegen unverändert auf dem Server.',
+    correctionsEmpty: 'Noch nichts kodiert.',
+    correctionOf: (n: number) => `Korrektur zu Item ${n}`,
+    saveCorrection: 'Korrektur speichern',
+    back: 'Zurück zur Kodierung',
+    ratedAt: (d: string) => `kodiert am ${d}`,
+
+    // Alle Items kodiert, noch nicht abgeschlossen
+    finishHeading: 'Alle Items kodiert',
+    finishCount: (n: number) => (n === 1 ? 'Sie haben 1 Item kodiert.' : `Sie haben ${n} Items kodiert.`),
+    finishHint:
+      'Mit dem Abschluss wird die Kodierung gesperrt. Danach sind keine Eingaben und keine Korrekturen mehr möglich.',
+    finish: 'Kodierung abschliessen',
+    finishConfirm: 'Endgültig abschliessen',
+    finishCancel: 'Abbrechen',
+    finishing: 'Wird abgeschlossen …',
+    finishError: 'Der Abschluss konnte nicht gespeichert werden. Bitte erneut versuchen.',
+
+    // Abschlussseite
+    doneHeading: 'Kodierung abgeschlossen',
+    doneCount: (n: number) =>
+      n === 1 ? '1 Item wurde kodiert und übermittelt.' : `${n} Items wurden kodiert und übermittelt.`,
+    doneLocked: 'Weitere Eingaben sind nicht mehr möglich.',
+    doneThanks: 'Vielen Dank für Ihre Mitarbeit.',
+  },
 } as const
