@@ -9,7 +9,7 @@
   background: rgba(11, 36, 71, 0.96);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 1.75rem 0;
+  padding: 1.1rem 0;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -20,12 +20,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* Keeps the nav off the logos once the row gets tight. Without it the two
+     groups butt up against each other and "Home" lands on the IB wordmark. */
+  gap: 1.25rem;
+  /* Below roughly 1070px a signed-in Administrator's nav no longer fits beside
+     the logos, and the stacked mobile header only starts at 768px. Wrapping
+     lets the nav drop to its own row exactly when it has to — and costs
+     nothing while it still fits. */
+  flex-wrap: wrap;
+  row-gap: 0.75rem;
 }
 
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.85rem;
+  flex-shrink: 0;
 }
 
 .site-logo-link {
@@ -41,7 +51,7 @@
 
 .site-logo {
   margin: 0;
-  margin-right: 0.5rem;
+  margin-right: 0;
   padding: 0;
   display: flex;
   align-items: center;
@@ -50,7 +60,7 @@
 
 .site-logo span {
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 1.35rem;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.5px;
@@ -96,7 +106,7 @@
 }
 
 .hslu-logo {
-  height: 2rem;
+  height: 1.3rem;
   width: auto;
   display: block;
   margin: 0;
@@ -117,7 +127,7 @@
 }
 
 .ib-logo {
-  height: 2rem;
+  height: 1.3rem;
   width: auto;
   display: block;
   object-fit: contain;
@@ -125,15 +135,20 @@
 
 .site-nav {
   display: flex;
-  gap: 2.5rem;
+  gap: 0.8rem;
   align-items: center;
+  /* Last resort below the wrap point of .header-content: the links break to a
+     further line instead of pushing the row wider than the viewport. */
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .site-nav a {
   color: rgba(255, 255, 255, 0.72);
   text-decoration: none;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.82rem;
+  white-space: nowrap;
   transition: color 0.2s ease;
   position: relative;
   letter-spacing: 0.2px;
@@ -162,14 +177,14 @@
 .site-nav .nav-auth {
   display: inline-flex;
   align-items: center;
-  gap: 0.85rem;
-  padding-left: 1.25rem;
+  gap: 0.6rem;
+  padding-left: 0.9rem;
   border-left: 1px solid rgba(255, 255, 255, 0.15);
 }
 .site-nav .nav-user {
   color: #ffffff;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   white-space: nowrap;
 }
 .site-nav .nav-auth-btn {
@@ -177,9 +192,10 @@
   border: 1px solid rgba(255, 255, 255, 0.35);
   color: rgba(255, 255, 255, 0.9);
   font-family: inherit;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  padding: 0.3rem 0.9rem;
+  padding: 0.28rem 0.75rem;
+  white-space: nowrap;
   border-radius: 999px;
   cursor: pointer;
   transition: color 0.2s ease, border-color 0.2s ease;
@@ -1008,6 +1024,41 @@
   }
 }
 
+/* The crunch zone: signed-in Administrators carry the longest nav (Home …
+   Kodierung, Administration, name, Abmelden). Tighten once more here so the row
+   survives without wrapping down to the stacked mobile header. */
+@media (max-width: 1100px) {
+  .logo-container {
+    gap: 0.6rem;
+  }
+
+  .site-logo span {
+    font-size: 1.2rem;
+  }
+
+  .hslu-logo,
+  .ib-logo {
+    height: 1.15rem;
+  }
+
+  .site-nav {
+    gap: 0.6rem;
+  }
+
+  .site-nav a {
+    font-size: 0.78rem;
+  }
+
+  .site-nav .nav-user {
+    font-size: 0.78rem;
+  }
+
+  .site-nav .nav-auth {
+    gap: 0.5rem;
+    padding-left: 0.6rem;
+  }
+}
+
 @media (max-width: 768px) {
   .site-header {
     padding: 1rem 0;
@@ -1031,20 +1082,20 @@
   }
 
   .site-logo span {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
 
   .hslu-logo {
-    height: 1.5rem;
+    height: 1.3rem;
   }
 
   .ib-logo {
-    height: 1.5rem;
+    height: 1.3rem;
   }
 
   .hslu-logo-link svg,
   .hslu-logo svg {
-    height: 1.5rem;
+    height: 1.3rem;
   }
 
   .site-nav {
