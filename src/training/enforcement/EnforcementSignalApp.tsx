@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import '../styles.css'
 import { labels } from '../labels'
 import { useAuth } from '../auth/AuthContext'
-import LoginGate from '../auth/LoginGate'
 import { Markdown } from '../lib/markdown'
 import ItemForm, { type ItemSubmission } from './ItemForm'
 import { PROTOCOL_DRAFT, PROTOCOL_MARKDOWN } from './protocol'
@@ -10,11 +10,13 @@ import {
   EnforcementError,
   fetchItemForCorrection,
   fetchNextItem,
+  fetchSampleItem,
   fetchSession,
   hasCoderAccess,
   postRating,
   postSubmit,
   type ItemWithRating,
+  type SampleItem,
   type StudyItem,
   type StudySession,
 } from './enforcementApi'
@@ -38,35 +40,126 @@ const t = labels.enforcement
 // nur das eine Item, das der Server liefert; die Randomisierung kann darum auch
 // nicht durch die Oberfläche lecken.
 
-/** Route root: login required, coder-or-admin required, then the session. */
+/**
+ * Route root. Reading is open to everyone, writing is not: only the coder role
+ * or an Administrator gets a session, an assignment and a way to submit. Anyone
+ * else — signed out or signed in without the role — sees the protocol and one
+ * sample item, both read-only. That split mirrors the server, which serves the
+ * public preview without a token and refuses to write without the role.
+ */
 export default function EnforcementSignalApp() {
   const { status, user } = useAuth()
 
   if (status === 'checking') {
     return <Shell><p className="text-slate-500">{labels.auth.checking}</p></Shell>
   }
-  if (status === 'anonymous') {
-    return (
-      <div className="training-root font-sans">
-        <LoginGate />
-      </div>
-    )
-  }
-  // Mirrors the server gate: an Administrator is a coder like any other here.
-  if (!user || !hasCoderAccess(user.roles)) {
-    return (
-      <Shell>
-        <div className="rounded-md border border-red-300 bg-red-50 p-4 text-red-800">{t.noAccess}</div>
-      </Shell>
-    )
-  }
-  return <CodingSession email={user.email} />
+  const canWrite = status === 'authenticated' && !!user && hasCoderAccess(user.roles)
+  if (!canWrite) return <Shell><ReadOnlyView /></Shell>
+  return <CodingSession email={user!.email} />
 }
 
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="training-root font-sans">
+    <div className="training-root es-scope font-sans">
       <div className="mx-auto max-w-[46rem] px-4 py-8">{children}</div>
+    </div>
+  )
+}
+
+/**
+ * What everyone without write access sees: the protocol, and behind one click a
+ * single sample item with the full instrument, inert. No session, no assignment,
+ * no rating path — this branch never calls a write endpoint.
+ */
+function ReadOnlyView() {
+  const [example, setExample] = useState(false)
+  return example ? <ExamplePage onBack={() => setExample(false)} /> : <ProtocolPage onExample={() => setExample(true)} />
+}
+
+/** The notice the read-only branch leads with. Set off, not buried in prose. */
+function ReadOnlyNotice({ compact = false }: { compact?: boolean }) {
+  const r = t.readOnly
+  return (
+    <aside className="rounded-md border border-gold/60 border-l-4 border-l-gold bg-gold-soft px-5 py-4">
+      <p className="font-display text-sm font-bold uppercase tracking-kicker text-navy">{r.heading}</p>
+      {!compact && <p className="mt-2 max-w-prose text-sm leading-relaxed text-slate-800">{r.body}</p>}
+      <p className="mt-2 text-sm text-slate-800">
+        {r.loginHint}{' '}
+        <Link to="/training" className="font-semibold text-navy underline underline-offset-2 hover:text-gold-dark">
+          {r.login}
+        </Link>
+      </p>
+    </aside>
+  )
+}
+
+/** Read-only counterpart of IntroPage: same protocol, no acknowledgement. */
+function ProtocolPage({ onExample }: { onExample: () => void }) {
+  return (
+    <div className="space-y-6">
+      <h1 className="font-display text-2xl font-bold text-navy">{t.introHeading}</h1>
+
+      <ReadOnlyNotice />
+
+      {PROTOCOL_DRAFT && <DraftNotice />}
+
+      <div className="max-w-prose">
+        <Markdown text={PROTOCOL_MARKDOWN} />
+      </div>
+
+      <div className="border-t border-mist pt-5">
+        <button
+          type="button"
+          onClick={onExample}
+          className="rounded-md bg-navy px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-light"
+        >
+          {t.readOnly.showExample}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function ExamplePage({ onBack }: { onBack: () => void }) {
+  const [sample, setSample] = useState<SampleItem | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  const load = useCallback(() => {
+    setError(null)
+    fetchSampleItem()
+      .then(setSample)
+      .catch((e) =>
+        setError(e instanceof EnforcementError && e.code === 'NO_OPEN_STUDY' ? t.noOpenStudy : t.readOnly.exampleError),
+      )
+  }, [])
+
+  useEffect(load, [load])
+
+  return (
+    <div className="space-y-6">
+      <ReadOnlyNotice compact />
+
+      {error ? (
+        <ErrorBox message={error} onRetry={load} />
+      ) : !sample ? (
+        <p className="text-slate-500">{t.loading}</p>
+      ) : (
+        <>
+          <p className="max-w-prose text-sm text-slate-500">{t.readOnly.exampleLead(sample.totalItems)}</p>
+          <ItemForm
+            key={sample.item.itemId}
+            item={sample.item}
+            heading={t.readOnly.exampleHeading}
+            submitLabel={t.next}
+            readOnly
+            busy={false}
+            error={null}
+            onSubmit={() => {}}
+          />
+        </>
+      )}
+
+      <BackLink label={t.readOnly.backToProtocol} onClick={onBack} />
     </div>
   )
 }

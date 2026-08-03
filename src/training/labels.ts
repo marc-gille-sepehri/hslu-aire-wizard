@@ -459,11 +459,25 @@ export const labels = {
   // Kodieroberfläche der Enforcement-Signal-Studie (/enforcement-signal)
   enforcement: {
     title: 'Kodierung Enforcement-Signal',
-    noAccess: 'Kein Zugriff — dieser Bereich ist den Kodiererinnen und Kodierern der Studie vorbehalten.',
     noOpenStudy: 'Zurzeit läuft keine Erhebung.',
     loading: 'Wird geladen …',
     loadError: 'Die Sitzung konnte nicht geladen werden.',
     retry: 'Erneut versuchen',
+
+    // Lesemodus: ohne Rolle (auch nicht angemeldet) sichtbar, aber nicht beschreibbar
+    readOnly: {
+      heading: 'Lesemodus',
+      body:
+        'Diese Seite ist öffentlich einsehbar. Kodiert wird nur auf Einladung: dafür braucht es ein Benutzerkonto mit der Rolle für diese Studie. Sie sehen hier das vollständige Kodierprotokoll und ein Beispiel-Item mit allen Eingabefeldern — Eingaben sind jedoch nicht möglich und es wird nichts gespeichert.',
+      loginHint: 'Sie sind zur Studie eingeladen?',
+      login: 'Anmelden',
+      showExample: 'Beispiel-Item ansehen',
+      exampleHeading: 'Beispiel-Item',
+      exampleLead: (total: number) =>
+        `Eines von ${total} Items der Erhebung. Kodierende erhalten die Items einzeln und in einer für sie zufälligen Reihenfolge; welche Vorschriften die Stichprobe enthält, wird hier nicht gezeigt.`,
+      backToProtocol: 'Zurück zum Protokoll',
+      exampleError: 'Das Beispiel-Item konnte nicht geladen werden.',
+    },
 
     // Startseite
     introHeading: 'Kodierprotokoll',

@@ -56,11 +56,12 @@ export interface AttributeDef {
   undecidableValue?: string
 }
 
-export interface StudyItem {
+/**
+ * Everything needed to render an item. Split out from StudyItem because the
+ * public preview has no assignment and therefore no position in any order.
+ */
+export interface ItemContent {
   itemId: string
-  /** 1-based position in this coder's frozen order. */
-  position: number
-  total: number
   instrumentShortName: string
   instrumentTitle: string
   provision: string
@@ -69,6 +70,12 @@ export interface StudyItem {
   excerptTruncated: boolean
   /** The attributes this item asks for, fully resolved. */
   attributes: AttributeDef[]
+}
+
+export interface StudyItem extends ItemContent {
+  /** 1-based position in this coder's frozen order. */
+  position: number
+  total: number
 }
 
 export interface OwnRating {
@@ -85,6 +92,8 @@ export interface ItemWithRating extends StudyItem {
 }
 
 export interface StudySession {
+  /** True when the caller may read but not code. */
+  readOnly?: boolean
   studyVersionId: string
   itemsHash: string
   totalItems: number
@@ -159,6 +168,25 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     )
   }
   return (await res.json()) as T
+}
+
+export interface SampleItem {
+  /** Size of the item set, for the explanatory text. */
+  totalItems: number
+  /** One fixed, non-anchor item — the same one for every onlooker. */
+  item: ItemContent
+}
+
+/**
+ * Same endpoint as fetchNextItem(), different half of its branch: without the
+ * coder role the server answers with one fixed sample item instead of a
+ * position in an assignment. No token is required, nothing is written, and no
+ * delivery is stamped — an onlooker's page view stays out of the dwell data.
+ */
+export async function fetchSampleItem(): Promise<SampleItem> {
+  const body = await request<Record<string, unknown>>('/next')
+  const { done: _done, readOnly: _readOnly, totalItems, ...item } = body
+  return { totalItems: Number(totalItems) || 0, item: item as unknown as ItemContent }
 }
 
 /** Own session state: how far this coder is, and whether the run is closed. */

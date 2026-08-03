@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { labels } from '../labels'
-import { UNDECIDABLE, type AttributeDef, type OwnRating, type StudyItem } from './enforcementApi'
+import { UNDECIDABLE, type AttributeDef, type ItemContent, type OwnRating } from './enforcementApi'
 
 const t = labels.enforcement
 
@@ -33,9 +33,10 @@ export default function ItemForm({
   submitLabel,
   busy,
   error,
+  readOnly = false,
   onSubmit,
 }: {
-  item: StudyItem
+  item: ItemContent
   /** Present only in correction mode: the rating being revised. */
   initial?: OwnRating
   /** Position line, e.g. "Item 14 von 92". */
@@ -43,6 +44,12 @@ export default function ItemForm({
   submitLabel: string
   busy: boolean
   error: string | null
+  /**
+   * Public read mode: the whole instrument is shown, but every control is
+   * inert and there is no submit. Showing the disabled fields rather than
+   * hiding them is the point — a reader should see what coders are asked.
+   */
+  readOnly?: boolean
   onSubmit: (submission: ItemSubmission) => void
 }) {
   // Stamped when the item is rendered. The server measures dwell time itself
@@ -97,7 +104,7 @@ export default function ItemForm({
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!complete || busy) return
+    if (readOnly || !complete || busy) return
     const values: Record<string, unknown> = {}
     for (const def of item.attributes) {
       const mode = modes[def.id] ?? 'unset'
@@ -149,7 +156,8 @@ export default function ItemForm({
             mode={modes[def.id] ?? 'unset'}
             answer={answers[def.id]}
             draft={drafts[def.id] ?? ''}
-            problem={problems[def.id] || null}
+            problem={readOnly ? null : problems[def.id] || null}
+            readOnly={readOnly}
             onMode={(m) => setMode(def, m)}
             onValue={(v) => setValue(def, v)}
             onDraft={(raw) => setDraft(def, raw)}
@@ -162,6 +170,7 @@ export default function ItemForm({
           <input
             type="checkbox"
             checked={lookedUp}
+            disabled={readOnly}
             onChange={(e) => setLookedUp(e.target.checked)}
             className="mt-0.5 h-4 w-4 accent-navy"
           />
@@ -177,6 +186,7 @@ export default function ItemForm({
         <textarea
           id="es-comment"
           value={comment}
+          disabled={readOnly}
           onChange={(e) => setComment(e.target.value)}
           rows={2}
           placeholder={t.commentPlaceholder}
@@ -190,6 +200,8 @@ export default function ItemForm({
         </div>
       )}
 
+      {/* Not merely hidden: a read-only form has no submit control at all. */}
+      {!readOnly && (
       <div className="flex justify-end">
         <button
           type="submit"
@@ -203,6 +215,7 @@ export default function ItemForm({
           {busy ? t.saving : submitLabel}
         </button>
       </div>
+      )}
     </form>
   )
 }
@@ -214,6 +227,7 @@ function AttributeField({
   answer,
   draft,
   problem,
+  readOnly,
   onMode,
   onValue,
   onDraft,
@@ -223,13 +237,14 @@ function AttributeField({
   answer: unknown
   draft: string
   problem: string | null
+  readOnly: boolean
   onMode: (m: Mode) => void
   onValue: (v: unknown) => void
   onDraft: (raw: string) => void
 }) {
   const name = `attr-${def.id}`
   const control = 'mt-0.5 h-4 w-4 shrink-0 accent-navy'
-  const row = 'flex items-start gap-2.5 font-sans text-sm text-slate-800'
+  const row = `flex items-start gap-2.5 font-sans text-sm ${readOnly ? 'text-slate-500' : 'text-slate-800'}`
   const chosen = mode === 'value'
   const selected = Array.isArray(answer) ? (answer as unknown[]) : []
 
@@ -251,6 +266,7 @@ function AttributeField({
                 type="radio"
                 name={name}
                 className={control}
+                disabled={readOnly}
                 checked={chosen && Object.is(answer, opt.value)}
                 onChange={() => onValue(opt.value)}
               />
@@ -264,6 +280,7 @@ function AttributeField({
               <input
                 type="checkbox"
                 className={control}
+                disabled={readOnly}
                 checked={chosen && selected.some((v) => Object.is(v, opt.value))}
                 onChange={(e) =>
                   onValue(
@@ -284,6 +301,7 @@ function AttributeField({
                 type="radio"
                 name={name}
                 className={control}
+                disabled={readOnly}
                 checked={chosen && answer === b}
                 onChange={() => onValue(b)}
               />
@@ -298,6 +316,7 @@ function AttributeField({
                 type="radio"
                 name={name}
                 className={control}
+                disabled={readOnly}
                 checked={chosen}
                 onChange={() => onMode('value')}
               />
@@ -307,6 +326,7 @@ function AttributeField({
                 type="text"
                 inputMode="numeric"
                 value={draft}
+                disabled={readOnly}
                 onChange={(e) => onDraft(e.target.value)}
                 aria-label={def.label}
                 className="w-24 rounded-md border border-slate-300 px-2 py-1 font-sans text-sm text-slate-800 focus:border-slate-500 focus:outline-none"
@@ -325,12 +345,14 @@ function AttributeField({
                 type="radio"
                 name={name}
                 className={control}
+                disabled={readOnly}
                 checked={chosen}
                 onChange={() => onMode('value')}
               />
             )}
             <textarea
               value={draft}
+              disabled={readOnly}
               onChange={(e) => onDraft(e.target.value)}
               rows={3}
               aria-label={def.label}
@@ -347,6 +369,7 @@ function AttributeField({
               type="radio"
               name={name}
               className={control}
+              disabled={readOnly}
               checked={mode === 'undecidable'}
               onChange={() => onMode('undecidable')}
             />
@@ -400,7 +423,7 @@ function fieldProblem(def: AttributeDef, mode: Mode, draft: string, answer: unkn
 /** Blocks "Weiter" but shows no message — see fieldProblem(). */
 const NOT_ANSWERED = ''
 
-function initialAnswers(item: StudyItem, initial?: OwnRating): Record<string, unknown> {
+function initialAnswers(item: ItemContent, initial?: OwnRating): Record<string, unknown> {
   const out: Record<string, unknown> = {}
   if (!initial) return out
   for (const def of item.attributes) {
@@ -415,7 +438,7 @@ function initialAnswers(item: StudyItem, initial?: OwnRating): Record<string, un
   return out
 }
 
-function initialDrafts(item: StudyItem, initial?: OwnRating): Record<string, string> {
+function initialDrafts(item: ItemContent, initial?: OwnRating): Record<string, string> {
   const out: Record<string, string> = {}
   if (!initial) return out
   for (const def of item.attributes) {
@@ -428,7 +451,7 @@ function initialDrafts(item: StudyItem, initial?: OwnRating): Record<string, str
 }
 
 /** Nothing is pre-selected for a fresh item — a default becomes the answer. */
-function initialModes(item: StudyItem, initial?: OwnRating): Record<string, Mode> {
+function initialModes(item: ItemContent, initial?: OwnRating): Record<string, Mode> {
   const out: Record<string, Mode> = {}
   if (!initial) return out
   for (const def of item.attributes) {

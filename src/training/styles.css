@@ -20,6 +20,20 @@
   border: 0 solid;
 }
 
+/* Tailwind's `border` / `border-t` utilities set only a WIDTH. With preflight
+   disabled there is no `border-style: solid` default, so the style stays `none`
+   and the computed width falls back to 0 — the border silently never renders.
+   Restore what preflight would have done — zero width, solid style — inside the
+   coding UI. Both properties are needed: the initial width is `medium`, so
+   setting only the style would draw a border around every element. At zero
+   specificity, so Tailwind's own width utilities still win. Scoped rather than
+   global: applying it everywhere would make borders appear across training
+   components that have been living without them. */
+:where(.es-scope) * {
+  border-width: 0;
+  border-style: solid;
+}
+
 /* Rendered training markdown (Prose blocks + editor preview). Preflight is off
    in this project, so element styles are defined explicitly here. Colours use
    the AI@RE CI tokens defined in src/index.css. */
