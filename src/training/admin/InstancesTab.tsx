@@ -12,6 +12,37 @@ function fmtDate(iso: string): string {
   return d.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
+/**
+ * mailto: for one instance, addressed to every participant.
+ *
+ * The addresses go in BCC, not To: a course cohort is not automatically a group
+ * that has agreed to see each other's addresses, and one visible To: line hands
+ * every address to everyone. The subject is prefilled with the course title.
+ * Addresses are left unencoded — they are plain addr-specs and every client
+ * takes them as-is; only the subject needs escaping.
+ */
+function mailtoAll(i: CourseInstance): string {
+  const bcc = i.participants.map((p) => p.email).filter(Boolean).join(',')
+  const subject = i.courseTitle ? `&subject=${encodeURIComponent(i.courseTitle)}` : ''
+  return `mailto:?bcc=${bcc}${subject}`
+}
+
+/**
+ * Matches the stroke style of the pencil next to it.
+ *
+ * The body is a path, not a <rect>: src/index.css hides `svg rect[width][height]`
+ * globally to kill background rectangles, with hand-maintained exemptions for
+ * ApexCharts and bpmn.io. An icon should not need a third exemption.
+ */
+function EnvelopeIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" />
+      <path d="m3 7.5 9 5.5 9-5.5" />
+    </svg>
+  )
+}
+
 /** Comma-separated people names, with the count when there are several. */
 function People({ people }: { people: InstancePerson[] }) {
   if (people.length === 0) return <span className="text-slate-400">—</span>
@@ -80,18 +111,38 @@ export default function InstancesTab() {
                 <td className="px-4 py-3"><People people={i.participants} /></td>
                 <td className="px-4 py-3 text-slate-600">{fmtDate(i.startDate)}</td>
                 <td className="px-4 py-3 text-right">
-                  <button
-                    type="button"
-                    onClick={() => setDialog({ instance: i })}
-                    aria-label={t.edit}
-                    title={t.edit}
-                    className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-cream hover:text-navy"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 20h9" />
-                      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                    </svg>
-                  </button>
+                  <div className="flex items-center justify-end gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setDialog({ instance: i })}
+                      aria-label={t.edit}
+                      title={t.edit}
+                      className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-cream hover:text-navy"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                      </svg>
+                    </button>
+                    {i.participants.length > 0 ? (
+                      <a
+                        href={mailtoAll(i)}
+                        aria-label={t.mail}
+                        title={`${t.mail} (${t.mailBccHint})`}
+                        className="inline-flex rounded-md p-1.5 text-slate-400 transition-colors hover:bg-cream hover:text-navy"
+                      >
+                        <EnvelopeIcon />
+                      </a>
+                    ) : (
+                      <span
+                        aria-hidden="true"
+                        title={t.mailNoParticipants}
+                        className="inline-flex cursor-not-allowed rounded-md p-1.5 text-slate-200"
+                      >
+                        <EnvelopeIcon />
+                      </span>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
