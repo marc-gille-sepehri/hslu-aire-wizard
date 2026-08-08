@@ -86,8 +86,10 @@ export default function SkillTab() {
       <div className={card}>
         <Step n={1} title="Skill installieren">
           <p>
-            Die Skill <code className="rounded bg-cream px-1">kurs-autor</code> enthält die Autoren-Anleitung
-            (Kursaufbau, empfohlene Tool-Reihenfolge, Beispielkurs). Lade sie als ZIP herunter:
+            Die Skill <code className="rounded bg-cream px-1">kurs-autor</code> ist bewusst schlank: sie verweist auf
+            die Anleitung, die der Connector selbst mitbringt (Metamodell, Tool-Auswahl, Didaktik), und nennt die zwei
+            Regeln, die man nicht vergessen darf — kleinstmögliches Werkzeug und Änderungsnotiz. Damit veraltet sie
+            nicht, wenn der Server neue Tools bekommt. Lade sie als ZIP herunter:
           </p>
           <button
             type="button"
@@ -111,8 +113,10 @@ export default function SkillTab() {
             </li>
           </ul>
           <p className="text-slate-500">
-            Hinweis: In Claude.ai übernimmt zusätzlich der eingebaute Prompt <code className="rounded bg-cream px-1">author_course</code>
-            {' '}des Connectors die Anleitung — die Skill ist vor allem für Claude Code nützlich.
+            Das ZIP wird aus der Datei erzeugt, die mit diesem Portal-Stand ausgeliefert wurde — der Download ist also
+            immer so aktuell wie das Deployment. Die eigentliche Anleitung liefert der Prompt{' '}
+            <code className="rounded bg-cream px-1">author_course</code> des Connectors; in Claude.ai genügt er allein,
+            die Skill ist vor allem für Claude Code nützlich.
           </p>
         </Step>
       </div>
@@ -163,10 +167,18 @@ export default function SkillTab() {
               'describe_course_schema — Metamodell abfragen',
               'list_courses — vorhandene Kurse',
               'get_course — Kurs inkl. Inhalte lesen',
+              'get_module — ein Modul mit rev lesen',
               'create_course — Kurs (Entwurf) anlegen',
               'create_module — Modul mit Inhalten',
-              'update_module — Modul bearbeiten',
-              'set_course_modules — Reihenfolge',
+              'add_sections — Abschnitt anfügen/einfügen',
+              'update_section — einen Abschnitt überarbeiten',
+              'set_module_sections — umsortieren/entfernen',
+              'update_module — Titel/Beschreibung, oder Neuschreiben',
+              'set_course_modules — Modulreihenfolge',
+              'list_module_revisions — Änderungsverlauf',
+              'get_module_revision — alten Stand lesen',
+              'diff_module_revisions — zwei Stände vergleichen',
+              'restore_module_revision — Stand wiederherstellen',
               'publish_course / set_active_version — freigeben',
             ].map((x) => (
               <li key={x} className="flex gap-1.5">
