@@ -1,6 +1,7 @@
 // Client for DB-backed training modules on hslu-aire-server.
 import { apiBaseUrl } from '../../config/configuration'
 import { getStoredToken } from '../auth/AuthContext'
+import { ApiError } from './revisionApi'
 
 export interface ModuleSummary {
   id: string
@@ -12,6 +13,8 @@ export interface ModuleSummary {
 
 export interface ModuleMeta {
   moduleKey: string
+  /** Current revision; sent back as `expectedRev` so concurrent saves surface. */
+  rev?: number
 }
 
 /** Raw training-module payload: { module: {...}, meta }. */
@@ -50,15 +53,40 @@ export interface SaveModuleContent {
   lang?: string
   resources?: Record<string, unknown>
   sections: unknown[]
+  /** What changed, in one sentence — shown in the module history. */
+  note?: string
+  /** The rev the edit started from; the server refuses a stale write. */
+  expectedRev?: number
 }
 
-/** Persist edited content back to a module version (Administrator only). */
-export async function saveModule(id: string, content: SaveModuleContent): Promise<ModulePayload> {
+/**
+ * Persist edited content back to a module version (Administrator only). Every
+ * successful save commits one revision on the server, so `note` is what makes
+ * the history navigable later. A concurrent edit comes back as a REV_CONFLICT
+ * ApiError rather than overwriting the other author.
+ */
+export async function saveModule(
+  id: string,
+  content: SaveModuleContent,
+): Promise<ModulePayload & { rev?: number }> {
   const res = await fetch(`${apiBaseUrl}/modules/${encodeURIComponent(id)}`, {
     method: 'PUT',
     headers: authHeaders(),
     body: JSON.stringify(content),
   })
-  if (!res.ok) throw new Error(await errorMessage(res))
+  if (!res.ok) {
+    let code: string | undefined
+    let currentRev: number | undefined
+    let message = `Fehler (${res.status})`
+    try {
+      const body = await res.json()
+      if (body?.error) message = body.error
+      code = body?.code
+      currentRev = body?.currentRev
+    } catch {
+      // ignore
+    }
+    throw new ApiError(message, res.status, code, currentRev)
+  }
   return res.json()
 }

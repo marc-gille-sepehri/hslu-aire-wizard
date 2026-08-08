@@ -365,6 +365,107 @@ export const labels = {
   },
 
   // Edit mode (Administrator)
+  history: {
+    open: 'Versionsverlauf',
+    title: 'Versionsverlauf',
+    close: 'Schliessen',
+    loading: 'Wird geladen …',
+    empty: 'Noch keine Änderungen aufgezeichnet.',
+    loadMore: 'Ältere Revisionen laden',
+    current: 'aktuell',
+    revLabel: (rev: number) => `Rev ${rev}`,
+    counts: (sections: number, artifacts: number) =>
+      `${sections} ${sections === 1 ? 'Abschnitt' : 'Abschnitte'} · ${artifacts} ${artifacts === 1 ? 'Artefakt' : 'Artefakte'}`,
+    byPerson: 'Person',
+    byAgent: 'Agent',
+    bySystem: 'System',
+    view: 'Ansehen',
+    compare: 'Vergleichen',
+    restore: 'Wiederherstellen',
+    restoring: 'Wird wiederhergestellt …',
+    restored: (rev: number) => `Als Revision ${rev} wiederhergestellt.`,
+    restoreConfirmTitle: (rev: number) => `Revision ${rev} wiederherstellen?`,
+    restoreConfirmBody: (rev: number, current: number) =>
+      `Der Inhalt von Revision ${rev} wird als neue Revision ${current + 1} geschrieben. ` +
+      `Nichts wird gelöscht — die Revisionen ${rev + 1} bis ${current} bleiben lesbar, ` +
+      'diese Wiederherstellung lässt sich also selbst wieder zurücknehmen.',
+    restoreConfirmChanges: 'Das macht folgende Änderungen rückgängig:',
+    forkedFrom: (rev: number) => `Aus einer früheren Kursversion übernommen (Revision ${rev})`,
+    previewBanner: (rev: number, date: string) => `Revision ${rev} vom ${date} — nur Ansicht`,
+    previewExit: 'Ansicht beenden',
+    diffTitle: (from: number, to: number) => `Revision ${from} → ${to}`,
+    diffUnchanged: 'Keine inhaltlichen Unterschiede.',
+    diffUnchangedArtifacts: (n: number) => `${n} ${n === 1 ? 'unverändertes Artefakt' : 'unveränderte Artefakte'}`,
+    diffExpand: 'einblenden',
+    diffCollapse: 'ausblenden',
+    diffAdded: 'neu',
+    diffRemoved: 'entfernt',
+    diffMoved: 'verschoben',
+    diffChanged: 'geändert',
+    diffMovedBy: (from: number, to: number) => `Position ${from + 1} → ${to + 1}`,
+    diffBefore: 'Vorher',
+    diffAfter: 'Nachher',
+    diffField: (name: string) => name,
+    undoBar: (rev: number) => `Gespeichert als Revision ${rev}.`,
+    undo: 'Rückgängig',
+    tool: {
+      create: 'angelegt',
+      add_sections: 'Abschnitte hinzugefügt',
+      update_section: 'Abschnitt bearbeitet',
+      set_module_sections: 'umsortiert',
+      update_module: 'Modul gespeichert',
+      portal: 'im Editor gespeichert',
+      restore: 'wiederhergestellt',
+      course_copy: 'Kurskopie',
+      migration: 'Ausgangsstand',
+    } as Record<string, string>,
+  },
+  saveNote: {
+    title: 'Was hast du geändert?',
+    intro:
+      'Ein Satz genügt. Das steht später im Versionsverlauf und ist das, ' +
+      'woran du eine Änderung wiederfindest.',
+    placeholder: 'z. B. Aufgabenabschnitt am Ende angehängt',
+    hint: (min: number, max: number) => `${min}–${max} Zeichen`,
+    tooShort: (min: number) => `Bitte mindestens ${min} Zeichen.`,
+    save: 'Speichern',
+    cancel: 'Abbrechen',
+    conflictTitle: 'Das Modul wurde zwischenzeitlich geändert',
+    conflictBody: (currentRev: number) =>
+      `Jemand anderes hat gespeichert (jetzt Revision ${currentRev}). Deine Änderungen wurden ` +
+      'NICHT geschrieben, damit sie die fremde Änderung nicht überschreiben. Lade das Modul neu ' +
+      'und übertrage deine Änderung auf den aktuellen Stand.',
+    conflictReload: 'Neu laden',
+  },
+  draft: {
+    // §3 status indicator. The middle state must never read like a done save —
+    // an author who thinks the work is committed will not press Speichern.
+    committed: (rev: number) => `Gespeichert als Revision ${rev}`,
+    unsavedWithDraft: (time: string) => `Ungespeicherte Änderungen · Entwurf gesichert ${time}`,
+    unsavedNoDraft: 'Ungespeicherte Änderungen',
+    autosaving: 'Entwurf wird gesichert …',
+    failed: 'Entwurf konnte nicht gesichert werden',
+    retry: 'Erneut versuchen',
+    // §4 recovery
+    recoveryTitle: 'Ungespeicherte Änderungen gefunden',
+    recoveryBody: (when: string) =>
+      `Du hast am ${when} an diesem Modul gearbeitet, ohne zu speichern.`,
+    continue: 'Weiterbearbeiten',
+    discard: 'Entwurf verwerfen',
+    showDiff: 'Unterschiede ansehen',
+    discardConfirm: 'Der Entwurf wird endgültig gelöscht. Der zuletzt gespeicherte Stand bleibt bestehen.',
+    discardReally: 'Wirklich verwerfen',
+    // §5 stale draft
+    staleTitle: 'Modul wurde zwischenzeitlich geändert',
+    staleBody: (baseRev: number, currentRev: number) =>
+      `Dein Entwurf basiert auf Revision ${baseRev}. Inzwischen existiert Revision ${currentRev}`,
+    staleBy: (note: string, tool: string, actor: string, time: string) =>
+      `„${note}", ${actor} · ${tool}, ${time}`,
+    staleOverride: 'Entwurf trotzdem speichern',
+    staleNote:
+      'Der zwischenzeitliche Stand bleibt als Revision im Verlauf und ist wiederherstellbar.',
+    noDraft: 'Es gibt keinen Entwurf zum Speichern.',
+  },
   editor: {
     enterEditMode: 'Bearbeiten',
     exitEditMode: 'Fertig',

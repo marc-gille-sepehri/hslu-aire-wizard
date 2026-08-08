@@ -175,7 +175,15 @@ function TrainingContent() {
   }
 
   // key on the module id: switching modules resets the editor working copy
-  const view = <ModuleView key={load.selectedId} module={load.mod} moduleId={load.selectedId} courseId={courseId} />
+  const view = (
+    <ModuleView
+      key={load.selectedId}
+      module={load.mod}
+      moduleId={load.selectedId}
+      courseId={courseId}
+      initialRev={load.meta.rev}
+    />
+  )
 
   // With a course, record interactions (and consume a seat) + show the seat gate.
   // Without one (legacy preview/edit), render the module as before.

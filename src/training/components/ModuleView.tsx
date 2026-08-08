@@ -9,19 +9,78 @@ import { labels } from '../labels'
 import { ModuleEditorProvider, useModuleEditor } from '../editor/ModuleEditorContext'
 import { useEditMode } from '../editor/EditModeContext'
 import BlockPalette from '../editor/BlockPalette'
+import SaveNoteDialog, { ConflictDialog } from '../editor/SaveNoteDialog'
+import HistoryDrawer from '../editor/HistoryDrawer'
+import RevisionPreview from '../editor/RevisionPreview'
+import { loadRevision, restoreRevision } from '../lib/revisionApi'
+import { DraftRecoveryDialog, StaleDraftDialog } from '../editor/DraftDialogs'
 
-export default function ModuleView({ module, moduleId, courseId }: { module: Module; moduleId: string; courseId?: string }) {
+export default function ModuleView({
+  module,
+  moduleId,
+  courseId,
+  initialRev,
+}: {
+  module: Module
+  moduleId: string
+  courseId?: string
+  initialRev?: number
+}) {
   // The editor owns a working copy; the inner view renders from it so edits show
   // live. In view mode this is a transparent pass-through of the loaded module.
   return (
-    <ModuleEditorProvider initialModule={module} moduleId={moduleId} courseId={courseId}>
-      <ModuleViewInner />
+    <ModuleEditorProvider initialModule={module} moduleId={moduleId} courseId={courseId} initialRev={initialRev}>
+      <ModuleViewInner moduleId={moduleId} />
     </ModuleEditorProvider>
   )
 }
 
-function ModuleViewInner() {
-  const { mod, save, saveStatus, saveError, dirty, addSection, removeSection } = useModuleEditor()
+function ModuleViewInner({ moduleId }: { moduleId: string }) {
+  const {
+    mod, save, saveStatus, saveError, dirty, addSection, removeSection,
+    rev, lastSavedRev, clearLastSavedRev, conflictRev, clearConflict,
+    draftStatus, draftSavedAt, flushDraft, pendingDraft, resumeDraft, dropDraft,
+    staleInfo, clearStale, replaceModule,
+  } = useModuleEditor()
+  const [noteOpen, setNoteOpen] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const [previewRev, setPreviewRev] = useState<number | null>(null)
+  const [undoing, setUndoing] = useState(false)
+  const [pendingNote, setPendingNote] = useState('')
+  const [undoError, setUndoError] = useState<string | null>(null)
+
+  /** Pull a revision's content into the working copy after a restore. */
+  const adoptRevision = async (targetRev: number) => {
+    const snapshot = await loadRevision(moduleId, targetRev)
+    replaceModule(
+      {
+        module: {
+          id: moduleId,
+          title: snapshot.title,
+          lang: snapshot.lang,
+          resources: snapshot.resources ?? {},
+          sections: snapshot.sections ?? [],
+        },
+      },
+      snapshot.rev,
+    )
+  }
+
+  /** One click, no dialog: restore the state before the save just made. */
+  const undoLastSave = async () => {
+    if (lastSavedRev === null || lastSavedRev <= 1) return
+    setUndoing(true)
+    setUndoError(null)
+    try {
+      const res = await restoreRevision(moduleId, lastSavedRev - 1, { expectedRev: rev })
+      await adoptRevision(res.rev)
+      clearLastSavedRev()
+    } catch (e) {
+      setUndoError((e as Error).message)
+    } finally {
+      setUndoing(false)
+    }
+  }
   const { editing } = useEditMode()
   const m = mod.module
   const learner = useLearnerState(m.id)
@@ -75,19 +134,79 @@ function ModuleViewInner() {
               {dirty && (
                 <button
                   type="button"
-                  onClick={save}
+                  onClick={() => setNoteOpen(true)}
                   disabled={saveStatus === 'saving'}
                   className="rounded-md bg-gold px-3 py-1.5 text-sm font-semibold text-navy transition-colors hover:bg-gold-dark disabled:opacity-60"
                 >
                   {saveStatus === 'saving' ? labels.editor.saving : labels.editor.save}
                 </button>
               )}
-              {!dirty && saveStatus === 'saved' && (
-                <span className="text-sm font-semibold text-emerald-700">{labels.editor.saved}</span>
+              {/* Three states (spec §3). The middle one must not read like a
+                  completed save, or nobody presses Speichern. */}
+              {dirty && draftStatus === 'saving' && (
+                <span className="text-xs text-slate-500">{labels.draft.autosaving}</span>
               )}
-              {saveStatus === 'error' && <span className="text-sm text-red-700">{saveError || labels.editor.saveError}</span>}
+              {dirty && draftStatus === 'saved' && draftSavedAt && (
+                <span className="text-xs font-medium text-amber-800">
+                  {labels.draft.unsavedWithDraft(
+                    draftSavedAt.toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' }),
+                  )}
+                </span>
+              )}
+              {dirty && draftStatus === 'idle' && (
+                <span className="text-xs font-medium text-amber-800">{labels.draft.unsavedNoDraft}</span>
+              )}
+              {dirty && draftStatus === 'error' && (
+                <span className="text-xs font-semibold text-red-700">
+                  {labels.draft.failed}{' '}
+                  <button type="button" onClick={() => void flushDraft()} className="underline underline-offset-2">
+                    {labels.draft.retry}
+                  </button>
+                </span>
+              )}
+              {!dirty && (
+                <span className="text-xs text-slate-500">{labels.draft.committed(rev)}</span>
+              )}
+              {saveStatus === 'error' && !conflictRev && !staleInfo && saveError && (
+                <span className="text-sm text-red-700">{saveError}</span>
+              )}
+              <button
+                type="button"
+                onClick={() => setHistoryOpen(true)}
+                className="rounded-md border border-mist px-3 py-1.5 text-sm text-slate-700 transition-colors hover:border-navy"
+              >
+                {labels.history.open}
+              </button>
             </>,
             toolbarSlot,
+          )}
+
+          {/* Undo, prominent and short-lived: the dominant case is "ich habe
+              gerade etwas kaputtgemacht", not "ich möchte die Historie durchsehen". */}
+          {editing && lastSavedRev !== null && (
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3">
+              <span className="text-sm text-emerald-900">
+                {labels.history.undoBar(lastSavedRev)}
+                {undoError && <span className="ml-2 text-red-700">{undoError}</span>}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => void undoLastSave()}
+                  disabled={undoing || lastSavedRev <= 1}
+                  className="rounded border border-emerald-500 bg-white px-3 py-1 text-sm font-semibold text-emerald-900 hover:bg-emerald-100 disabled:opacity-50"
+                >
+                  {undoing ? labels.history.restoring : labels.history.undo}
+                </button>
+                <button
+                  type="button"
+                  onClick={clearLastSavedRev}
+                  className="rounded px-2 py-1 text-xs text-emerald-800 underline underline-offset-2"
+                >
+                  {labels.history.close}
+                </button>
+              </div>
+            </div>
           )}
 
           <header className="mb-8 pb-6 border-b border-slate-200">
@@ -179,6 +298,70 @@ function ModuleViewInner() {
           </footer>
         </div>
       </LearnerStateProvider>
+      {/* An explicit save asks for the change note; autosave never gets here. */}
+      <SaveNoteDialog
+        open={noteOpen}
+        saving={saveStatus === 'saving'}
+        onCancel={() => setNoteOpen(false)}
+        onSave={async (note) => {
+          setPendingNote(note)
+          const outcome = await save(note)
+          if (outcome.ok) {
+            setNoteOpen(false)
+            setPendingNote('')
+          } else if (outcome.kind === 'stale') {
+            // The stale dialog takes over; it can retry with the same note.
+            setNoteOpen(false)
+          } else if (outcome.kind === 'noDraft') {
+            window.alert(labels.draft.noDraft)
+            setNoteOpen(false)
+          }
+        }}
+      />
+      <ConflictDialog
+        currentRev={conflictRev}
+        onDismiss={clearConflict}
+        onReload={() => window.location.reload()}
+      />
+      {/* §4: a draft that differs from the committed content, offered on open. */}
+      {pendingDraft && (
+        <DraftRecoveryDialog
+          moduleId={moduleId}
+          updatedAt={pendingDraft.updatedAt}
+          onResume={resumeDraft}
+          onDiscard={() => void dropDraft()}
+        />
+      )}
+      {/* §5: the module moved on under the draft — on open and on commit. */}
+      {staleInfo && !pendingDraft && (
+        <StaleDraftDialog
+          moduleId={moduleId}
+          stale={staleInfo}
+          saving={saveStatus === 'saving'}
+          error={saveStatus === 'error' ? saveError : null}
+          onDismiss={clearStale}
+          onDiscard={() => void dropDraft()}
+          onOverride={async () => {
+            const outcome = await save(pendingNote || labels.draft.staleOverride, { override: true })
+            if (outcome.ok) {
+              clearStale()
+              setPendingNote('')
+            }
+          }}
+        />
+      )}
+      {historyOpen && (
+        <HistoryDrawer
+          moduleId={moduleId}
+          currentRev={rev}
+          onClose={() => setHistoryOpen(false)}
+          onPreview={(r) => setPreviewRev(r)}
+          onRestored={(newRev) => void adoptRevision(newRev)}
+        />
+      )}
+      {previewRev !== null && (
+        <RevisionPreview moduleId={moduleId} rev={previewRev} onClose={() => setPreviewRev(null)} />
+      )}
     </ResourcesProvider>
   )
 }
