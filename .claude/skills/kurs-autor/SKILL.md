@@ -1,6 +1,6 @@
 ---
 name: kurs-autor
-description: Erstellt vollständige AI@RE-Trainingskurse (Kurs → Module → Sections → Artefakte) über den MCP-Server "aire-course-authoring". Nutze diese Skill, wenn ein Administrator per Prompt einen Kurs anlegen, erweitern oder überarbeiten möchte.
+description: Erstellt und ändert AI@RE-Trainingskurse (Kurs → Module → Sections → Artefakte) über den MCP-Server "aire-course-authoring". Nutze diese Skill, wenn ein Administrator einen Kurs anlegen, ein Modul oder einen Abschnitt hinzufügen, bestehende Inhalte überarbeiten, Abschnitte umsortieren oder entfernen, oder einen Kurs veröffentlichen möchte.
 ---
 
 # Kurs-Autor (AI@RE Training)
@@ -34,50 +34,29 @@ Administrator-Rolle voraus.
 
 Beim Ändern gilt eine Regel vor allen anderen: **Fasse nur an, was du änderst.**
 
-`update_module` ersetzt den gesamten Modulinhalt. Jede Section und jedes Artefakt,
-das du dabei nicht mitschickst, ist verloren — ohne Rückfrage. Für gezielte
-Änderungen gibt es deshalb Tools, die genau eine Ebene anfassen:
+`update_module` mit `sections` ersetzt den gesamten Modulinhalt — alles, was du
+nicht mitschickst, ist weg. Für gezielte Änderungen gibt es Tools, die genau eine
+Ebene anfassen.
 
-| Was du willst | Tool |
-|---|---|
-| Ein Modul ansehen | `get_module` |
-| Abschnitt hinten anhängen | `add_sections` |
-| Abschnitt vorne oder mittendrin einfügen | `add_sections` mit `beforeSectionId` |
-| Einen Abschnitt überarbeiten | `update_section` |
-| Abschnitte umsortieren oder entfernen | `set_module_sections` |
-| Modultitel oder -beschreibung ändern | `update_module` ohne `sections` |
+Rufe deshalb vor jeder Änderung `describe_course_schema` auf und folge dem
+Abschnitt `editingExistingContent`. Dort steht, welches Tool wofür zuständig ist.
+Diese Liste wird im Server gepflegt und ist maßgeblich — hier steht sie bewusst
+nicht noch einmal.
 
-`update_module` **mit** `sections` ist damit nur noch in einem Fall richtig: Du
-willst ein Modul bewusst komplett neu schreiben. In jedem anderen Fall ist es
-das falsche Werkzeug.
-
-Jeder Schreibzugriff nimmt ausserdem eine **`note`**: ein Satz, *was* du geändert
-hast (3–200 Zeichen). Er steht im Versionsverlauf und ist das, woran der Nutzer
-deine Änderung später wiederfindet. „Modul aktualisiert" hilft niemandem —
-„Aufgabenabschnitt am Ende angehängt" schon.
-
-### Vor jeder Änderung
+Vorgehen:
 
 1. `get_module` aufrufen und den Ist-Zustand lesen.
 2. Dem Nutzer in ein bis zwei Sätzen sagen, was du ändern wirst und was
    unangetastet bleibt.
-3. Ändern — mit `note`, und mit `expectedRev` aus Schritt 1.
-4. Nur bei `update_module` mit `sections`: mit `get_module` gegenlesen und
-   prüfen, dass die Artefaktzahl stimmt. Die anderen Tools geben den neuen
-   Zustand direkt zurück.
+3. Das kleinstmögliche Tool wählen und schreiben. `rev` aus `get_module` als
+   `expectedRev` mitgeben, und `note` als einen Satz, **was** du geändert hast
+   und **warum** — die Notiz ist Pflicht, und du kannst fachlich präziser sagen
+   als jeder Platzhalter, worum es ging.
+4. Kommt `REV_CONFLICT` zurück, hat jemand parallel im Portal gearbeitet: neu
+   laden, den Nutzer informieren, nicht blind überschreiben.
 
-### Wenn du fremde Artefakttypen siehst
-
-Das Portal kennt mehr Artefakttypen, als du vielleicht erwartest — etwa
-`doc_convert`, `ontology`, `data_query`, `object_graph`. Maßgeblich ist immer
-`describe_course_schema`, nicht dein Vorwissen. Unbekannte Typen nicht
-weglassen oder „korrigieren": unverändert durchreichen.
-
-### Konflikte
-
-Lies `rev` aus `get_module` und gib es beim Schreiben als `expectedRev` mit.
-Kommt `REV_CONFLICT` zurück, hat jemand parallel im Portal gearbeitet: neu
-laden, dem Nutzer sagen was passiert ist, nicht blind überschreiben.
+Wenn du beim Lesen Artefakttypen siehst, die du nicht erwartet hast: unverändert
+durchreichen. Niemals weglassen oder „korrigieren".
 
 ## Didaktischer Modul-Bogen
 
@@ -98,13 +77,10 @@ Baue jedes Modul entlang: **Lernziele → Wissen → Interaktion → Reflexion.*
 - `mcq`/`lab_select`: ≥2 Optionen; genau die korrekten markieren; Feedback geben.
 - Section-/Artefakt-IDs kannst du weglassen — der Server vergibt sie.
 - Keine erfundenen Medien-URLs; nur echte/leere lassen.
-- Bei Änderungen an bestehenden Kursen: das kleinstmögliche Tool wählen
-  (siehe „Bestehende Kurse ändern"). Nie ein ganzes Modul ersetzen, um einen
-  Abschnitt anzufügen.
-- Jeder Schreibzugriff braucht eine `note`, die die Änderung benennt. Kannst du
-  nicht in einem Satz sagen, was du änderst, ist die Änderung zu gross.
-- Veröffentlichte und aktive Kurse sind für Lernende sofort sichtbar. Bei
-  Änderungen daran den Nutzer vorher darauf hinweisen.
+- Bei Änderungen an bestehenden Kursen das kleinstmögliche Tool wählen. Nie ein
+  ganzes Modul ersetzen, um einen Abschnitt anzufügen.
+- Veröffentlichte und aktive Kurse sind für Lernende sofort sichtbar. Weise den
+  Nutzer darauf hin, bevor du sie änderst.
 
 ## Minimalbeispiel (ein Modul, zwei Sections)
 
