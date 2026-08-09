@@ -14,6 +14,19 @@ import { labels } from '../labels'
 
 marked.use({ gfm: true, breaks: true })
 
+// Tables get their own scroll box. A seven-column defect list does not fit a
+// 70-character reading column, and a twelve-row table pushes the following
+// paragraph off the screen. Wrapping happens in the renderer rather than by
+// string-replacing the output, so it survives whatever marked emits.
+marked.use({
+  renderer: {
+    table(this: any, token: any) {
+      const inner = (marked.Renderer.prototype.table as any).call(this, token)
+      return `<div class="md-table-wrap">${inner}</div>`
+    },
+  },
+})
+
 const MEDIA_RE = /\[\[media:([a-zA-Z0-9_\-]+)\]\]/g
 
 /** Split on [[media:id]] and render markdown text segments interleaved with media. */

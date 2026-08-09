@@ -124,6 +124,63 @@
   border-top: 1px solid var(--aire-mist, #e4e9f2);
   margin: 1.5rem 0;
 }
+/* Tables in prose. Three problems at once: seven columns do not fit a
+   70-character reading column, twelve rows push the following paragraph off the
+   screen, and without preflight a <table> has no collapse, no padding and no
+   rules at all. So: own scroll box, clipped to the column, smaller sans type
+   (tabular data is scanned, not read), and a header that stays put. */
+.md-content .md-table-wrap {
+  max-height: 22rem;
+  overflow: auto;
+  margin: 0 0 1rem;
+  border: 1px solid var(--aire-mist, #e4e9f2);
+  border-radius: 6px;
+  background-color: #fff;
+  /* Scroll shadows: a clipped column is invisible otherwise, and macOS hides its
+     scrollbars until you touch them. The two `local` gradients travel with the
+     content and mask the two `scroll` shadows, so an edge shadow appears exactly
+     when something is cut off there — and never when it isn't. */
+  background-image:
+    linear-gradient(to right, #fff 40%, rgba(255, 255, 255, 0)),
+    linear-gradient(to left, #fff 40%, rgba(255, 255, 255, 0)),
+    radial-gradient(farthest-side at 0 50%, rgba(11, 36, 71, 0.16), rgba(11, 36, 71, 0)),
+    radial-gradient(farthest-side at 100% 50%, rgba(11, 36, 71, 0.16), rgba(11, 36, 71, 0));
+  background-position: left center, right center, left center, right center;
+  background-size: 28px 100%, 28px 100%, 12px 100%, 12px 100%;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll, scroll;
+}
+.md-content table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+.md-content th,
+.md-content td {
+  padding: 0.35rem 0.65rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--aire-mist, #e4e9f2);
+  /* One row stays one row: the horizontal scroll is the honest answer to a wide
+     table, wrapped cells only make it taller and no easier to scan. */
+  white-space: nowrap;
+}
+.md-content thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--aire-cream-deep, #f1eee5);
+  color: var(--aire-navy, #0b2447);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.md-content tbody tr:last-child td {
+  border-bottom: 0;
+}
+
 /* Uploaded / embedded images never exceed the reading column. */
 .md-content img {
   display: block;
@@ -131,6 +188,24 @@
   height: auto;
   margin: 1rem 0;
   border-radius: 0.5rem;
+}
+
+/* Inline markdown inside a media caption. figcaption sits outside .md-content,
+   so the few inline elements a caption can contain need their own rules. */
+.md-caption strong { font-weight: 600; color: var(--aire-navy, #0b2447); }
+.md-caption em { font-style: italic; }
+.md-caption a {
+  color: var(--aire-navy, #0b2447);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.md-caption a:hover { color: var(--aire-gold-dark, #d98f1f); }
+.md-caption code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  background: var(--aire-cream-deep, #f1eee5);
+  border-radius: 3px;
+  padding: 0.05em 0.3em;
 }
 
 /* Compact markdown for chat answers (bullets, bold, links). Preflight is off,
