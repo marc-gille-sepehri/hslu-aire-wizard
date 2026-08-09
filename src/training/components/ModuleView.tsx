@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import type { Module } from '../schema/types'
 import { ResourcesProvider } from '../state/ResourcesContext'
@@ -14,28 +15,53 @@ import HistoryDrawer from '../editor/HistoryDrawer'
 import RevisionPreview from '../editor/RevisionPreview'
 import { loadRevision, restoreRevision } from '../lib/revisionApi'
 import { DraftRecoveryDialog, StaleDraftDialog } from '../editor/DraftDialogs'
+import { artifactFromHash, sectionUrl } from '../routing/courseUrls'
+import { NotFound } from '../routing/CourseRouter'
 
 export default function ModuleView({
   module,
   moduleId,
   courseId,
   initialRev,
+  sectionId,
+  addressable = false,
 }: {
   module: Module
   moduleId: string
   courseId?: string
   initialRev?: number
+  /** Section to open, from /courses/…/sections/{id}. */
+  sectionId?: string
+  /** Under the /courses/… contract, paging writes the address bar. */
+  addressable?: boolean
 }) {
   // The editor owns a working copy; the inner view renders from it so edits show
   // live. In view mode this is a transparent pass-through of the loaded module.
   return (
     <ModuleEditorProvider initialModule={module} moduleId={moduleId} courseId={courseId} initialRev={initialRev}>
-      <ModuleViewInner moduleId={moduleId} />
+      <ModuleViewInner
+        moduleId={moduleId}
+        courseId={courseId}
+        sectionId={sectionId}
+        addressable={addressable}
+      />
     </ModuleEditorProvider>
   )
 }
 
-function ModuleViewInner({ moduleId }: { moduleId: string }) {
+function ModuleViewInner({
+  moduleId,
+  courseId,
+  sectionId,
+  addressable,
+}: {
+  moduleId: string
+  courseId?: string
+  sectionId?: string
+  addressable: boolean
+}) {
+  const navigate = useNavigate()
+  const { hash } = useLocation()
   const {
     mod, save, saveStatus, saveError, dirty, addSection, removeSection,
     rev, lastSavedRev, clearLastSavedRev, conflictRev, clearConflict,
@@ -84,7 +110,11 @@ function ModuleViewInner({ moduleId }: { moduleId: string }) {
   const { editing } = useEditMode()
   const m = mod.module
   const learner = useLearnerState(m.id)
-  const [sectionIndex, setSectionIndex] = useState(0)
+  // The URL owns which section is open. An unknown id is a dead address, not a
+  // reason to silently fall back to the first section.
+  const initialIndex = sectionId ? m.sections.findIndex((sec) => sec.id === sectionId) : 0
+  const [sectionIndex, setSectionIndex] = useState(Math.max(0, initialIndex))
+  const unknownSection = sectionId !== undefined && initialIndex < 0
   // The Save controls render into the header slot (next to "Fertig") via a portal.
   const [toolbarSlot, setToolbarSlot] = useState<HTMLElement | null>(null)
   useEffect(() => setToolbarSlot(document.getElementById('training-edit-toolbar')), [])
@@ -108,6 +138,7 @@ function ModuleViewInner({ moduleId }: { moduleId: string }) {
     // section is both slow and easy to cancel (any content that lands during the
     // animation aborts it, leaving the reader stranded mid-section). Paging is
     // also the one place where an instant jump is the expected behaviour.
+    if (artifactFromHash(window.location.hash)) return // the fragment owns the position
     topRef.current?.scrollIntoView({ behavior: 'instant', block: 'start' })
   }, [sectionIndex])
 
@@ -142,6 +173,46 @@ function ModuleViewInner({ moduleId }: { moduleId: string }) {
 
   const canPrev = sectionIndex > 0
   const canNext = sectionIndex < sectionCount - 1
+
+  /**
+   * Move to a section. Under the /courses contract the address bar follows, so
+   * the URL always names the place on screen and Back steps section by section.
+   * A push, not a replace: paging is navigation, and a reader who pages three
+   * sections in expects three steps back.
+   */
+  const goToSection = (next: number) => {
+    const target = m.sections[next]
+    if (!target) return
+    if (addressable && courseId) {
+      navigate(sectionUrl(courseId, moduleId, target.id))
+      return
+    }
+    setSectionIndex(next)
+  }
+
+  // Under the contract the URL drives the index, so follow it when it changes.
+  useEffect(() => {
+    if (!sectionId) return
+    const i = m.sections.findIndex((sec) => sec.id === sectionId)
+    if (i >= 0) setSectionIndex(i)
+  }, [sectionId, m.sections])
+
+  // `#a=sec-2-a5` addresses one artifact: same page, scroll there and mark it.
+  // Runs after the section is in place, and wins over the top-of-section jump.
+  const wantedArtifact = artifactFromHash(hash)
+  useEffect(() => {
+    if (!wantedArtifact) return
+    const el = document.getElementById(wantedArtifact)
+    if (!el) return
+    el.scrollIntoView({ behavior: 'instant', block: 'start' })
+    el.classList.add('artifact-target')
+    const timer = window.setTimeout(() => el.classList.remove('artifact-target'), 2400)
+    return () => window.clearTimeout(timer)
+  }, [wantedArtifact, sectionIndex])
+
+  // A section id the module does not have is a dead address. Placed after every
+  // hook: an early return above them would make the hook order conditional.
+  if (unknownSection) return <NotFound />
 
   return (
     <ResourcesProvider resources={m.resources}>
@@ -251,7 +322,7 @@ function ModuleViewInner({ moduleId }: { moduleId: string }) {
                     <li key={sec.id}>
                       <button
                         type="button"
-                        onClick={() => setSectionIndex(i)}
+                        onClick={() => goToSection(i)}
                         className={`px-2 py-1 rounded border ${
                           i === sectionIndex
                             ? 'border-slate-800 bg-slate-800 text-white'
@@ -300,7 +371,7 @@ function ModuleViewInner({ moduleId }: { moduleId: string }) {
           <footer className="mt-12 pt-6 border-t border-slate-200 flex justify-between">
             <button
               type="button"
-              onClick={() => canPrev && setSectionIndex((i) => i - 1)}
+              onClick={() => canPrev && goToSection(sectionIndex - 1)}
               disabled={!canPrev}
               className="rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-slate-500 disabled:opacity-40 disabled:cursor-not-allowed"
             >
@@ -308,7 +379,7 @@ function ModuleViewInner({ moduleId }: { moduleId: string }) {
             </button>
             <button
               type="button"
-              onClick={() => canNext && setSectionIndex((i) => i + 1)}
+              onClick={() => canNext && goToSection(sectionIndex + 1)}
               disabled={!canNext}
               className="rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-slate-500 disabled:opacity-40 disabled:cursor-not-allowed"
             >

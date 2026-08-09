@@ -34,6 +34,21 @@
   border-style: solid;
 }
 
+/* An artifact addressed by `#a=<id>`: brief, non-destructive emphasis so the
+   eye finds it after the jump. Fades out on its own — a permanent marker would
+   still be there when the reader has long moved on. */
+.artifact-target {
+  animation: artifact-target-fade 2.4s ease-out;
+  border-radius: 0.5rem;
+}
+@keyframes artifact-target-fade {
+  0%, 55% { box-shadow: 0 0 0 3px var(--aire-gold, #f2a93b); }
+  100% { box-shadow: 0 0 0 3px rgba(242, 169, 59, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .artifact-target { animation: none; box-shadow: 0 0 0 3px var(--aire-gold, #f2a93b); }
+}
+
 /* Rendered training markdown (Prose blocks + editor preview). Preflight is off
    in this project, so element styles are defined explicitly here. Colours use
    the AI@RE CI tokens defined in src/index.css. */

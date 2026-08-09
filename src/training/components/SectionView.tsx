@@ -71,8 +71,12 @@ export default function SectionView({ section }: { section: Section }) {
       ) : (
         // View mode: unchanged learner experience.
         <div className="space-y-8">
+          {/* The id is the anchor for `#a=<id>` — one artifact is addressable
+              by fragment, not by its own path. */}
           {section.artifacts.map((artifact) => (
-            <div key={artifact.id}>{renderArtifact(artifact)}</div>
+            <div key={artifact.id} id={artifact.id} className="scroll-mt-24">
+              {renderArtifact(artifact)}
+            </div>
           ))}
         </div>
       )}

@@ -22,17 +22,28 @@ type LoadState =
   | { kind: 'invalid'; failures: ValidationFailure[] }
   | { kind: 'ready'; selectedId: string; mod: Module; meta: ModuleMeta }
 
-export default function TrainingApp() {
+/**
+ * Overrides let the URL contract (/courses/…) drive this component instead of
+ * the legacy /training/* params. Nothing else changes: the same module view,
+ * the same progress and seat handling.
+ */
+export interface TrainingAppProps {
+  courseIdOverride?: string
+  moduleIdOverride?: string
+  sectionIdOverride?: string
+}
+
+export default function TrainingApp(props: TrainingAppProps = {}) {
   // AuthProvider is mounted app-wide in main.jsx.
   return (
     <EditModeProvider>
-      <TrainingGate />
+      <TrainingGate {...props} />
     </EditModeProvider>
   )
 }
 
 /** Show the login screen until a valid session exists; then the training UI. */
-function TrainingGate() {
+function TrainingGate(props: TrainingAppProps) {
   const { status } = useAuth()
 
   if (status === 'checking') {
@@ -55,7 +66,7 @@ function TrainingGate() {
     <ViewAsProvider>
       <TrainingHeader />
       <ViewAsBanner />
-      <TrainingContent />
+      <TrainingContent {...props} />
       <ChatWidget />
     </ViewAsProvider>
   )
@@ -112,10 +123,13 @@ function TrainingHeader() {
   )
 }
 
-function TrainingContent() {
+function TrainingContent({ courseIdOverride, moduleIdOverride, sectionIdOverride }: TrainingAppProps) {
   // `/training` → catalog (offering); `/training/:courseId/:moduleId` → a module
   // with seat-consuming progress; `/training/:moduleId` → course-less preview.
-  const { courseId, moduleId } = useParams<{ courseId?: string; moduleId?: string }>()
+  // The /courses/… contract passes the same three values in as props instead.
+  const params = useParams<{ courseId?: string; moduleId?: string }>()
+  const courseId = courseIdOverride ?? params.courseId
+  const moduleId = moduleIdOverride ?? params.moduleId
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' })
 
   useEffect(() => {
@@ -182,6 +196,8 @@ function TrainingContent() {
       moduleId={load.selectedId}
       courseId={courseId}
       initialRev={load.meta.rev}
+      sectionId={sectionIdOverride}
+      addressable={!!courseIdOverride}
     />
   )
 

@@ -10,6 +10,7 @@ import MarketTestPage from './pages/MarketTestPage'
 import TrainingApp from './training/TrainingApp'
 import AdminApp from './training/admin/AdminApp'
 import EnforcementSignalApp from './training/enforcement/EnforcementSignalApp'
+import CourseRouter, { NotFound as CourseNotFound } from './training/routing/CourseRouter'
 import { hasCoderAccess } from './training/enforcement/enforcementApi'
 import { useAuth } from './training/auth/AuthContext'
 import { apiBaseUrl, contactEmail } from './config/configuration'
@@ -140,6 +141,22 @@ function App() {
           <Route path="/training/:courseId/:moduleId" element={<TrainingApp />} />
           <Route path="/admin" element={<AdminApp />} />
           <Route path="/enforcement-signal" element={<EnforcementSignalApp />} />
+
+          {/* Course navigation by URL. The canonical path is redundant on
+              purpose — a URL read off a slide should say what it points at —
+              and every segment is checked, so a mismatch is a dead address
+              rather than a silent redirect to the place we guess was meant.
+              Short forms and /active resolve to the canonical path. */}
+          <Route path="/courses/:courseId" element={<CourseRouter mode="course" />} />
+          <Route path="/courses/:familyId/active" element={<CourseRouter mode="active" />} />
+          <Route path="/courses/:courseId/modules/:moduleId" element={<CourseRouter mode="module" />} />
+          <Route
+            path="/courses/:courseId/modules/:moduleId/sections/:sectionId"
+            element={<CourseRouter mode="section" />}
+          />
+          <Route path="/m/:moduleId" element={<CourseRouter mode="short-module" />} />
+          <Route path="/s/:moduleId/:sectionId" element={<CourseRouter mode="short-section" />} />
+          <Route path="*" element={<CourseNotFound />} />
         </Routes>
       </main>
 
