@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Module } from '../schema/types'
 import { ResourcesProvider } from '../state/ResourcesContext'
@@ -92,6 +92,25 @@ function ModuleViewInner({ moduleId }: { moduleId: string }) {
   const sectionCount = m.sections.length
   const currentSection = m.sections[Math.min(sectionIndex, sectionCount - 1)]
 
+  // Advancing a section keeps the old scroll offset, so a reader who was at the
+  // bottom of a long section lands in the middle of the next one. Scroll back to
+  // the top on every section change — but not on the first render, which would
+  // fight a deep link or a restored position.
+  const topRef = useRef<HTMLDivElement>(null)
+  const firstRender = useRef(true)
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
+    // 'instant', not 'smooth': the page sets `scroll-behavior: smooth` globally,
+    // which also governs programmatic scrolls — and an animated jump over a long
+    // section is both slow and easy to cancel (any content that lands during the
+    // animation aborts it, leaving the reader stranded mid-section). Paging is
+    // also the one place where an instant jump is the expected behaviour.
+    topRef.current?.scrollIntoView({ behavior: 'instant', block: 'start' })
+  }, [sectionIndex])
+
   const onAddSection = () => {
     addSection()
     setSectionIndex(sectionCount) // the new section is appended at the end
@@ -127,7 +146,7 @@ function ModuleViewInner({ moduleId }: { moduleId: string }) {
   return (
     <ResourcesProvider resources={m.resources}>
       <LearnerStateProvider value={learner}>
-        <div className="max-w-prose mx-auto px-4 py-10 font-sans">
+        <div ref={topRef} className="max-w-prose mx-auto scroll-mt-24 px-4 py-10 font-sans">
           {/* Save controls (edit mode) — portalled next to "Fertig"; only shown when dirty. */}
           {editing && toolbarSlot && createPortal(
             <>
