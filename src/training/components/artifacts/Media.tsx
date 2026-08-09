@@ -2,7 +2,7 @@ import type { MediaArtifact } from '../../schema/types'
 import { InlineMarkdown } from '../../lib/inlineMarkdown'
 import { useResource } from '../../state/ResourcesContext'
 import { useEditMode } from '../../editor/EditModeContext'
-import { detectMedia } from '../../lib/media'
+import { detectMedia, formatBytes } from '../../lib/media'
 import { labels } from '../../labels'
 
 // Used both as an artifact (with full props) and inline via [[media:id]]
@@ -23,7 +23,14 @@ export default function Media(props: Props) {
 
   // A direct URL takes precedence over a library reference.
   if (url && url.trim()) {
-    return <UrlMedia url={url.trim()} caption={caption} />
+    return (
+      <UrlMedia
+        url={url.trim()}
+        caption={caption}
+        filename={isArtifact ? props.artifact.filename : undefined}
+        filesize={isArtifact ? props.artifact.filesize : undefined}
+      />
+    )
   }
 
   // No URL and no (valid) reference: nothing to show. In edit mode, surface a
@@ -89,7 +96,17 @@ export default function Media(props: Props) {
 }
 
 /** Render a direct media URL, classified by {@link detectMedia}. */
-function UrlMedia({ url, caption }: { url: string; caption?: string }) {
+function UrlMedia({
+  url,
+  caption,
+  filename,
+  filesize,
+}: {
+  url: string
+  caption?: string
+  filename?: string
+  filesize?: number
+}) {
   const media = detectMedia(url)
   if (!media) return null
 
@@ -115,6 +132,17 @@ function UrlMedia({ url, caption }: { url: string; caption?: string }) {
     return (
       <figure className="my-2">
         <video src={media.src} controls preload="metadata" className="w-full rounded-md bg-black" />
+        {/* Playable and takeable: a workshop video is often wanted offline. */}
+        <DownloadLink url={media.src} filename={filename} filesize={filesize} />
+        {caption && <figcaption className="text-sm text-slate-600 mt-2"><InlineMarkdown text={caption} className="md-caption" /></figcaption>}
+      </figure>
+    )
+  }
+
+  if (media.kind === 'file') {
+    return (
+      <figure className="my-2">
+        <FileCard url={media.src} ext={media.ext} filename={filename} filesize={filesize} />
         {caption && <figcaption className="text-sm text-slate-600 mt-2"><InlineMarkdown text={caption} className="md-caption" /></figcaption>}
       </figure>
     )
@@ -134,6 +162,85 @@ function UrlMedia({ url, caption }: { url: string; caption?: string }) {
       />
       {caption && <figcaption className="text-sm text-slate-600 mt-2"><InlineMarkdown text={caption} className="md-caption" /></figcaption>}
     </figure>
+  )
+}
+
+/**
+ * A file to take away rather than to watch. PDFs get a first-page preview —
+ * browsers render them natively, so it costs an <iframe> and no library. Every
+ * other type gets its extension as the icon: an honest label beats a generic
+ * paperclip, and it is the thing people actually recognise.
+ */
+function FileCard({
+  url,
+  ext,
+  filename,
+  filesize,
+}: {
+  url: string
+  ext: string
+  filename?: string
+  filesize?: number
+}) {
+  const name = filename || decodeURIComponent(url.split('/').pop()?.split('?')[0] || ext.toUpperCase())
+  const size = formatBytes(filesize)
+  return (
+    <div className="overflow-hidden rounded-md border border-mist bg-white">
+      {ext === 'pdf' && (
+        <iframe
+          src={`${url}#toolbar=0&navpanes=0&view=FitH`}
+          title={name}
+          loading="lazy"
+          className="h-64 w-full border-0 bg-cream"
+        />
+      )}
+      <div className="flex items-center gap-3 px-4 py-3">
+        <span
+          aria-hidden="true"
+          className={`shrink-0 rounded px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-white ${extColor(ext)}`}
+        >
+          {ext}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-semibold text-navy" title={name}>{name}</span>
+          <span className="block text-xs text-slate-500">
+            {ext.toUpperCase()}
+            {size ? ` · ${size}` : ''}
+          </span>
+        </span>
+        <a
+          href={url}
+          download={name}
+          className="shrink-0 rounded-md border-2 border-navy px-3 py-1.5 text-xs font-semibold text-navy no-underline transition-colors hover:bg-navy hover:text-white"
+        >
+          {labels.media.download}
+        </a>
+      </div>
+    </div>
+  )
+}
+
+/** Colour by family, so a spreadsheet does not look like an archive. */
+function extColor(ext: string): string {
+  if (ext === 'pdf') return 'bg-red-600'
+  if (/^(xlsx?|xlsm|csv|ods)$/.test(ext)) return 'bg-emerald-600'
+  if (/^(docx?|odt|rtf|txt|md)$/.test(ext)) return 'bg-indigo-600'
+  if (/^(pptx?|odp)$/.test(ext)) return 'bg-amber-600'
+  if (/^(zip|rar|7z)$/.test(ext)) return 'bg-slate-500'
+  return 'bg-slate-500'
+}
+
+function DownloadLink({ url, filename, filesize }: { url: string; filename?: string; filesize?: number }) {
+  const size = formatBytes(filesize)
+  return (
+    <a
+      href={url}
+      download={filename || undefined}
+      className="mt-1 inline-block text-xs text-slate-500 no-underline hover:text-navy"
+    >
+      ↓ {labels.media.download}
+      {size ? ` (${size})` : ''}
+    </a>
   )
 }
 

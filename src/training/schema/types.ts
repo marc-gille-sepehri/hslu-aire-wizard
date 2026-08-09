@@ -77,8 +77,12 @@ export type MediaArtifact = BaseArtifact & {
   /** Reference into module.resources (the asset library). Optional now that a
    *  direct URL is also supported; at most one of ref/url is used, url wins. */
   ref?: string
-  /** Direct URL to an image or video (incl. YouTube / Vimeo). */
+  /** Direct URL to an image, video or file (incl. YouTube / Vimeo). */
   url?: string
+  /** Original name of an uploaded file — an S3 key is not a label. */
+  filename?: string
+  /** Byte size at upload time, for the download label. */
+  filesize?: number
   caption_override?: string | null
 }
 export type LlmPromptArtifact = BaseArtifact & {

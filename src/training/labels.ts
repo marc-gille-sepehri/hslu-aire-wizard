@@ -155,6 +155,17 @@ export const labels = {
     adminOnlyHint: 'Für Teilnehmende ist diese Adresse ein 404 — sie sehen unveröffentlichte Kurse nicht.',
   },
 
+  // Media-Block: hochgeladene Dateien
+  media: {
+    download: 'Herunterladen',
+    dropHint: 'Datei hierher ziehen oder klicken — PDF, Excel, Video, Bild',
+    uploading: 'Lädt hoch …',
+    uploadError: 'Upload fehlgeschlagen.',
+    needCourse: 'Uploads brauchen einen Kurskontext — dieses Modul ist ohne Kurs geöffnet.',
+    remove: 'Datei entfernen',
+    orUrl: 'oder Adresse einfügen',
+  },
+
   // Admin panel
   admin: {
     title: 'Administration',
@@ -538,6 +549,7 @@ export const labels = {
     fGuidance: 'Hinweis (optional)',
     fResource: 'Ressource',
     fResourceOptional: '… oder Ressource aus der Bibliothek',
+    fMediaUpload: 'Datei hochladen',
     fMediaUrl: 'Medien-URL',
     mediaUrlPlaceholder: 'https://… (Bild, Video oder YouTube/Vimeo)',
     mediaDetected: 'Erkannt',

@@ -6,10 +6,16 @@ export type DetectedMedia =
   | { kind: 'vimeo'; embedUrl: string; id: string }
   | { kind: 'video'; src: string }
   | { kind: 'image'; src: string }
+  /** A file to hand out rather than to embed: PDF, spreadsheet, archive, … */
+  | { kind: 'file'; src: string; ext: string }
   | { kind: 'unknown'; src: string }
 
 const VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)$/i
 const IMAGE_EXT = /\.(jpe?g|png|gif|webp|svg|avif|bmp|ico)$/i
+// Everything a browser will not embed usefully. Listed rather than inferred:
+// an unknown extension stays `unknown` (and is tried as an image), because that
+// is what extension-less CDN media usually is.
+const FILE_EXT = /\.(pdf|xlsx?|xlsm|csv|docx?|pptx?|odt|ods|odp|zip|rar|7z|txt|rtf|json|xml|md)$/i
 
 /**
  * Classify a media URL. Returns null for an empty/blank input. YouTube and Vimeo
@@ -32,6 +38,8 @@ export function detectMedia(rawUrl: string): DetectedMedia | null {
   const path = url.split(/[?#]/)[0]
   if (VIDEO_EXT.test(path)) return { kind: 'video', src: url }
   if (IMAGE_EXT.test(path)) return { kind: 'image', src: url }
+  const file = path.match(FILE_EXT)
+  if (file) return { kind: 'file', src: url, ext: file[1].toLowerCase() }
 
   return { kind: 'unknown', src: url }
 }
@@ -47,9 +55,25 @@ export function mediaKindLabel(m: DetectedMedia | null): string {
       return 'Video'
     case 'image':
       return 'Bild'
+    case 'file':
+      return `Datei (${m.ext.toUpperCase()})`
     case 'unknown':
       return 'Bild (angenommen)'
     default:
       return '—'
   }
+}
+
+/** Human size for a download label. Bytes are never the interesting number. */
+export function formatBytes(bytes?: number): string | null {
+  if (!bytes || bytes < 0) return null
+  if (bytes < 1024) return `${bytes} B`
+  const units = ['KB', 'MB', 'GB']
+  let v = bytes / 1024
+  let i = 0
+  while (v >= 1024 && i < units.length - 1) {
+    v /= 1024
+    i++
+  }
+  return `${v < 10 ? v.toFixed(1) : Math.round(v)} ${units[i]}`
 }

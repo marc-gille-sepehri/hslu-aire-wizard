@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type {
   Artifact,
   BpmnArtifact,
@@ -22,6 +22,7 @@ import { labels } from '../labels'
 import MarkdownEditor from './MarkdownEditor'
 import { fetchModels, type ModelInfo } from '../lib/llmApi'
 import { detectMedia, mediaKindLabel } from '../lib/media'
+import { uploadCourseDocument } from '../lib/documentApi'
 
 const t = labels.editor
 
@@ -327,10 +328,88 @@ function ReflectEditor({ draft, set }: { draft: ReflectArtifact; set: (d: Reflec
   )
 }
 
-function MediaEditor({ draft, set, resourceKeys }: { draft: MediaArtifact; set: (d: MediaArtifact) => void; resourceKeys: string[] }) {
+function MediaEditor({
+  draft,
+  set,
+  resourceKeys,
+  courseId,
+}: {
+  draft: MediaArtifact
+  set: (d: MediaArtifact) => void
+  resourceKeys: string[]
+  courseId?: string
+}) {
   const detected = draft.url ? detectMedia(draft.url) : null
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [dragOver, setDragOver] = useState(false)
+  const fileInput = useRef<HTMLInputElement>(null)
+
+  /** Same path as the markdown editor's drop: straight to S3, URL comes back. */
+  const upload = async (file: File | undefined) => {
+    if (!file || !courseId || uploading) return
+    setUploading(true)
+    setUploadError(null)
+    try {
+      const up = await uploadCourseDocument(courseId, file)
+      // The upload wins over a resource ref, exactly as a pasted URL does.
+      set({ ...draft, url: up.url, filename: up.filename, filesize: file.size, ref: undefined })
+    } catch (e) {
+      setUploadError((e as Error).message || labels.media.uploadError)
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
     <div className="space-y-4">
+      <Field label={t.fMediaUpload}>
+        {courseId ? (
+          <div
+            onDragOver={(e) => {
+              e.preventDefault()
+              setDragOver(true)
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={(e) => {
+              e.preventDefault()
+              setDragOver(false)
+              void upload(e.dataTransfer.files?.[0])
+            }}
+            onClick={() => fileInput.current?.click()}
+            className={`cursor-pointer rounded-md border-2 border-dashed px-4 py-6 text-center text-sm transition-colors ${
+              dragOver ? 'border-navy bg-cream' : 'border-mist text-slate-500 hover:border-slate-300'
+            }`}
+          >
+            {uploading ? labels.media.uploading : labels.media.dropHint}
+            <input
+              ref={fileInput}
+              type="file"
+              className="hidden"
+              onChange={(e) => {
+                void upload(e.target.files?.[0])
+                e.currentTarget.value = ''
+              }}
+            />
+          </div>
+        ) : (
+          <p className="text-xs text-slate-400">{labels.media.needCourse}</p>
+        )}
+        {uploadError && <p className="mt-1 text-xs text-red-700">{uploadError}</p>}
+        {draft.filename && (
+          <p className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+            <span className="truncate font-medium text-navy">{draft.filename}</span>
+            <button
+              type="button"
+              onClick={() => set({ ...draft, url: undefined, filename: undefined, filesize: undefined })}
+              className="shrink-0 underline underline-offset-2 hover:text-red-700"
+            >
+              {labels.media.remove}
+            </button>
+          </p>
+        )}
+      </Field>
+
       <Field label={t.fMediaUrl}>
         <TextInput
           value={draft.url ?? ''}
@@ -464,7 +543,7 @@ export default function BlockEditorDialog({
       case 'reflect':
         return <ReflectEditor draft={draft} set={setDraft} />
       case 'media':
-        return <MediaEditor draft={draft} set={setDraft} resourceKeys={resourceKeys} />
+        return <MediaEditor draft={draft} set={setDraft} resourceKeys={resourceKeys} courseId={courseId} />
       case 'llm_prompt':
         return <LlmPromptEditor draft={draft} set={setDraft} />
       case 'bpmn':
