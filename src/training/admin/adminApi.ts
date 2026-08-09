@@ -106,6 +106,29 @@ export async function createUser(input: CreateUserInput): Promise<AdminUser> {
   return body.user as AdminUser
 }
 
+export interface UpdateUserInput {
+  firstName: string
+  lastName: string
+  roles: string[]
+  customerId: string
+}
+
+/**
+ * Edit an existing user. The email is the key, not a field: it is what people
+ * log in with and what course progress and course instances reference, so it is
+ * passed in the path and never in the body.
+ */
+export async function updateUser(email: string, input: UpdateUserInput): Promise<AdminUser> {
+  const res = await fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(email)}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.user as AdminUser
+}
+
 export async function listCustomers(): Promise<Customer[]> {
   const res = await fetch(`${apiBaseUrl}/admin/customers`, { headers: authHeaders() })
   if (!res.ok) throw await parseError(res)

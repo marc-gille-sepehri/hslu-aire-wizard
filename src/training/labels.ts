@@ -164,8 +164,23 @@ export const labels = {
     fRoles: 'Rollen',
     roleAdministrator: 'Administrator',
     roleMember: 'Member',
+    roleCoder: 'Kodierer (Enforcement-Signal)',
+    roleStudyAdmin: 'Studienadministration (Enforcement-Signal)',
+    roleCoderShort: 'Kodierer',
+    roleStudyAdminShort: 'Studienadmin',
     create: 'Erstellen',
     creating: 'Wird erstellt …',
+    // Edit
+    edit: 'Bearbeiten',
+    editTitle: 'Nutzer bearbeiten',
+    save: 'Speichern',
+    saving: 'Wird gespeichert …',
+    emailRenameHint:
+      'Adressänderung: der Login und alle Verweise (Kursfortschritt, Durchführungen) werden mitgezogen. Ein offener Anmeldecode für die alte Adresse verfällt.',
+    emailRenameConfirm: (from: string, to: string) =>
+      `Adresse von „${from}" auf „${to}" ändern? Der Login und alle Verweise werden mitgezogen.`,
+    selfDemote: 'Sie können sich nicht selbst die Administratorrolle entziehen.',
+    selfRename: 'Sie können Ihre eigene Adresse hier nicht ändern — das würde Ihre laufende Sitzung ungültig machen.',
     cancel: 'Abbrechen',
     invalidEmail: 'Bitte eine gültige E-Mail-Adresse eingeben.',
     nameRequired: 'Vor- und Nachname sind erforderlich.',

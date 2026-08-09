@@ -6,6 +6,7 @@ import LoginGate from '../auth/LoginGate'
 import {
   listUsers,
   createUser,
+  updateUser,
   setDeactivated,
   listCustomers,
   AdminError,
@@ -22,7 +23,25 @@ import SkillTab from './SkillTab'
 
 const t = labels.admin
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const ROLES = ['Administrator', 'Member'] as const
+// Mirrors ALLOWED_ROLES on the server. The study roles are listed here so the
+// coding route can be staffed from this panel instead of by hand in the DB.
+const ROLES = ['Administrator', 'Member', 'enforcement-signal-coder', 'enforcement-signal-admin'] as const
+
+const ROLE_LABELS: Record<string, string> = {
+  Administrator: t.roleAdministrator,
+  Member: t.roleMember,
+  'enforcement-signal-coder': t.roleCoder,
+  'enforcement-signal-admin': t.roleStudyAdmin,
+}
+
+/** Short form for the table chips; the dialog spells the roles out in full. */
+const ROLE_SHORT: Record<string, string> = {
+  'enforcement-signal-coder': t.roleCoderShort,
+  'enforcement-signal-admin': t.roleStudyAdminShort,
+}
+
+const roleLabel = (role: string) => ROLE_LABELS[role] ?? role
+const roleChip = (role: string) => ROLE_SHORT[role] ?? roleLabel(role)
 
 /** Guard: login required, Administrator role required; then render the panel. */
 export default function AdminApp() {
@@ -106,7 +125,8 @@ function UsersTab() {
   const [users, setUsers] = useState<AdminUser[] | null>(null)
   const [showDeactivated, setShowDeactivated] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  // null = closed; { user: null } = create; { user } = edit.
+  const [dialog, setDialog] = useState<{ user: AdminUser | null } | null>(null)
   const [busyEmail, setBusyEmail] = useState<string | null>(null)
 
   const load = async (includeDeactivated: boolean) => {
@@ -148,7 +168,7 @@ function UsersTab() {
         </label>
         <button
           type="button"
-          onClick={() => setDialogOpen(true)}
+          onClick={() => setDialog({ user: null })}
           className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-gold-dark"
         >
           + {t.createUser}
@@ -180,8 +200,8 @@ function UsersTab() {
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-1">
                     {u.roles.map((r) => (
-                      <span key={r} className="rounded-full bg-navy px-2 py-0.5 text-xs font-semibold text-white">
-                        {r}
+                      <span key={r} title={r} className="rounded-full bg-navy px-2 py-0.5 text-xs font-semibold text-white">
+                        {roleChip(r)}
                       </span>
                     ))}
                   </div>
@@ -194,6 +214,19 @@ function UsersTab() {
                   )}
                 </td>
                 <td className="px-4 py-3 text-right">
+                  <div className="flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setDialog({ user: u })}
+                    aria-label={t.edit}
+                    title={t.edit}
+                    className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-cream hover:text-navy"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                    </svg>
+                  </button>
                   <button
                     type="button"
                     onClick={() => toggleDeactivated(u)}
@@ -206,6 +239,7 @@ function UsersTab() {
                   >
                     {u.deactivated ? t.reactivate : t.deactivate}
                   </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -220,11 +254,12 @@ function UsersTab() {
         </table>
       </div>
 
-      {dialogOpen && (
-        <CreateUserDialog
-          onClose={() => setDialogOpen(false)}
-          onCreated={() => {
-            setDialogOpen(false)
+      {dialog && (
+        <UserDialog
+          user={dialog.user}
+          onClose={() => setDialog(null)}
+          onSaved={() => {
+            setDialog(null)
             load(showDeactivated)
           }}
         />
@@ -235,16 +270,32 @@ function UsersTab() {
 
 const NEW_CUSTOMER = '__new__'
 
-function CreateUserDialog({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [roles, setRoles] = useState<string[]>(['Member'])
+/**
+ * Create or edit a user. In edit mode the email is shown but not editable: it
+ * is the login handle and the key that course progress and course instances
+ * reference, so changing it is a migration rather than a field edit. A new
+ * customer can only be attached while creating — afterwards the Kunden tab is
+ * the place for that.
+ */
+function UserDialog({
+  user,
+  onClose,
+  onSaved,
+}: {
+  user: AdminUser | null
+  onClose: () => void
+  onSaved: () => void
+}) {
+  const isEdit = user !== null
+  const [firstName, setFirstName] = useState(user?.firstName ?? '')
+  const [lastName, setLastName] = useState(user?.lastName ?? '')
+  const [email, setEmail] = useState(user?.email ?? '')
+  const [roles, setRoles] = useState<string[]>(user?.roles ?? ['Member'])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const [customers, setCustomers] = useState<Customer[]>([])
-  const [customerChoice, setCustomerChoice] = useState<string>(NEW_CUSTOMER)
+  const [customerChoice, setCustomerChoice] = useState<string>(user?.customerId ?? NEW_CUSTOMER)
   const [custName, setCustName] = useState('')
   const [addr, setAddr] = useState<CustomerAddress>({
     street: '',
@@ -265,12 +316,15 @@ function CreateUserDialog({ onClose, onCreated }: { onClose: () => void; onCreat
     listCustomers()
       .then((list) => {
         setCustomers(list)
-        if (list.length > 0) setCustomerChoice(list[0].id)
+        // Editing keeps the user's own customer; creating falls back to the first.
+        if (!isEdit && list.length > 0) setCustomerChoice(list[0].id)
       })
       .catch(() => setCustomers([]))
-  }, [])
+  }, [isEdit])
 
-  const isNewCustomer = customerChoice === NEW_CUSTOMER
+  const isNewCustomer = !isEdit && customerChoice === NEW_CUSTOMER
+  // A rename cascades through progress and instances — worth naming explicitly.
+  const emailChanged = isEdit && email.trim().toLowerCase() !== user!.email.toLowerCase()
   const setAddrField = (k: keyof CustomerAddress, v: string) => setAddr((a) => ({ ...a, [k]: v }))
 
   // Enable "Erstellen" only when every required field is populated.
@@ -302,21 +356,43 @@ function CreateUserDialog({ onClose, onCreated }: { onClose: () => void; onCreat
         return
       }
     }
+    // A rename is not undoable from this dialog, so it gets an explicit yes.
+    if (emailChanged && !window.confirm(t.emailRenameConfirm(user!.email, email.trim().toLowerCase()))) {
+      return
+    }
     setBusy(true)
     try {
-      await createUser({
-        email: email.trim(),
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        roles,
-        ...(isNewCustomer
-          ? { newCustomer: { name: custName.trim(), address: addr } }
-          : { customerId: customerChoice }),
-      })
-      onCreated()
+      if (isEdit) {
+        await updateUser(user!.email, {
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          roles,
+          customerId: customerChoice,
+          ...(emailChanged ? { email: email.trim() } : {}),
+        })
+      } else {
+        await createUser({
+          email: email.trim(),
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          roles,
+          ...(isNewCustomer
+            ? { newCustomer: { name: custName.trim(), address: addr } }
+            : { customerId: customerChoice }),
+        })
+      }
+      onSaved()
     } catch (e) {
       const ae = e as AdminError
-      setError(ae.code === 'DUPLICATE' ? t.duplicate : ae.message)
+      setError(
+        ae.code === 'DUPLICATE'
+          ? t.duplicate
+          : ae.code === 'SELF_DEMOTE'
+            ? t.selfDemote
+            : ae.code === 'SELF_RENAME'
+              ? t.selfRename
+              : ae.message,
+      )
     } finally {
       setBusy(false)
     }
@@ -333,7 +409,7 @@ function CreateUserDialog({ onClose, onCreated }: { onClose: () => void; onCreat
     >
       <div className="w-full max-w-md rounded-2xl border border-mist bg-white shadow-lg">
         <div className="flex items-center justify-between border-b border-mist bg-cream px-6 py-4">
-          <h2 className="font-display text-lg font-bold text-navy">{t.dialogTitle}</h2>
+          <h2 className="font-display text-lg font-bold text-navy">{isEdit ? t.editTitle : t.dialogTitle}</h2>
           <button type="button" onClick={onClose} aria-label={t.cancel} className="text-slate-400 hover:text-navy">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M18 6 6 18M6 6l12 12" />
@@ -354,7 +430,16 @@ function CreateUserDialog({ onClose, onCreated }: { onClose: () => void; onCreat
           </div>
           <label className="block">
             <span className={labelCls}>{t.fEmail}</span>
-            <input className={inputCls} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vorname.nachname@hslu.ch" />
+            <input
+              className={inputCls}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="vorname.nachname@hslu.ch"
+            />
+            {isEdit && emailChanged && (
+              <span className="mt-1 block text-xs text-slate-500">{t.emailRenameHint}</span>
+            )}
           </label>
 
           {/* Customer: existing or new */}
@@ -364,7 +449,7 @@ function CreateUserDialog({ onClose, onCreated }: { onClose: () => void; onCreat
               {customers.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
-              <option value={NEW_CUSTOMER}>{t.newCustomerOption}</option>
+              {!isEdit && <option value={NEW_CUSTOMER}>{t.newCustomerOption}</option>}
             </select>
           </label>
 
@@ -411,11 +496,11 @@ function CreateUserDialog({ onClose, onCreated }: { onClose: () => void; onCreat
 
           <div>
             <span className={labelCls}>{t.fRoles}</span>
-            <div className="flex gap-4">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
               {ROLES.map((role) => (
-                <label key={role} className="flex items-center gap-2 text-sm text-slate-700">
+                <label key={role} className="flex items-start gap-2 text-sm text-slate-700">
                   <input type="checkbox" checked={roles.includes(role)} onChange={() => toggleRole(role)} />
-                  {role === 'Administrator' ? t.roleAdministrator : t.roleMember}
+                  {roleLabel(role)}
                 </label>
               ))}
             </div>
@@ -429,7 +514,7 @@ function CreateUserDialog({ onClose, onCreated }: { onClose: () => void; onCreat
             {t.cancel}
           </button>
           <button type="button" onClick={submit} disabled={busy || !canSubmit} className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-gold-dark disabled:opacity-60 disabled:cursor-not-allowed">
-            {busy ? t.creating : t.create}
+            {busy ? (isEdit ? t.saving : t.creating) : isEdit ? t.save : t.create}
           </button>
         </div>
       </div>
