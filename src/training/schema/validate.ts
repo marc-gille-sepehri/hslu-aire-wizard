@@ -121,6 +121,8 @@ const docConvertArtifact = baseArtifact.extend({
   type: z.literal('doc_convert'),
   title: z.string().optional(),
   instructions: z.string().optional(),
+  outputFormat: z.enum(['markdown', 'cells', 'both']).optional(),
+  formulaMode: z.enum(['silent', 'error', 'formula']).optional(),
 })
 
 const artifact = z.discriminatedUnion('type', [

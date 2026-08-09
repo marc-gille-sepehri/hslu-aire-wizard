@@ -9,12 +9,14 @@ import MarkdownEditor from '../../editor/MarkdownEditor'
 
 const t = labels.docConvert
 
-type Tab = 'markdown' | 'serialized' | 'analysis'
+type Tab = 'markdown' | 'cells' | 'analysis'
 
 /**
  * Document → Markdown converter block: upload a PDF/PPTX/DOCX/image and see the
- * Markdown (Docling); for spreadsheets, also the row-wise serialization and a
- * statistical analysis. Complete once a file has been converted.
+ * Markdown (Docling); for spreadsheets, also a statistical analysis and —  when the
+ * artifact asks for it — a cell-addressed serialization that keeps addresses, merges
+ * and stored values where the Markdown table silently loses them.
+ * Complete once a file has been converted, in whichever format.
  */
 export default function DocConvert({ artifact }: { artifact: DocConvertArtifact }) {
   const record = useRecordInteraction()
@@ -29,6 +31,13 @@ export default function DocConvert({ artifact }: { artifact: DocConvertArtifact 
   // Editable markdown shown in the same editor as the text block.
   const [markdown, setMarkdown] = useState('')
   const [copied, setCopied] = useState(false)
+  // One-shot: recording every tab click would be one POST per click.
+  const cellsSeen = useRef(false)
+
+  // Absent fields behave as before, so existing artifacts are unaffected.
+  const outputFormat = artifact.outputFormat ?? 'markdown'
+  const formulaMode = artifact.formulaMode ?? 'silent'
+  const wantsCells = outputFormat !== 'markdown'
 
   const convert = async (file?: File) => {
     if (!file || busy) return
@@ -36,12 +45,25 @@ export default function DocConvert({ artifact }: { artifact: DocConvertArtifact 
     setError(null)
     setResult(null)
     try {
-      const res = await convertDocument(file)
+      const res = await convertDocument(file, { outputFormat, formulaMode })
       setResult(res)
-      setTab('markdown')
+      const cells = res.excel?.cells ?? res.cells
+      const startTab: Tab = outputFormat === 'cells' && cells?.applicable ? 'cells' : 'markdown'
+      setTab(startTab)
+      cellsSeen.current = startTab === 'cells'
       setMarkdown(res.kind === 'excel' ? res.excel!.markdown : res.markdown ?? '')
       setCopied(false)
-      record(artifact.id, { type: 'docconvert', converted: true })
+      record(artifact.id, {
+        type: 'docconvert',
+        converted: true,
+        outputFormat,
+        formulaMode,
+        applicable: cells?.applicable ?? null,
+        sheetCount: cells?.sheets?.length ?? null,
+        cellCount: cells?.sheets?.reduce((n, s) => n + s.cells, 0) ?? null,
+        truncated: cells?.truncated ?? null,
+        paneViewed: startTab,
+      })
       if (artifact.tracked !== false) markComplete(artifact.id)
     } catch (e) {
       setError((e as Error).message)
@@ -51,10 +73,27 @@ export default function DocConvert({ artifact }: { artifact: DocConvertArtifact 
   }
 
   const isExcel = result?.kind === 'excel'
+  const cells = result?.excel?.cells ?? result?.cells
+  const tabs: Tab[] = [
+    ...(outputFormat === 'cells' && cells?.applicable ? [] : (['markdown'] as Tab[])),
+    ...(wantsCells && cells?.applicable ? (['cells'] as Tab[]) : []),
+    ...(isExcel ? (['analysis'] as Tab[]) : []),
+  ]
+
+  const openTab = (k: Tab) => {
+    setTab(k)
+    // Whether learners actually look at the cell format is the question this block
+    // exists to answer — record it once, the first time they do.
+    if (k === 'cells' && !cellsSeen.current) {
+      cellsSeen.current = true
+      record(artifact.id, { type: 'docconvert', converted: true, outputFormat, formulaMode, paneViewed: 'cells' })
+    }
+  }
 
   const copyAll = async () => {
     try {
-      await navigator.clipboard.writeText(markdown)
+      // Copy the raw serialization, not the rendered DOM.
+      await navigator.clipboard.writeText(tab === 'cells' ? cells?.text ?? '' : markdown)
       setCopied(true)
       window.setTimeout(() => setCopied(false), 1500)
     } catch {
@@ -96,17 +135,17 @@ export default function DocConvert({ artifact }: { artifact: DocConvertArtifact 
           <div>
             <div className="mb-2 flex items-center gap-2">
               <span className="rounded bg-cream px-2 py-0.5 font-mono text-xs text-slate-600">{result.filename}</span>
-              {isExcel && (
+              {tabs.length > 1 && (
                 <div className="flex gap-1">
-                  {(['markdown', 'serialized', 'analysis'] as Tab[]).map((k) => (
-                    <button key={k} type="button" onClick={() => setTab(k)}
+                  {tabs.map((k) => (
+                    <button key={k} type="button" onClick={() => openTab(k)}
                       className={`rounded px-2 py-1 text-xs font-semibold transition-colors ${tab === k ? 'bg-navy text-white' : 'text-slate-500 hover:text-navy'}`}>
                       {t.tab[k]}
                     </button>
                   ))}
                 </div>
               )}
-              {(!isExcel || tab === 'markdown') && (
+              {tab !== 'analysis' && (
                 <button type="button" onClick={copyAll} className="ml-auto text-xs font-medium text-slate-500 hover:text-navy">
                   {copied ? t.copied : t.copyAll}
                 </button>
@@ -114,19 +153,31 @@ export default function DocConvert({ artifact }: { artifact: DocConvertArtifact 
             </div>
 
             {/* Markdown tab (documents + excel) — same editor as the text block. */}
-            {(!isExcel || tab === 'markdown') && (
-              <MarkdownEditor value={markdown} onChange={setMarkdown} />
+            {tab === 'markdown' && <MarkdownEditor value={markdown} onChange={setMarkdown} />}
+
+            {/* Cells requested but the file has no table structure — explain, never fail. */}
+            {tab === 'markdown' && wantsCells && cells && !cells.applicable && (
+              <p className="mt-2 rounded-md border border-mist bg-cream px-3 py-2 text-xs text-slate-600">
+                {cells.message ?? t.cellsNotApplicable}
+              </p>
             )}
 
-            {/* Serialized tab (excel) */}
-            {isExcel && tab === 'serialized' && (
-              <div className="max-h-96 space-y-3 overflow-auto rounded-md border border-mist p-3">
-                {result!.excel!.serialized.map((s) => (
-                  <div key={s.name}>
-                    <p className="mb-1 text-xs font-semibold uppercase tracking-kicker text-slate-400">{s.name}</p>
-                    <pre className="overflow-x-auto rounded bg-navy/95 px-2 py-1.5 font-mono text-[11px] text-cream whitespace-pre">{s.serialized}</pre>
-                  </div>
-                ))}
+            {/* Cells tab — raw, monospace, horizontally scrollable. Not highlighted: the
+                point is that it is plain inspectable text. */}
+            {tab === 'cells' && cells?.applicable && (
+              <div className="rounded-md border border-mist p-3">
+                <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                  <span className="rounded bg-cream px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-kicker text-slate-500">
+                    {t.formulaModeLabel(cells.formulaMode ?? formulaMode)}
+                  </span>
+                  {cells.truncated && <span className="text-[11px] text-amber-700">{t.cellsTruncated}</span>}
+                  {(cells.warnings ?? []).map((w) => (
+                    <span key={w} className="text-[11px] text-amber-700">{w}</span>
+                  ))}
+                </div>
+                <pre className="max-h-96 overflow-auto rounded bg-navy/95 px-2 py-1.5 font-mono text-[11px] text-cream whitespace-pre">
+                  {cells.text}
+                </pre>
               </div>
             )}
 

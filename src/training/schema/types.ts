@@ -138,4 +138,12 @@ export type DocConvertArtifact = BaseArtifact & {
   title?: string
   /** Explanatory text shown above the converter. */
   instructions?: string
+  /**
+   * Spreadsheet output. 'cells' is a cell-addressed serialization that keeps
+   * row/column addresses, merges and stored values; a Markdown table loses them
+   * without an error. Absent behaves as 'markdown'. Ignored for non-tabular files.
+   */
+  outputFormat?: 'markdown' | 'cells' | 'both'
+  /** How formula cells render in the cells output. Ignored unless cells are shown. */
+  formulaMode?: 'silent' | 'error' | 'formula'
 }

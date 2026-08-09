@@ -285,6 +285,30 @@ function DocConvertEditor({ draft, set }: { draft: DocConvertArtifact; set: (d: 
       <Field label={t.fInstructions}>
         <TextArea value={draft.instructions ?? ''} rows={2} onChange={(v) => set({ ...draft, instructions: v || undefined })} />
       </Field>
+      <Field label={t.fOutputFormat}>
+        <select
+          className={inputCls}
+          value={draft.outputFormat ?? 'markdown'}
+          onChange={(e) => set({ ...draft, outputFormat: e.target.value as DocConvertArtifact['outputFormat'] })}
+        >
+          <option value="markdown">{t.outputFormatOpt.markdown}</option>
+          <option value="cells">{t.outputFormatOpt.cells}</option>
+          <option value="both">{t.outputFormatOpt.both}</option>
+        </select>
+      </Field>
+      {draft.outputFormat && draft.outputFormat !== 'markdown' && (
+        <Field label={t.fFormulaMode}>
+          <select
+            className={inputCls}
+            value={draft.formulaMode ?? 'silent'}
+            onChange={(e) => set({ ...draft, formulaMode: e.target.value as DocConvertArtifact['formulaMode'] })}
+          >
+            <option value="silent">{t.formulaModeOpt.silent}</option>
+            <option value="error">{t.formulaModeOpt.error}</option>
+            <option value="formula">{t.formulaModeOpt.formula}</option>
+          </select>
+        </Field>
+      )}
       <p className="text-xs text-slate-500">{t.docConvertEditorHint}</p>
     </div>
   )

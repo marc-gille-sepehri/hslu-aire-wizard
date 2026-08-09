@@ -137,6 +137,8 @@ export function makeNewArtifact(type: BlockType): Artifact {
         type,
         title: 'Dokument nach Markdown konvertieren',
         instructions: 'Lade ein Dokument (PDF, PPTX, DOCX, Bild) oder eine Excel-Datei hoch und sieh dir die Umwandlung an.',
+        outputFormat: 'markdown',
+        formulaMode: 'silent',
       }
     default: {
       // Exhaustiveness guard — a new schema type must be handled here.

@@ -7,6 +7,29 @@ export interface ExcelSheetSerialized {
   name: string
   serialized: string
 }
+export interface CellsSheet {
+  name: string
+  text: string
+  rows: number
+  cells: number
+}
+/**
+ * Cell-addressed serialization. `applicable` is false for inputs without table
+ * structure (PDF, DOCX, .xls) — the conversion still succeeds, only this pane
+ * carries an explanation instead of content.
+ */
+export interface CellsResult {
+  applicable: boolean
+  message?: string
+  text?: string
+  sheets?: CellsSheet[]
+  formulaMode?: FormulaMode
+  requestedFormulaMode?: FormulaMode
+  truncated?: boolean
+  warnings?: string[]
+}
+export type OutputFormat = 'markdown' | 'cells' | 'both'
+export type FormulaMode = 'silent' | 'error' | 'formula'
 export interface ExcelColumn {
   name: string
   dtype: string
@@ -25,19 +48,30 @@ export interface ExcelAnalysisSheet {
 export interface ExcelResult {
   filename: string
   markdown: string
+  /** @deprecated superseded by `cells` — 0-based numeric indices, no merges, no escaping. */
   serialized: ExcelSheetSerialized[]
   analysis: ExcelAnalysisSheet[]
+  cells?: CellsResult
 }
 export interface ConvertResult {
   kind: 'markdown' | 'excel'
   filename: string
   markdown?: string
   excel?: ExcelResult
+  /** Present on non-spreadsheet responses when cells were requested. */
+  cells?: CellsResult
 }
 
-export async function convertDocument(file: File): Promise<ConvertResult> {
+export async function convertDocument(
+  file: File,
+  opts: { outputFormat?: OutputFormat; formulaMode?: FormulaMode } = {},
+): Promise<ConvertResult> {
   const token = getStoredToken()
-  const res = await fetch(`${apiBaseUrl}/training/convert`, {
+  const query = new URLSearchParams()
+  if (opts.outputFormat) query.set('outputFormat', opts.outputFormat)
+  if (opts.formulaMode) query.set('formulaMode', opts.formulaMode)
+  const qs = query.toString()
+  const res = await fetch(`${apiBaseUrl}/training/convert${qs ? `?${qs}` : ''}`, {
     method: 'POST',
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),

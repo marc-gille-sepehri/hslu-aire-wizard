@@ -58,7 +58,20 @@ export type Interaction =
   | { type: 'ontology'; explored: boolean }
   | { type: 'dataquery'; ran: boolean }
   | { type: 'graphview'; expanded: boolean }
-  | { type: 'docconvert'; converted: boolean }
+  // Additive: the server stores the interaction as-is, so older records simply lack
+  // the newer fields. `paneViewed` answers whether learners actually open the cell
+  // format or stay on the familiar Markdown — the question the block exists to ask.
+  | {
+      type: 'docconvert'
+      converted: boolean
+      outputFormat?: 'markdown' | 'cells' | 'both'
+      formulaMode?: 'silent' | 'error' | 'formula'
+      applicable?: boolean | null
+      sheetCount?: number | null
+      cellCount?: number | null
+      truncated?: boolean | null
+      paneViewed?: 'markdown' | 'cells' | 'analysis'
+    }
 
 export interface ModuleProgressRecord {
   moduleKey: string

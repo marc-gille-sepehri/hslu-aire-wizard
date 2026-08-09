@@ -138,6 +138,23 @@ export const labels = {
     invalidEmail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
   },
 
+  // Kursnavigation über URLs (/courses/…, Kurzformen, 404)
+  routes: {
+    notFoundTitle: 'Diese Adresse führt ins Leere',
+    notFoundBody:
+      'Die Adresse zeigt auf eine Stelle, die es nicht (mehr) gibt — oder die Segmente passen nicht zusammen. Bitte den Link prüfen.',
+    toCatalog: '← Zur Kursübersicht',
+    resolving: 'Wird aufgelöst …',
+    supersededTitle: 'Überholte Fassung',
+    supersededBody: (v: number) =>
+      `Sie sehen Version ${v}. Es gibt eine neuere aktive Fassung dieses Kurses.`,
+    toActive: 'Zur aktuellen Fassung',
+    courseModules: 'Module',
+    noModules: 'Dieser Kurs enthält noch keine Module.',
+    unpublishedTag: 'Unveröffentlicht',
+    adminOnlyHint: 'Für Teilnehmende ist diese Adresse ein 404 — sie sehen unveröffentlichte Kurse nicht.',
+  },
+
   // Admin panel
   admin: {
     title: 'Administration',
@@ -253,13 +270,17 @@ export const labels = {
   // Document → Markdown converter block
   docConvert: {
     drop: 'Datei hierher ziehen oder klicken',
-    formats: 'PDF, PPTX, DOCX, Bilder → Markdown · Excel → Markdown + Serialisierung + Analyse',
+    formats: 'PDF, PPTX, DOCX, Bilder → Markdown · Excel → Markdown, Zellenformat + Analyse',
     converting: 'Konvertiere …',
     raw: 'Rohtext',
     rendered: 'Gerendert',
     copyAll: 'Alles kopieren',
     copied: 'Kopiert ✓',
-    tab: { markdown: 'Markdown', serialized: 'Serialisiert', analysis: 'Analyse' },
+    tab: { markdown: 'Markdown', cells: 'Zellen', analysis: 'Analyse' },
+    cellsNotApplicable: 'Zellenformat nicht anwendbar — diese Datei hat keine Tabellenstruktur.',
+    cellsTruncated: 'Ausgabe gekürzt — die Datei ist grösser als die Anzeigegrenze.',
+    formulaModeLabel: (m: string) =>
+      m === 'formula' ? 'Formeln sichtbar' : m === 'error' ? 'Fehlerwerte sichtbar' : 'nur Werte',
   },
 
   // Data-room object-graph explorer block
@@ -538,6 +559,18 @@ export const labels = {
     fStartType: 'Start-Klasse (z. B. Site)',
     objectGraphEditorHint: 'Der Graph kommt live aus dem Datenraum; der Block gilt als erledigt, sobald ein Knoten expandiert wurde.',
     docConvertEditorHint: 'Teilnehmende laden eine Datei hoch; der Block gilt als erledigt, sobald eine Konvertierung lief. Der Dokumentendienst muss serverseitig konfiguriert sein.',
+    fOutputFormat: 'Ausgabe bei Tabellen',
+    outputFormatOpt: {
+      markdown: 'Nur Markdown (wie bisher)',
+      cells: 'Nur Zellenformat (mit Adressen)',
+      both: 'Beides — zum Vergleichen',
+    },
+    fFormulaMode: 'Formelzellen',
+    formulaModeOpt: {
+      silent: 'Nur berechnete Werte',
+      error: 'Auch Fehlerwerte (#BEZUG!, #DIV/0!)',
+      formula: 'Wert und Formel anzeigen',
+    },
     fCaption: 'Bildunterschrift (optional)',
     noResources: 'Keine Ressourcen in diesem Modul definiert.',
     variantNote: 'Hinweis',
