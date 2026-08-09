@@ -1,4 +1,5 @@
 import type { MediaArtifact } from '../../schema/types'
+import { InlineMarkdown } from '../../lib/inlineMarkdown'
 import { useResource } from '../../state/ResourcesContext'
 import { useEditMode } from '../../editor/EditModeContext'
 import { detectMedia } from '../../lib/media'
@@ -57,7 +58,7 @@ export default function Media(props: Props) {
         >
           {resource.captions && <track kind="captions" src={resource.captions} default />}
         </video>
-        {resCaption && <figcaption className="text-sm text-slate-600 mt-2">{resCaption}</figcaption>}
+        {resCaption && <figcaption className="text-sm text-slate-600 mt-2"><InlineMarkdown text={resCaption} className="md-caption" /></figcaption>}
       </figure>
     )
   }
@@ -82,7 +83,7 @@ export default function Media(props: Props) {
           {labels.missingAlt}
         </div>
       )}
-      {resCaption && <figcaption className="text-sm text-slate-600 mt-2">{resCaption}</figcaption>}
+      {resCaption && <figcaption className="text-sm text-slate-600 mt-2"><InlineMarkdown text={resCaption} className="md-caption" /></figcaption>}
     </figure>
   )
 }
@@ -105,7 +106,7 @@ function UrlMedia({ url, caption }: { url: string; caption?: string }) {
             allowFullScreen
           />
         </div>
-        {caption && <figcaption className="text-sm text-slate-600 mt-2">{caption}</figcaption>}
+        {caption && <figcaption className="text-sm text-slate-600 mt-2"><InlineMarkdown text={caption} className="md-caption" /></figcaption>}
       </figure>
     )
   }
@@ -114,7 +115,7 @@ function UrlMedia({ url, caption }: { url: string; caption?: string }) {
     return (
       <figure className="my-2">
         <video src={media.src} controls preload="metadata" className="w-full rounded-md bg-black" />
-        {caption && <figcaption className="text-sm text-slate-600 mt-2">{caption}</figcaption>}
+        {caption && <figcaption className="text-sm text-slate-600 mt-2"><InlineMarkdown text={caption} className="md-caption" /></figcaption>}
       </figure>
     )
   }
@@ -131,7 +132,7 @@ function UrlMedia({ url, caption }: { url: string; caption?: string }) {
           ;(e.currentTarget as HTMLImageElement).style.display = 'none'
         }}
       />
-      {caption && <figcaption className="text-sm text-slate-600 mt-2">{caption}</figcaption>}
+      {caption && <figcaption className="text-sm text-slate-600 mt-2"><InlineMarkdown text={caption} className="md-caption" /></figcaption>}
     </figure>
   )
 }
