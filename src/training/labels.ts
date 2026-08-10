@@ -164,6 +164,7 @@ export const labels = {
       + 'als PNG oder SVG abgelegt und automatisch verschlagwortet.',
     drop: 'PowerPoint oder PDF hierher ziehen oder klicken',
     formats: 'PPTX, PPTM, PDF',
+    forceHint: 'Mit gedrückter Alt-Taste ablegen, um eine bereits ausgewertete Datei erneut zu verarbeiten.',
     wrongType: 'Nur PowerPoint (.pptx, .pptm) und PDF werden ausgewertet.',
     reused: 'Diese Datei wurde bereits ausgewertet — der bestehende Lauf wird angezeigt.',
     search: 'Suchen',

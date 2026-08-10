@@ -82,8 +82,11 @@ async function asJson<T>(res: Response): Promise<T> {
  * the same shape the document converter already uses, so no multipart parser is
  * needed on either side.
  */
-export async function startIngest(file: File): Promise<{ jobId: string; state: JobState; reused?: boolean }> {
-  const res = await fetch(`${apiBaseUrl}/admin/media/ingest`, {
+export async function startIngest(
+  file: File,
+  force = false,
+): Promise<{ jobId: string; state: JobState; reused?: boolean }> {
+  const res = await fetch(`${apiBaseUrl}/admin/media/ingest${force ? '?force=true' : ''}`, {
     method: 'POST',
     headers: {
       ...authHeaders(),

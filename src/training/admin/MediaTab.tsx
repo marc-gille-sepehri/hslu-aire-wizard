@@ -154,7 +154,7 @@ export default function MediaTab() {
   const accepted = (file: File) =>
     ACCEPTED.some((ext) => file.name.toLowerCase().endsWith(ext))
 
-  const upload = async (file?: File) => {
+  const upload = async (file?: File, force = false) => {
     if (!file) return
     setError(null)
     if (!accepted(file)) {
@@ -162,7 +162,7 @@ export default function MediaTab() {
       return
     }
     try {
-      const { reused } = await startIngest(file)
+      const { reused } = await startIngest(file, force)
       if (reused) setError(t.reused)
       await refreshJobs()
     } catch (e) {
@@ -192,7 +192,9 @@ export default function MediaTab() {
         onDrop={(e) => {
           e.preventDefault()
           setDrag(false)
-          void upload(e.dataTransfer.files[0])
+          // Alt while dropping re-runs a deck that was already ingested — needed
+          // whenever the pipeline itself has been fixed since the first run.
+          void upload(e.dataTransfer.files[0], e.altKey)
         }}
         onClick={() => fileRef.current?.click()}
         className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-md border-2 border-dashed px-4 py-8 text-center transition-colors ${
@@ -204,6 +206,7 @@ export default function MediaTab() {
         </svg>
         <span className="text-sm font-semibold text-navy">{t.drop}</span>
         <span className="text-xs text-slate-400">{t.formats}</span>
+        <span className="text-[11px] text-slate-400">{t.forceHint}</span>
         <input
           ref={fileRef}
           type="file"
