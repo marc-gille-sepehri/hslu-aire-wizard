@@ -155,6 +155,44 @@ export const labels = {
     adminOnlyHint: 'Für Teilnehmende ist diese Adresse ein 404 — sie sehen unveröffentlichte Kurse nicht.',
   },
 
+  // Administration → Mediendatenbank
+  adminMedia: {
+    tab: 'Mediendatenbank',
+    heading: 'Mediendatenbank',
+    intro:
+      'Eine Quelle hierher ziehen — Abbildungen und Diagramme werden herausgelöst, '
+      + 'als PNG oder SVG abgelegt und automatisch verschlagwortet.',
+    drop: 'PowerPoint oder PDF hierher ziehen oder klicken',
+    formats: 'PPTX, PPTM, PDF',
+    wrongType: 'Nur PowerPoint (.pptx, .pptm) und PDF werden ausgewertet.',
+    reused: 'Diese Datei wurde bereits ausgewertet — der bestehende Lauf wird angezeigt.',
+    search: 'Suchen',
+    searchPlaceholder: 'Nach Schlagwort, Alternativtext oder Folientitel suchen …',
+    noHits: 'Keine Treffer.',
+    empty: 'Noch keine Medien. Zieh eine Quelle in das Feld oben.',
+    noPreview: 'keine Vorschau',
+    slide: 'Folie',
+    authorAlt: 'Alternativtext vom Autor',
+    errorCount: (n: number) => `${n} Hinweis${n === 1 ? '' : 'e'} zum Lauf`,
+    colPreview: 'Vorschau',
+    colTags: 'Verschlagwortung',
+    colMime: 'Typ',
+    colSize: 'Grösse',
+    colDate: 'Datum',
+    colUploader: 'Hochgeladen von',
+    state: {
+      queued: 'Wartet',
+      preparing: 'Wird vorbereitet',
+      enumerating: 'Sucht Abbildungen',
+      rendering: 'Rendert',
+      deriving: 'Verschlagwortet',
+      indexing: 'Wird abgelegt',
+      done: 'Fertig',
+      completed_with_errors: 'Fertig, mit Hinweisen',
+      failed: 'Fehlgeschlagen',
+    } as Record<string, string>,
+  },
+
   // Media-Block: hochgeladene Dateien
   media: {
     download: 'Herunterladen',
