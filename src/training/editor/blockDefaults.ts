@@ -28,6 +28,7 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: 'data_query', label: 'Datenabfrage', icon: '🗄️', hint: 'SQL gegen den Datenraum ausführen' },
   { type: 'object_graph', label: 'Objekt-Graph', icon: '🕸️', hint: 'Datenraum als Graph erkunden' },
   { type: 'doc_convert', label: 'Dokument → Markdown', icon: '📄', hint: 'PDF/PPT/Excel nach Markdown konvertieren' },
+  { type: 'embedding_compare', label: 'Embeddings vergleichen', icon: '📐', hint: 'Textstücke als Punkte mit Distanzen' },
 ]
 
 export const BLOCK_TYPE_LABEL: Record<BlockType, string> = BLOCK_TYPES.reduce(
@@ -130,6 +131,19 @@ export function makeNewArtifact(type: BlockType): Artifact {
         title: 'Datenraum als Graph',
         instructions: 'Klicke einen Knoten, um seine Nachbarn zu laden, und erkunde so das Beziehungsnetz.',
         startType: 'Site',
+      }
+    case 'embedding_compare':
+      return {
+        id,
+        type,
+        title: 'Embeddings vergleichen',
+        instructions:
+          'Füge Textstücke ein und lass sie in Vektoren umrechnen. Die Punkte unten zeigen, wie nah sich die Texte inhaltlich sind — die Zahlen an den Linien sind die echten Distanzen.',
+        samples: [
+          'Die Notbeleuchtung im Treppenhaus ist ohne Funktion.',
+          'Im Treppenhaus funktioniert die Sicherheitsbeleuchtung nicht.',
+          'Der Mietvertrag läuft bis zum 31. Dezember 2027.',
+        ],
       }
     case 'doc_convert':
       return {

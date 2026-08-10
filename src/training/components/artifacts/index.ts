@@ -14,6 +14,7 @@ import Ontology from './Ontology'
 import DataQuery from './DataQuery'
 import ObjectGraph from './ObjectGraph'
 import DocConvert from './DocConvert'
+import EmbeddingCompare from './EmbeddingCompare'
 
 type ArtifactComponent<T extends Artifact = Artifact> = ComponentType<{ artifact: T }>
 
@@ -32,4 +33,5 @@ export const artifactComponents: Record<Artifact['type'], ArtifactComponent<any>
   data_query: DataQuery,
   object_graph: ObjectGraph,
   doc_convert: DocConvert,
+  embedding_compare: EmbeddingCompare,
 }

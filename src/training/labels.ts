@@ -166,6 +166,31 @@ export const labels = {
     orUrl: 'oder Adresse einfügen',
   },
 
+  // Embedding-Vergleichsblock
+  embeddingCompare: {
+    title: 'Embeddings vergleichen',
+    listHeading: 'Textstücke',
+    addPlaceholder: 'Textstück einfügen und Enter drücken …',
+    add: 'Hinzufügen',
+    remove: 'Entfernen',
+    empty: 'Noch keine Textstücke. Füge zwei oder mehr ein, um sie zu vergleichen.',
+    selectHint: 'Ausgewählte Stücke werden unten als Punkte gezeigt.',
+    compute: 'Vergleichen',
+    computing: 'Vektoren werden berechnet …',
+    recompute: 'Neu berechnen',
+    needTwo: 'Wähle mindestens zwei Textstücke aus.',
+    dirty: 'Die Auswahl hat sich geändert — neu berechnen.',
+    modelLine: (model: string, dims: number) => `${model} · ${dims} Dimensionen`,
+    distanceHint: 'Beschriftung: Winkeldistanz, 0 = identische Richtung, 1 = entgegengesetzt.',
+    exact: 'Diese Darstellung ist exakt — drei Punkte lassen sich immer verzerrungsfrei in die Ebene legen.',
+    projected: (pct: string) =>
+      `Projektion: ab vier Texten passen die Abstände nicht mehr verzerrungsfrei in eine Ebene. Verzerrung ${pct}.`,
+    projectedNote:
+      'Die Zahlen an den Linien sind die echten Distanzen, die gezeichneten Längen nur die bestmögliche Annäherung.',
+    error: 'Die Vektoren konnten nicht berechnet werden.',
+    notConfigured: 'Für diesen Block ist noch kein Embedding-Dienst hinterlegt.',
+  },
+
   // Admin panel
   admin: {
     title: 'Administration',
@@ -549,6 +574,8 @@ export const labels = {
     fGuidance: 'Hinweis (optional)',
     fResource: 'Ressource',
     fResourceOptional: '… oder Ressource aus der Bibliothek',
+    fEmbeddingSamples: 'Vorgegebene Textstücke',
+    embeddingSamplesHint: 'Ein Textstück pro Zeile. Teilnehmende können sie ändern, ergänzen oder entfernen.',
     fMediaUpload: 'Datei hochladen',
     fMediaUrl: 'Medien-URL',
     mediaUrlPlaceholder: 'https://… (Bild, Video oder YouTube/Vimeo)',

@@ -58,6 +58,13 @@ const labSelectArtifact = baseArtifact.extend({
   explanation: z.string().optional(),
 })
 
+const embeddingCompareArtifact = baseArtifact.extend({
+  type: z.literal('embedding_compare'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+  samples: z.array(z.string()).optional(),
+})
+
 const reflectArtifact = baseArtifact.extend({
   type: z.literal('reflect'),
   prompt: z.string(),
@@ -140,6 +147,7 @@ const artifact = z.discriminatedUnion('type', [
   dataQueryArtifact,
   objectGraphArtifact,
   docConvertArtifact,
+  embeddingCompareArtifact,
 ])
 
 const section = z.object({

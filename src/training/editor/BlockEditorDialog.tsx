@@ -11,6 +11,7 @@ import type {
   McpInspectorArtifact,
   MCQArtifact,
   MediaArtifact,
+  EmbeddingCompareArtifact,
   ObjectGraphArtifact,
   OntologyArtifact,
   ProseArtifact,
@@ -328,6 +329,45 @@ function ReflectEditor({ draft, set }: { draft: ReflectArtifact; set: (d: Reflec
   )
 }
 
+/** Title, intro and the texts the block starts with (one per line). */
+function EmbeddingCompareEditor({
+  draft,
+  set,
+}: {
+  draft: EmbeddingCompareArtifact
+  set: (d: EmbeddingCompareArtifact) => void
+}) {
+  return (
+    <div className="space-y-4">
+      <Field label={t.fTitle}>
+        <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
+      </Field>
+      <Field label={t.fInstructions}>
+        <textarea
+          className={inputCls}
+          rows={3}
+          value={draft.instructions ?? ''}
+          onChange={(e) => set({ ...draft, instructions: e.target.value || undefined })}
+        />
+      </Field>
+      <Field label={t.fEmbeddingSamples}>
+        <textarea
+          className={inputCls}
+          rows={5}
+          value={(draft.samples ?? []).join('\n')}
+          onChange={(e) =>
+            set({
+              ...draft,
+              samples: e.target.value.split('\n').map((l) => l.trim()).filter(Boolean),
+            })
+          }
+        />
+        <p className="mt-1 text-xs text-slate-400">{t.embeddingSamplesHint}</p>
+      </Field>
+    </div>
+  )
+}
+
 function MediaEditor({
   draft,
   set,
@@ -558,6 +598,8 @@ export default function BlockEditorDialog({
         return <ObjectGraphEditor draft={draft} set={setDraft} />
       case 'doc_convert':
         return <DocConvertEditor draft={draft} set={setDraft} />
+      case 'embedding_compare':
+        return <EmbeddingCompareEditor draft={draft} set={setDraft} />
       default:
         return null
     }

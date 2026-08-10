@@ -38,6 +38,7 @@ export type Artifact =
   | DataQueryArtifact
   | ObjectGraphArtifact
   | DocConvertArtifact
+  | EmbeddingCompareArtifact
 
 export type BaseArtifact = {
   id: string
@@ -150,4 +151,13 @@ export type DocConvertArtifact = BaseArtifact & {
   outputFormat?: 'markdown' | 'cells' | 'both'
   /** How formula cells render in the cells output. Ignored unless cells are shown. */
   formulaMode?: 'silent' | 'error' | 'formula'
+}
+
+export type EmbeddingCompareArtifact = BaseArtifact & {
+  type: 'embedding_compare'
+  title?: string
+  /** Explanatory text shown above the widget. */
+  instructions?: string
+  /** Texts the block starts with; participants can add, edit and remove them. */
+  samples?: string[]
 }
