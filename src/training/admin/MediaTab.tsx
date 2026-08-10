@@ -10,6 +10,8 @@ import {
   formatDate,
   listAssets,
   listJobs,
+  retireAsset,
+  retireBySource,
   startIngest,
 } from './mediaApi'
 
@@ -170,6 +172,28 @@ export default function MediaTab() {
     }
   }
 
+  const remove = async (asset: MediaAsset) => {
+    if (!window.confirm(t.removeConfirm(asset.descriptors?.altText ?? asset.assetId))) return
+    setAssets((prev) => prev.filter((x) => x.assetId !== asset.assetId))   // optimistic
+    try {
+      await retireAsset(asset.assetId)
+    } catch (e) {
+      setError((e as Error).message)
+      void refreshAssets(query)                                            // put it back
+    }
+  }
+
+  const removeSource = async (sourceDoc: string) => {
+    if (!window.confirm(t.removeSourceConfirm(sourceDoc))) return
+    try {
+      const { affected } = await retireBySource(sourceDoc)
+      setError(t.removedSource(sourceDoc, affected))
+      void refreshAssets(query)
+    } catch (e) {
+      setError((e as Error).message)
+    }
+  }
+
   const activeJobs = jobs.filter((j) => ACTIVE_STATES.includes(j.state))
   const recentJobs = jobs.filter((j) => !ACTIVE_STATES.includes(j.state)).slice(0, 3)
 
@@ -228,7 +252,20 @@ export default function MediaTab() {
       {(activeJobs.length > 0 || recentJobs.length > 0) && (
         <div className="space-y-2">
           {activeJobs.map((j) => <JobRow key={j.jobId} job={j} />)}
-          {recentJobs.map((j) => <JobRow key={j.jobId} job={j} />)}
+          {recentJobs.map((j) => (
+            <div key={j.jobId} className="flex items-start gap-2">
+              <div className="min-w-0 flex-1">
+                <JobRow job={j} />
+              </div>
+              <button
+                type="button"
+                onClick={() => void removeSource(j.sourceDoc)}
+                className="mt-1 shrink-0 rounded border border-mist px-2 py-1 text-[11px] font-semibold text-red-700 hover:bg-red-50"
+              >
+                {t.removeSource}
+              </button>
+            </div>
+          ))}
         </div>
       )}
 
@@ -269,6 +306,7 @@ export default function MediaTab() {
                 <th className="px-3 py-2 font-semibold">{t.colSize}</th>
                 <th className="px-3 py-2 font-semibold">{t.colDate}</th>
                 <th className="px-3 py-2 font-semibold">{t.colUploader}</th>
+                <th className="px-3 py-2" />
               </tr>
             </thead>
             <tbody>
@@ -302,6 +340,15 @@ export default function MediaTab() {
                   <td className="px-3 py-2 text-slate-500">{formatBytes(a.bytes ?? 0)}</td>
                   <td className="px-3 py-2 text-slate-500">{formatDate(a.createdAt ?? '')}</td>
                   <td className="px-3 py-2 text-slate-500">{a.uploadedBy ?? '—'}</td>
+                  <td className="px-3 py-2 text-right">
+                    <button
+                      type="button"
+                      onClick={() => void remove(a)}
+                      className="rounded border border-mist px-2 py-1 text-[11px] font-semibold text-red-700 hover:bg-red-50"
+                    >
+                      {t.remove}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

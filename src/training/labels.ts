@@ -181,6 +181,12 @@ export const labels = {
     colSize: 'Grösse',
     colDate: 'Datum',
     colUploader: 'Hochgeladen von',
+    remove: 'Entfernen',
+    removeConfirm: (name: string) => `„${name}" aus der Mediathek entfernen?`,
+    removeSource: 'Alle aus dieser Quelle entfernen',
+    removeSourceConfirm: (doc: string) =>
+      `Alle Abbildungen aus „${doc}" entfernen? Die Dateien bleiben gespeichert und lassen sich erneut auswerten.`,
+    removedSource: (doc: string, n: number) => `${n} Einträge aus „${doc}" entfernt.`,
     state: {
       queued: 'Wartet',
       preparing: 'Wird vorbereitet',

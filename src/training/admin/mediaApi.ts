@@ -141,6 +141,31 @@ export async function listAssets(params: { q?: string; limit?: number } = {}): P
 }
 
 /**
+ * Remove an asset from the library.
+ *
+ * Retires by default rather than deleting: blobs are content-addressed and shared
+ * between assets, and an asset attached to a course revision must not dangle. A
+ * retired asset disappears from the listing, which is what this needs to mean.
+ */
+export async function retireAsset(assetId: string): Promise<void> {
+  const res = await fetch(`${apiBaseUrl}/admin/media/assets/${assetId}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  })
+  await asJson(res)
+}
+
+/** Retire everything that came out of one source document. */
+export async function retireBySource(sourceDoc: string): Promise<{ affected: number }> {
+  const res = await fetch(`${apiBaseUrl}/admin/media/assets/retire`, {
+    method: 'POST',
+    headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sourceDoc }),
+  })
+  return asJson(res)
+}
+
+/**
  * Blob URL for an <img>.
  *
  * The bucket is private; the portal proxies reads under /documents/. That route
