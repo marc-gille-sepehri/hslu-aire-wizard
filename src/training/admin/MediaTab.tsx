@@ -8,7 +8,6 @@ import {
   blobUrl,
   formatBytes,
   formatDate,
-  getJob,
   listAssets,
   listJobs,
   startIngest,
@@ -104,7 +103,6 @@ export default function MediaTab() {
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const fileRef = useRef<HTMLInputElement>(null)
-  const pollRef = useRef<number | null>(null)
 
   const refreshAssets = useCallback(async (q: string) => {
     try {
@@ -132,34 +130,26 @@ export default function MediaTab() {
     void refreshAssets('')
   }, [refreshJobs, refreshAssets])
 
-  // Poll only while something is actually running, and stop as soon as it is not
-  // — an admin screen left open should not hold an endless request loop.
-  const startPolling = useCallback(
-    (jobId: string) => {
-      if (pollRef.current) window.clearInterval(pollRef.current)
-      pollRef.current = window.setInterval(async () => {
-        try {
-          const job = await getJob(jobId)
-          setJobs((prev) => {
-            const rest = prev.filter((j) => j.jobId !== job.jobId)
-            return [job, ...rest]
-          })
-          if (!ACTIVE_STATES.includes(job.state)) {
-            if (pollRef.current) window.clearInterval(pollRef.current)
-            pollRef.current = null
-            void refreshAssets(query)
-          }
-        } catch {
-          /* transient — the next tick tries again */
-        }
-      }, POLL_MS)
-    },
-    [refreshAssets, query],
-  )
+  // Poll while any job is active, not just after an upload. Driving it from the
+  // job list rather than from one jobId means a reload mid-run keeps updating,
+  // a re-submitted file that resolves to an existing job is followed too, and
+  // nothing keeps ticking once everything has settled.
+  const hasActive = jobs.some((j) => ACTIVE_STATES.includes(j.state))
+  const wasActive = useRef(false)
 
-  useEffect(() => () => {
-    if (pollRef.current) window.clearInterval(pollRef.current)
-  }, [])
+  useEffect(() => {
+    if (!hasActive) return undefined
+    const id = window.setInterval(() => {
+      void refreshJobs()
+    }, POLL_MS)
+    return () => window.clearInterval(id)
+  }, [hasActive, refreshJobs])
+
+  // The moment the last job settles, the table is stale — reload it once.
+  useEffect(() => {
+    if (wasActive.current && !hasActive) void refreshAssets(query)
+    wasActive.current = hasActive
+  }, [hasActive, refreshAssets, query])
 
   const accepted = (file: File) =>
     ACCEPTED.some((ext) => file.name.toLowerCase().endsWith(ext))
@@ -172,10 +162,9 @@ export default function MediaTab() {
       return
     }
     try {
-      const { jobId, reused } = await startIngest(file)
+      const { reused } = await startIngest(file)
       if (reused) setError(t.reused)
       await refreshJobs()
-      startPolling(jobId)
     } catch (e) {
       setError((e as Error).message)
     }
