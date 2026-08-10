@@ -95,14 +95,38 @@ export async function startIngest(file: File): Promise<{ jobId: string; state: J
   return asJson(res)
 }
 
+/**
+ * Fill in anything the server left out.
+ *
+ * The two job endpoints briefly disagreed on their shape — the list route
+ * returned raw documents without `errors`, and reading `.length` on that
+ * unmounted the whole admin screen. The server is fixed; this makes the UI
+ * unable to be taken down by a field again.
+ */
+function normaliseJob(raw: Partial<MediaJob> & { _id?: string }): MediaJob {
+  return {
+    jobId: raw.jobId ?? raw._id ?? '',
+    state: raw.state ?? 'queued',
+    progress: raw.progress ?? { done: 0, total: 0 },
+    counts: raw.counts ?? {},
+    errors: raw.errors ?? [],
+    assetIds: raw.assetIds ?? [],
+    sourceDoc: raw.sourceDoc ?? '—',
+    attempts: raw.attempts ?? 0,
+    createdAt: raw.createdAt ?? '',
+    updatedAt: raw.updatedAt ?? '',
+  }
+}
+
 export async function getJob(jobId: string): Promise<MediaJob> {
   const res = await fetch(`${apiBaseUrl}/admin/media/ingest/${jobId}`, { headers: authHeaders() })
-  return asJson(res)
+  return normaliseJob(await asJson(res))
 }
 
 export async function listJobs(): Promise<{ jobs: MediaJob[] }> {
   const res = await fetch(`${apiBaseUrl}/admin/media/jobs`, { headers: authHeaders() })
-  return asJson(res)
+  const body = await asJson<{ jobs?: unknown[] }>(res)
+  return { jobs: (body.jobs ?? []).map((j) => normaliseJob(j as Partial<MediaJob>)) }
 }
 
 export async function listAssets(params: { q?: string; limit?: number } = {}): Promise<{ assets: MediaAsset[] }> {

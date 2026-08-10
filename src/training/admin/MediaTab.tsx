@@ -75,7 +75,7 @@ function JobRow({ job }: { job: MediaJob }) {
 
 function Preview({ asset }: { asset: MediaAsset }) {
   const [failed, setFailed] = useState(false)
-  const key = asset.blobKeys.thumb ?? asset.blobKeys.original
+  const key = asset.blobKeys?.thumb ?? asset.blobKeys?.original
   // SVG assets are rendered as <img>, never inlined: the browser blocks script
   // and external fetches inside an <img>, which is a real boundary at no cost.
   if (failed || !key) {
@@ -88,7 +88,7 @@ function Preview({ asset }: { asset: MediaAsset }) {
   return (
     <img
       src={blobUrl(key)}
-      alt={asset.descriptors.altText}
+      alt={asset.descriptors?.altText ?? ''}
       loading="lazy"
       onError={() => setFailed(true)}
       className="h-14 w-20 rounded border border-mist bg-white object-contain"
@@ -283,18 +283,18 @@ export default function MediaTab() {
               {assets.map((a) => (
                 <tr key={a.assetId} className="border-t border-mist align-top">
                   <td className="px-3 py-2">
-                    <a href={blobUrl(a.blobKeys.original)} target="_blank" rel="noreferrer">
+                    <a href={blobUrl(a.blobKeys?.original ?? '')} target="_blank" rel="noreferrer">
                       <Preview asset={a} />
                     </a>
                   </td>
                   <td className="px-3 py-2">
-                    <p className="font-medium text-navy">{a.descriptors.altText}</p>
-                    {a.descriptors.description && (
+                    <p className="font-medium text-navy">{a.descriptors?.altText ?? '—'}</p>
+                    {a.descriptors?.description && (
                       <p className="mt-0.5 text-slate-500">{a.descriptors.description}</p>
                     )}
-                    {a.descriptors.tags.length > 0 && (
+                    {(a.descriptors?.tags?.length ?? 0) > 0 && (
                       <div className="mt-1 flex flex-wrap gap-1">
-                        {a.descriptors.tags.map((tag) => (
+                        {(a.descriptors?.tags ?? []).map((tag) => (
                           <span key={tag} className="rounded bg-navy/10 px-1.5 py-0.5 text-[10px] text-navy">
                             {tag}
                           </span>
@@ -302,13 +302,13 @@ export default function MediaTab() {
                       </div>
                     )}
                     <p className="mt-1 text-[10px] text-slate-400">
-                      {a.provenance.sourceDoc} · {t.slide} {a.provenance.locator.slide}
-                      {a.descriptors.altTextSource === 'author' && ` · ${t.authorAlt}`}
+                      {a.provenance?.sourceDoc ?? '—'} · {t.slide} {a.provenance?.locator?.slide ?? '?'}
+                      {a.descriptors?.altTextSource === 'author' && ` · ${t.authorAlt}`}
                     </p>
                   </td>
                   <td className="px-3 py-2 font-mono text-[11px] text-slate-500">{a.mediaType}</td>
-                  <td className="px-3 py-2 text-slate-500">{formatBytes(a.bytes)}</td>
-                  <td className="px-3 py-2 text-slate-500">{formatDate(a.createdAt)}</td>
+                  <td className="px-3 py-2 text-slate-500">{formatBytes(a.bytes ?? 0)}</td>
+                  <td className="px-3 py-2 text-slate-500">{formatDate(a.createdAt ?? '')}</td>
                   <td className="px-3 py-2 text-slate-500">{a.uploadedBy ?? '—'}</td>
                 </tr>
               ))}
