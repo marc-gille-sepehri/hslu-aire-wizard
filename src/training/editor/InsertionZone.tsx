@@ -13,14 +13,14 @@ export default function InsertionZone({
   sectionId: string
   index: number
 }) {
-  const { dragState, setDragState, insertNewArtifact, moveArtifact } = useModuleEditor()
+  const { dragState, setDragState, insertNewArtifact, insertArtifact, moveArtifact } = useModuleEditor()
   const [over, setOver] = useState(false)
 
   // Whether the current drag can drop here. A move within the same section is a
   // no-op onto its own edges; hide the indicator in that case.
   const active = (() => {
     if (!dragState) return false
-    if (dragState.kind === 'new') return true
+    if (dragState.kind === 'new' || dragState.kind === 'media') return true
     if (dragState.sectionId !== sectionId) return false
     return !(index === dragState.index || index === dragState.index + 1)
   })()
@@ -28,7 +28,7 @@ export default function InsertionZone({
   const onDragOver = (e: DragEvent) => {
     if (!active) return
     e.preventDefault()
-    e.dataTransfer.dropEffect = dragState?.kind === 'new' ? 'copy' : 'move'
+    e.dataTransfer.dropEffect = dragState?.kind === 'move' ? 'move' : 'copy'
     if (!over) setOver(true)
   }
 
@@ -37,6 +37,18 @@ export default function InsertionZone({
     e.preventDefault()
     if (dragState.kind === 'new') {
       insertNewArtifact(sectionId, index, dragState.blockType)
+    } else if (dragState.kind === 'media') {
+      // Built here rather than inserted empty and edited: the drop already knows
+      // the url, the alt text and the size, and an author who dragged a picture
+      // in did not ask for a configuration dialog.
+      insertArtifact(sectionId, index, {
+        id: `media-${Date.now().toString(36)}`,
+        type: 'media',
+        url: dragState.url,
+        filename: dragState.filename,
+        filesize: dragState.bytes,
+        caption_override: dragState.altText || null,
+      })
     } else {
       moveArtifact(sectionId, dragState.index, index)
     }

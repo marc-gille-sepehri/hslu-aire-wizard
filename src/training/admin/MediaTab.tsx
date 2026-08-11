@@ -12,7 +12,7 @@ import {
   listAssets,
   listJobs,
   retireAsset,
-  retireBySource,
+  deleteJob,
   retireMany,
   startIngest,
 } from './mediaApi'
@@ -224,11 +224,12 @@ export default function MediaTab() {
     }
   }
 
-  const removeSource = async (sourceDoc: string) => {
-    if (!window.confirm(t.removeSourceConfirm(sourceDoc))) return
+  const removeRun = async (job: MediaJob) => {
+    if (!window.confirm(t.removeSourceConfirm(job.sourceDoc))) return
     try {
-      const { affected } = await retireBySource(sourceDoc)
-      setError(t.removedSource(sourceDoc, affected))
+      const { purgedAssets } = await deleteJob(job.jobId)
+      setJobs((prev) => prev.filter((x) => x.jobId !== job.jobId))
+      setError(t.removedSource(job.sourceDoc, purgedAssets))
       void refreshAssets(query)
     } catch (e) {
       setError((e as Error).message)
@@ -302,10 +303,12 @@ export default function MediaTab() {
               </div>
               <button
                 type="button"
-                onClick={() => void removeSource(j.sourceDoc)}
-                className="mt-1 shrink-0 rounded border border-mist px-2 py-1 text-[11px] font-semibold text-red-700 hover:bg-red-50"
+                onClick={() => void removeRun(j)}
+                title={t.removeSource}
+                aria-label={t.removeSource}
+                className="mt-1 shrink-0 rounded border border-mist p-1.5 text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700"
               >
-                {t.removeSource}
+                <TrashIcon />
               </button>
             </div>
           ))}

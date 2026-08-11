@@ -197,10 +197,10 @@ export const labels = {
     removeManyConfirm: (n: number) =>
       `${n} Einträge aus der Mediathek entfernen? Die Dateien bleiben gespeichert.`,
     removeConfirm: (name: string) => `„${name}" aus der Mediathek entfernen?`,
-    removeSource: 'Alle aus dieser Quelle entfernen',
+    removeSource: 'Diesen Lauf und seine Abbildungen löschen',
     removeSourceConfirm: (doc: string) =>
-      `Alle Abbildungen aus „${doc}" entfernen? Die Dateien bleiben gespeichert und lassen sich erneut auswerten.`,
-    removedSource: (doc: string, n: number) => `${n} Einträge aus „${doc}" entfernt.`,
+      `Lauf „${doc}“ mitsamt seinen Abbildungen löschen? Danach lässt sich die Datei wieder neu auswerten.`,
+    removedSource: (doc: string, n: number) => `Lauf „${doc}“ gelöscht (${n} Abbildungen).`,
     state: {
       queued: 'Wartet',
       preparing: 'Wird vorbereitet',
@@ -711,6 +711,16 @@ export const labels = {
     mdUpload: 'Datei hochladen',
     mdDropHint: 'Dateien hier ablegen zum Hochladen',
     mdUploading: 'Lädt hoch …',
+
+    // Fly-out rail of extracted figures, opposite the block palette.
+    mediaRail: {
+      title: 'Mediathek',
+      hint: 'Abbildung in den Text ziehen oder zwischen zwei Blöcke ablegen.',
+      search: 'Suchen …',
+      empty: 'Noch keine Abbildungen. Quellen werden in der Administration ausgewertet.',
+      open: 'Mediathek öffnen',
+      close: 'Mediathek schliessen',
+    },
   },
 
   // Kodieroberfläche der Enforcement-Signal-Studie (/enforcement-signal)

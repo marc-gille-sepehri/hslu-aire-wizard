@@ -115,11 +115,21 @@ export default function MarkdownEditor({
     onChange(res.value)
   }
 
+  /** Insert a markdown block at the caret, with blank lines where needed. */
+  const insertAtCursor = (block: string) => {
+    const ta = taRef.current
+    const at = ta ? ta.selectionStart : value.length
+    const needLead = at > 0 && value[at - 1] !== '\n'
+    const needTrail = at < value.length && value[at] !== '\n'
+    const insert = (needLead ? '\n\n' : '') + block + (needTrail ? '\n\n' : '\n')
+    const caret = at + insert.length
+    pendingSel.current = { start: caret, end: caret }
+    onChange(value.slice(0, at) + insert + value.slice(at))
+  }
+
   /** Upload dropped/pasted/picked files and insert their markdown at the caret. */
   const handleFiles = async (files: File[]) => {
     if (!courseId || files.length === 0 || uploading) return
-    const ta = taRef.current
-    const at = ta ? ta.selectionStart : value.length
     setUploading(true)
     setUploadError(null)
     try {
@@ -128,13 +138,7 @@ export default function MarkdownEditor({
         const up = await uploadCourseDocument(courseId, file)
         snippets.push(up.isImage ? `![${up.filename}](${up.url})` : `[${up.filename}](${up.url})`)
       }
-      const block = snippets.join('\n\n')
-      const needLead = at > 0 && value[at - 1] !== '\n'
-      const needTrail = at < value.length && value[at] !== '\n'
-      const insert = (needLead ? '\n\n' : '') + block + (needTrail ? '\n\n' : '\n')
-      const caret = at + insert.length
-      pendingSel.current = { start: caret, end: caret }
-      onChange(value.slice(0, at) + insert + value.slice(at))
+      insertAtCursor(snippets.join('\n\n'))
     } catch (err) {
       setUploadError((err as Error).message)
     } finally {
@@ -214,6 +218,16 @@ export default function MarkdownEditor({
               if (e.currentTarget === e.target) setDragActive(false)
             }}
             onDrop={(e) => {
+              // A figure from the media rail arrives as text, not as a file, and
+              // needs no course context — handle it before the upload path bails
+              // out on a missing courseId.
+              const dropped = e.dataTransfer.getData('text/plain')
+              if (dropped.startsWith('![')) {
+                e.preventDefault()
+                setDragActive(false)
+                insertAtCursor(dropped)
+                return
+              }
               if (!courseId) return
               e.preventDefault()
               setDragActive(false)

@@ -165,6 +165,21 @@ export async function retireBySource(sourceDoc: string): Promise<{ affected: num
   return asJson(res)
 }
 
+/**
+ * Delete a whole run - the job and the assets it produced.
+ *
+ * Retiring assets leaves the job behind, and idempotency on the file hash then
+ * blocks the same source from ever being ingested again. Removing the run is
+ * what deleting a source has to mean.
+ */
+export async function deleteJob(jobId: string): Promise<{ purgedAssets: number }> {
+  const res = await fetch(`${apiBaseUrl}/admin/media/jobs/${jobId}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  })
+  return asJson(res)
+}
+
 /** Retire a selection in one call rather than one request per row. */
 export async function retireMany(assetIds: string[]): Promise<{ affected: number }> {
   const res = await fetch(`${apiBaseUrl}/admin/media/assets/retire`, {

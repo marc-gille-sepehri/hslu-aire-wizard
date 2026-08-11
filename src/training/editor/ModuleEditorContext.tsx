@@ -34,6 +34,10 @@ export type CommitOutcome =
 export type DragState =
   | { kind: 'new'; blockType: BlockType }
   | { kind: 'move'; sectionId: string; index: number; id: string }
+  // A figure dragged out of the media rail. Carries what a media block needs, so
+  // the drop can build a filled-in artifact instead of an empty one the author
+  // then has to configure.
+  | { kind: 'media'; url: string; altText: string; filename: string; bytes: number }
   | null
 
 interface ModuleEditorState {
@@ -45,6 +49,8 @@ interface ModuleEditorState {
   deleteArtifact: (sectionId: string, artifactId: string) => void
   /** Insert a brand-new block of `type` at an insertion index (0..len). */
   insertNewArtifact: (sectionId: string, index: number, type: BlockType) => void
+  /** Insert an already-built artifact — used when a drop carries its content. */
+  insertArtifact: (sectionId: string, index: number, artifact: Artifact) => void
   /** Move an existing block to an insertion index (0..len) within its section. */
   moveArtifact: (sectionId: string, fromIndex: number, toInsertIndex: number) => void
 
@@ -272,6 +278,15 @@ export function ModuleEditorProvider({
         }),
       )
 
+    const insertArtifact = (sectionId: string, index: number, artifact: Artifact) =>
+      setMod((m) =>
+        replaceSectionArtifacts(m, sectionId, (arts) => {
+          const next = arts.slice()
+          next.splice(Math.max(0, Math.min(index, next.length)), 0, artifact)
+          return next
+        }),
+      )
+
     const moveArtifact = (sectionId: string, fromIndex: number, toInsertIndex: number) =>
       setMod((m) =>
         replaceSectionArtifacts(m, sectionId, (arts) => {
@@ -421,6 +436,7 @@ export function ModuleEditorProvider({
       updateArtifact,
       deleteArtifact,
       insertNewArtifact,
+      insertArtifact,
       moveArtifact,
       addSection,
       renameSection,
