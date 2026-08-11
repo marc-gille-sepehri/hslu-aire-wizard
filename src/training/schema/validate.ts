@@ -63,6 +63,10 @@ const embeddingCompareArtifact = baseArtifact.extend({
   title: z.string().optional(),
   instructions: z.string().optional(),
   samples: z.array(z.string()).optional(),
+  // 4000 is the embedding proxy's per-text ceiling: a larger chunk could not be
+  // embedded at all, so it is not a size worth offering.
+  chunkSize: z.number().min(100).max(4000).optional(),
+  chunkOverlap: z.number().min(0).max(2000).optional(),
 })
 
 const reflectArtifact = baseArtifact.extend({

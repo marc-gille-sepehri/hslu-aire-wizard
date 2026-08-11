@@ -165,4 +165,10 @@ export type EmbeddingCompareArtifact = BaseArtifact & {
   instructions?: string
   /** Texts the block starts with; participants can add, edit and remove them. */
   samples?: string[]
+  /** Chunk length in characters for text added during the exercise, 100–4000.
+   *  Longer input is split, the way a RAG pipeline splits a document before it
+   *  ever embeds anything. Participants can change it; this is the start value. */
+  chunkSize?: number
+  /** Characters each chunk repeats from the one before, 0 to half the size. */
+  chunkOverlap?: number
 }

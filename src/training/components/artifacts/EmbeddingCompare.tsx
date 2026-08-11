@@ -1,6 +1,7 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useMemo, useState, type DragEvent, type FormEvent } from 'react'
 import type { EmbeddingCompareArtifact } from '../../schema/types'
 import { labels } from '../../labels'
+import { chunkText } from '../../lib/chunking'
 import { embedTexts } from '../../lib/embeddingsApi'
 import { distanceMatrix, edgeDistortion, layoutInPlane } from '../../lib/embeddingGeometry'
 
@@ -17,10 +18,17 @@ const t = labels.embeddingCompare
 /** Distinguishable at a glance, and legible against the cream background. */
 const COLORS = ['#0b2447', '#c2523c', '#4f8f42', '#f2a93b', '#7a3f9d', '#1b8a9e', '#b0672a', '#5b6b85']
 
+/** Defaults when the author set none. ~400 characters is a paragraph. */
+const DEFAULT_CHUNK_SIZE = 400
+const DEFAULT_OVERLAP = 60
+const MAX_CHUNK_SIZE = 4000   // the embedding proxy's per-text ceiling
+
 interface Item {
   id: string
   text: string
   selected: boolean
+  /** Set when this item came out of a split, so the list can say so. */
+  chunk?: { index: number; total: number }
 }
 
 type Computed = {
@@ -43,6 +51,25 @@ export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingComp
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [computed, setComputed] = useState<Computed | null>(null)
+  const [size, setSize] = useState(() =>
+    clamp(artifact.chunkSize ?? DEFAULT_CHUNK_SIZE, 100, MAX_CHUNK_SIZE),
+  )
+  const [overlap, setOverlap] = useState(() => artifact.chunkOverlap ?? DEFAULT_OVERLAP)
+  const [dropping, setDropping] = useState(false)
+  const [lastSplit, setLastSplit] = useState<number | null>(null)
+
+  // The overlap can never reach the window: past half, each chunk is mostly its
+  // predecessor and the count grows while the content does not.
+  const maxOverlap = Math.floor(size / 2)
+  const effectiveOverlap = Math.min(overlap, maxOverlap)
+
+  // Splitting a pasted document is linear in its length, and the button label
+  // needs the count on every render. Memoised so a slider drag does not re-cut
+  // half a megabyte per frame.
+  const willSplitInto = useMemo(
+    () => (draft.trim().length > size ? chunkText(draft, size, effectiveOverlap).length : 1),
+    [draft, size, effectiveOverlap],
+  )
 
   const selected = items.filter((i) => i.selected)
   const colorOf = (id: string) => COLORS[items.findIndex((i) => i.id === id) % COLORS.length]
@@ -55,12 +82,52 @@ export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingComp
     return now !== computed.ids.join('|')
   }, [computed, selected])
 
+  /**
+   * Add a text, split first if it is longer than the chunk size.
+   *
+   * This is the whole point of the block's second half: retrieval never sees a
+   * document, only the fragments somebody cut out of it. Pasting a page and
+   * watching it become eight points — some of which land nowhere near the
+   * others — is the lesson, and it cannot be told by swallowing the page whole.
+   */
+  const addText = (raw: string) => {
+    const chunks = chunkText(raw, size, effectiveOverlap)
+    if (chunks.length === 0) return
+    const stamp = Date.now()
+    setItems((prev) => [
+      ...prev,
+      ...chunks.map((c, i) => ({
+        id: `i${stamp}-${prev.length}-${i}`,
+        text: c.text,
+        selected: true,
+        chunk: c.total > 1 ? { index: c.index, total: c.total } : undefined,
+      })),
+    ])
+    setLastSplit(chunks.length > 1 ? chunks.length : null)
+  }
+
   const add = (e: FormEvent) => {
     e.preventDefault()
-    const text = draft.trim()
-    if (!text) return
-    setItems((prev) => [...prev, { id: `i${Date.now()}${prev.length}`, text, selected: true }])
+    if (!draft.trim()) return
+    addText(draft)
     setDraft('')
+  }
+
+  /** Text or a text file, dragged onto the box. */
+  const onDrop = async (e: DragEvent) => {
+    e.preventDefault()
+    setDropping(false)
+    const file = e.dataTransfer.files?.[0]
+    if (file) {
+      if (file.size > 2_000_000) {
+        setError(t.fileTooBig)
+        return
+      }
+      addText(await file.text())
+      return
+    }
+    const text = e.dataTransfer.getData('text/plain')
+    if (text.trim()) addText(text)
   }
 
   const compute = async () => {
@@ -130,12 +197,19 @@ export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingComp
                   className="mt-1.5 h-3 w-3 shrink-0 rounded-full"
                   style={{ backgroundColor: item.selected ? colorOf(item.id) : '#cfd8e6' }}
                 />
-                <span
-                  className={`min-w-0 flex-1 whitespace-pre-wrap font-sans text-sm ${
-                    item.selected ? 'text-slate-800' : 'text-slate-400'
-                  }`}
-                >
-                  {item.text}
+                <span className="min-w-0 flex-1">
+                  {item.chunk && (
+                    <span className="mr-2 rounded bg-cream px-1.5 py-0.5 align-middle font-sans text-[0.65rem] font-semibold uppercase tracking-wide text-slate-500">
+                      {t.chunkBadge(item.chunk.index, item.chunk.total)}
+                    </span>
+                  )}
+                  <span
+                    className={`whitespace-pre-wrap font-sans text-sm ${
+                      item.selected ? 'text-slate-800' : 'text-slate-400'
+                    }`}
+                  >
+                    {item.text}
+                  </span>
                 </span>
                 <button
                   type="button"
@@ -151,7 +225,20 @@ export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingComp
           </ul>
         )}
 
-        <form onSubmit={add} className="flex gap-2 border-t border-mist px-4 py-3">
+        <form
+          onSubmit={add}
+          onDragOver={(e) => {
+            e.preventDefault()
+            setDropping(true)
+          }}
+          onDragLeave={(e) => {
+            if (e.currentTarget === e.target) setDropping(false)
+          }}
+          onDrop={(e) => void onDrop(e)}
+          className={`relative flex gap-2 border-t border-mist px-4 py-3 transition-colors ${
+            dropping ? 'bg-navy/5' : ''
+          }`}
+        >
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
@@ -169,9 +256,44 @@ export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingComp
             disabled={!draft.trim()}
             className="shrink-0 self-start rounded-md border-2 border-navy px-3 py-1.5 font-sans text-sm font-semibold text-navy transition-colors hover:bg-navy hover:text-white disabled:border-mist disabled:text-slate-300 disabled:hover:bg-transparent"
           >
-            {t.add}
+            {/* Say up front that this will be cut, so nobody is surprised by
+                eight new rows appearing where one was typed. */}
+            {willSplitInto > 1 ? t.addChunked(willSplitInto) : t.add}
           </button>
+          {dropping && (
+            <span className="pointer-events-none absolute inset-0 flex items-center justify-center rounded font-sans text-sm font-semibold text-navy">
+              {t.dropHint}
+            </span>
+          )}
         </form>
+      </div>
+
+      {/* ── Chunking ─────────────────────────────────────────────────────── */}
+      <div className="rounded-md border border-mist bg-white px-4 py-3">
+        <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
+          <Slider
+            label={t.chunkSize}
+            value={size}
+            min={100}
+            max={MAX_CHUNK_SIZE}
+            step={50}
+            onChange={(v) => setSize(v)}
+            unit={t.chars}
+          />
+          <Slider
+            label={t.chunkOverlap}
+            value={effectiveOverlap}
+            min={0}
+            max={maxOverlap}
+            step={10}
+            onChange={(v) => setOverlap(v)}
+            unit={t.chars}
+          />
+        </div>
+        <p className="mt-2 max-w-prose font-sans text-xs text-slate-500">{t.chunkHint}</p>
+        {lastSplit && (
+          <p className="mt-1 font-sans text-xs text-navy">{t.splitInto(lastSplit)}</p>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -206,6 +328,49 @@ export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingComp
         />
       )}
     </div>
+  )
+}
+
+function clamp(n: number, lo: number, hi: number): number {
+  return Math.min(hi, Math.max(lo, Math.round(n)))
+}
+
+function Slider({
+  label,
+  value,
+  min,
+  max,
+  step,
+  unit,
+  onChange,
+}: {
+  label: string
+  value: number
+  min: number
+  max: number
+  step: number
+  unit: string
+  onChange: (v: number) => void
+}) {
+  return (
+    <label className="min-w-[13rem] flex-1">
+      <span className="flex items-baseline justify-between font-sans text-xs text-slate-600">
+        {label}
+        <span className="tabular-nums text-slate-500">
+          {value} {unit}
+        </span>
+      </span>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        disabled={max <= min}
+        className="mt-1 w-full accent-navy disabled:opacity-40"
+      />
+    </label>
   )
 }
 

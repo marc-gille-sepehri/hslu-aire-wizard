@@ -364,7 +364,60 @@ function EmbeddingCompareEditor({
         />
         <p className="mt-1 text-xs text-slate-400">{t.embeddingSamplesHint}</p>
       </Field>
+      <Field label={t.fChunking}>
+        <div className="flex flex-wrap gap-3">
+          <NumberInput
+            label={t.fChunkSize}
+            value={draft.chunkSize ?? 400}
+            min={100}
+            max={4000}
+            step={50}
+            onChange={(v) => set({ ...draft, chunkSize: v })}
+          />
+          <NumberInput
+            label={t.fChunkOverlap}
+            value={draft.chunkOverlap ?? 60}
+            min={0}
+            max={Math.floor((draft.chunkSize ?? 400) / 2)}
+            step={10}
+            onChange={(v) => set({ ...draft, chunkOverlap: v })}
+          />
+        </div>
+        <p className="mt-1 text-xs text-slate-400">{t.chunkingHint}</p>
+      </Field>
     </div>
+  )
+}
+
+/** A labelled number field. Bounded, because both values have hard limits. */
+function NumberInput({
+  label,
+  value,
+  min,
+  max,
+  step,
+  onChange,
+}: {
+  label: string
+  value: number
+  min: number
+  max: number
+  step: number
+  onChange: (v: number) => void
+}) {
+  return (
+    <label className="text-xs text-slate-600">
+      <span className="block">{label}</span>
+      <input
+        type="number"
+        className={`${inputCls} mt-1 w-32`}
+        value={value}
+        min={min}
+        max={max}
+        step={step}
+        onChange={(e) => onChange(Math.min(max, Math.max(min, Number(e.target.value))))}
+      />
+    </label>
   )
 }
 

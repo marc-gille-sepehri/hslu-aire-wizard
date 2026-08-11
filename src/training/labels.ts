@@ -226,8 +226,22 @@ export const labels = {
   embeddingCompare: {
     title: 'Embeddings vergleichen',
     listHeading: 'Textstücke',
-    addPlaceholder: 'Textstück einfügen und Enter drücken …',
+    addPlaceholder: 'Textstück einfügen, tippen oder eine Textdatei hierher ziehen …',
     add: 'Hinzufügen',
+    addChunked: (n: number) => `In ${n} Stücke zerlegen`,
+    dropHint: 'Text oder Textdatei ablegen',
+    fileTooBig: 'Die Datei ist zu gross — bitte höchstens 2 MB Text.',
+    chunkSize: 'Chunk-Grösse',
+    chunkOverlap: 'Überlappung',
+    chars: 'Zeichen',
+    chunkHint:
+      'Längerer Text wird beim Hinzufügen zerlegt — genau wie in einer RAG-Pipeline, '
+      + 'die nie ein Dokument sieht, sondern nur dessen Stücke. Geschnitten wird bevorzugt '
+      + 'an Absatz-, sonst an Satz- oder Wortgrenzen. Die Überlappung wiederholt das Ende '
+      + 'des vorigen Stücks, damit eine Aussage nicht an der Schnittkante verloren geht. '
+      + 'Als Faustregel entsprechen vier Zeichen etwa einem Token.',
+    splitInto: (n: number) => `Zuletzt hinzugefügter Text wurde in ${n} Stücke zerlegt.`,
+    chunkBadge: (i: number, total: number) => `Chunk ${i}/${total}`,
     colMedium: 'Medium',
     colDescription: 'Beschreibung',
     remove: 'Entfernen',
@@ -641,6 +655,13 @@ export const labels = {
     fResourceOptional: '… oder Ressource aus der Bibliothek',
     fEmbeddingSamples: 'Vorgegebene Textstücke',
     embeddingSamplesHint: 'Ein Textstück pro Zeile. Teilnehmende können sie ändern, ergänzen oder entfernen.',
+    fChunking: 'Zerlegung längerer Texte',
+    fChunkSize: 'Chunk-Grösse (Zeichen)',
+    fChunkOverlap: 'Überlappung (Zeichen)',
+    chunkingHint:
+      'Startwerte für die Zerlegung. Was Teilnehmende einfügen und was länger ist als die '
+      + 'Chunk-Grösse, wird in mehrere Stücke geschnitten — wie in einer RAG-Pipeline. '
+      + 'Die Werte lassen sich im Block selbst weiter verändern.',
     fMediaUpload: 'Datei hochladen',
     fMediaUrl: 'Medien-URL',
     mediaUrlPlaceholder: 'https://… (Bild, Video oder YouTube/Vimeo)',
