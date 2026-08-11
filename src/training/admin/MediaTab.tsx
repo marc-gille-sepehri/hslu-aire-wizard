@@ -12,6 +12,7 @@ import {
   listJobs,
   retireAsset,
   retireBySource,
+  retireMany,
   startIngest,
 } from './mediaApi'
 
@@ -19,6 +20,15 @@ const t = labels.adminMedia
 
 const ACCEPTED = ['.pptx', '.pptm', '.pdf']
 const POLL_MS = 2000
+
+function TrashIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M10 11v6M14 11v6" />
+    </svg>
+  )
+}
 
 /** A running job, shown above the table until it finishes. */
 function JobRow({ job }: { job: MediaJob }) {
@@ -103,6 +113,7 @@ export default function MediaTab() {
   const [jobs, setJobs] = useState<MediaJob[]>([])
   const [assets, setAssets] = useState<MediaAsset[]>([])
   const [query, setQuery] = useState('')
+  const [selected, setSelected] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -110,6 +121,7 @@ export default function MediaTab() {
     try {
       const { assets: rows } = await listAssets({ q: q.trim() || undefined })
       setAssets(rows)
+      setSelected(new Set())
     } catch (e) {
       setError((e as Error).message)
     } finally {
@@ -169,6 +181,33 @@ export default function MediaTab() {
       await refreshJobs()
     } catch (e) {
       setError((e as Error).message)
+    }
+  }
+
+  const toggle = (assetId: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(assetId)) next.delete(assetId)
+      else next.add(assetId)
+      return next
+    })
+
+  const allSelected = assets.length > 0 && selected.size === assets.length
+  const toggleAll = () =>
+    setSelected(allSelected ? new Set() : new Set(assets.map((a) => a.assetId)))
+
+  const removeSelected = async () => {
+    const ids = Array.from(selected)
+    if (ids.length === 0) return
+    if (!window.confirm(t.removeManyConfirm(ids.length))) return
+    const removing = new Set(ids)
+    setAssets((prev) => prev.filter((x) => !removing.has(x.assetId)))   // optimistic
+    setSelected(new Set())
+    try {
+      await retireMany(ids)
+    } catch (e) {
+      setError((e as Error).message)
+      void refreshAssets(query)
     }
   }
 
@@ -289,6 +328,29 @@ export default function MediaTab() {
         </button>
       </div>
 
+      {selected.size > 0 && (
+        <div className="flex items-center justify-between rounded-md border border-navy/20 bg-navy/5 px-3 py-2">
+          <span className="text-sm text-navy">{t.selectedCount(selected.size)}</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSelected(new Set())}
+              className="rounded border border-mist bg-white px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-cream"
+            >
+              {t.clearSelection}
+            </button>
+            <button
+              type="button"
+              onClick={() => void removeSelected()}
+              className="flex items-center gap-1.5 rounded border border-red-300 bg-white px-2.5 py-1 text-xs font-semibold text-red-700 hover:bg-red-50"
+            >
+              <TrashIcon />
+              {t.removeSelected}
+            </button>
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <p className="text-sm text-slate-500">{labels.loading}</p>
       ) : assets.length === 0 ? (
@@ -300,6 +362,15 @@ export default function MediaTab() {
           <table className="w-full text-left text-xs">
             <thead className="bg-cream text-slate-500">
               <tr>
+                <th className="w-8 px-3 py-2">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    onChange={toggleAll}
+                    aria-label={t.selectAll}
+                    className="cursor-pointer"
+                  />
+                </th>
                 <th className="px-3 py-2 font-semibold">{t.colPreview}</th>
                 <th className="px-3 py-2 font-semibold">{t.colTags}</th>
                 <th className="px-3 py-2 font-semibold">{t.colMime}</th>
@@ -311,7 +382,19 @@ export default function MediaTab() {
             </thead>
             <tbody>
               {assets.map((a) => (
-                <tr key={a.assetId} className="border-t border-mist align-top">
+                <tr
+                  key={a.assetId}
+                  className={`border-t border-mist align-top ${selected.has(a.assetId) ? 'bg-gold/10' : ''}`}
+                >
+                  <td className="px-3 py-2">
+                    <input
+                      type="checkbox"
+                      checked={selected.has(a.assetId)}
+                      onChange={() => toggle(a.assetId)}
+                      aria-label={t.selectOne}
+                      className="cursor-pointer"
+                    />
+                  </td>
                   <td className="px-3 py-2">
                     <a href={blobUrl(a.blobKeys?.original ?? '')} target="_blank" rel="noreferrer">
                       <Preview asset={a} />
@@ -344,9 +427,11 @@ export default function MediaTab() {
                     <button
                       type="button"
                       onClick={() => void remove(a)}
-                      className="rounded border border-mist px-2 py-1 text-[11px] font-semibold text-red-700 hover:bg-red-50"
+                      title={t.remove}
+                      aria-label={t.remove}
+                      className="rounded border border-mist p-1.5 text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700"
                     >
-                      {t.remove}
+                      <TrashIcon />
                     </button>
                   </td>
                 </tr>

@@ -182,6 +182,13 @@ export const labels = {
     colDate: 'Datum',
     colUploader: 'Hochgeladen von',
     remove: 'Entfernen',
+    selectAll: 'Alle auswählen',
+    selectOne: 'Eintrag auswählen',
+    selectedCount: (n: number) => `${n} ausgewählt`,
+    clearSelection: 'Auswahl aufheben',
+    removeSelected: 'Ausgewählte entfernen',
+    removeManyConfirm: (n: number) =>
+      `${n} Einträge aus der Mediathek entfernen? Die Dateien bleiben gespeichert.`,
     removeConfirm: (name: string) => `„${name}" aus der Mediathek entfernen?`,
     removeSource: 'Alle aus dieser Quelle entfernen',
     removeSourceConfirm: (doc: string) =>
@@ -218,6 +225,13 @@ export const labels = {
     addPlaceholder: 'Textstück einfügen und Enter drücken …',
     add: 'Hinzufügen',
     remove: 'Entfernen',
+    selectAll: 'Alle auswählen',
+    selectOne: 'Eintrag auswählen',
+    selectedCount: (n: number) => `${n} ausgewählt`,
+    clearSelection: 'Auswahl aufheben',
+    removeSelected: 'Ausgewählte entfernen',
+    removeManyConfirm: (n: number) =>
+      `${n} Einträge aus der Mediathek entfernen? Die Dateien bleiben gespeichert.`,
     empty: 'Noch keine Textstücke. Füge zwei oder mehr ein, um sie zu vergleichen.',
     selectHint: 'Ausgewählte Stücke werden unten als Punkte gezeigt.',
     compute: 'Vergleichen',

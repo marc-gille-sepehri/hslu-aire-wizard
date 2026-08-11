@@ -165,6 +165,16 @@ export async function retireBySource(sourceDoc: string): Promise<{ affected: num
   return asJson(res)
 }
 
+/** Retire a selection in one call rather than one request per row. */
+export async function retireMany(assetIds: string[]): Promise<{ affected: number }> {
+  const res = await fetch(`${apiBaseUrl}/admin/media/assets/retire`, {
+    method: 'POST',
+    headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ assetIds }),
+  })
+  return asJson(res)
+}
+
 /**
  * Blob URL for an <img>.
  *
