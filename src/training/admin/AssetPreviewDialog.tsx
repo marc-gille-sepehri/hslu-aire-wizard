@@ -29,13 +29,16 @@ export default function AssetPreviewDialog({
   const dragging = useRef<{ x: number; y: number } | null>(null)
   const stageRef = useRef<HTMLDivElement>(null)
 
-  // An SVG stays crisp at any zoom, and an <img> is a real boundary — the
-  // browser blocks script and external fetches inside one — so the vector is
-  // safe to show directly. Everything else gets the 1600 px derivative.
-  const src =
-    asset.mediaType === 'image/svg+xml'
-      ? blobUrl(asset.blobKeys?.original ?? '')
-      : blobUrl(asset.blobKeys?.web ?? asset.blobKeys?.original ?? '')
+  // The raster derivative, deliberately, even for SVG assets.
+  //
+  // An SVG names its fonts and cannot load them: inside an <img> it may only use
+  // what is installed on the viewing machine. The deck's house font is Lato,
+  // which the render host now has but a Mac generally does not — so the vector
+  // renders with substituted metrics here and the labels sit wrong, while the
+  // PNG was rendered server-side with the right fonts and is faithful.
+  //
+  // Crispness is the trade. "Original öffnen" still gives the vector.
+  const src = blobUrl(asset.blobKeys?.web ?? asset.blobKeys?.original ?? '')
 
   const reset = useCallback(() => {
     setZoom(1)
