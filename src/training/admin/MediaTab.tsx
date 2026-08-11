@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { labels } from '../labels'
+import AssetPreviewDialog from './AssetPreviewDialog'
 import {
   ACTIVE_STATES,
   type MediaAsset,
@@ -114,6 +115,7 @@ export default function MediaTab() {
   const [assets, setAssets] = useState<MediaAsset[]>([])
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [preview, setPreview] = useState<MediaAsset | null>(null)
   const [loading, setLoading] = useState(true)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -238,6 +240,8 @@ export default function MediaTab() {
 
   return (
     <div className="space-y-4">
+      {preview && <AssetPreviewDialog asset={preview} onClose={() => setPreview(null)} />}
+
       <div>
         <h3 className="font-display text-lg font-bold text-navy">{t.heading}</h3>
         <p className="mt-0.5 text-sm text-slate-600">{t.intro}</p>
@@ -388,9 +392,15 @@ export default function MediaTab() {
                     />
                   </td>
                   <td className="px-3 py-2">
-                    <a href={blobUrl(a.blobKeys?.original ?? '')} target="_blank" rel="noreferrer">
+                    <button
+                      type="button"
+                      onClick={() => setPreview(a)}
+                      title={t.preview}
+                      aria-label={t.preview}
+                      className="rounded focus:outline-none focus:ring-2 focus:ring-gold"
+                    >
                       <Preview asset={a} />
-                    </a>
+                    </button>
                   </td>
                   <td className="px-3 py-2">
                     <p className="font-medium text-navy">{a.descriptors?.altText ?? '—'}</p>
