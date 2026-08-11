@@ -78,22 +78,68 @@ async function asJson<T>(res: Response): Promise<T> {
 }
 
 /**
- * Start an extraction. The file goes as a raw body with the name in a header —
- * the same shape the document converter already uses, so no multipart parser is
- * needed on either side.
+ * PUT the file straight to S3.
+ *
+ * XHR rather than fetch, for the one thing fetch still cannot do: report upload
+ * progress. A 285 MB deck takes minutes on a normal connection, and a drop zone
+ * that shows nothing for minutes reads as broken.
+ */
+function putToS3(
+  url: string,
+  file: File,
+  contentType: string,
+  onProgress: (fraction: number) => void,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('PUT', url)
+    // Must match the signed content type exactly, or S3 rejects the signature.
+    xhr.setRequestHeader('Content-Type', contentType)
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress(e.loaded / e.total)
+    }
+    xhr.onload = () =>
+      xhr.status >= 200 && xhr.status < 300
+        ? resolve()
+        : reject(new Error(`Upload fehlgeschlagen (${xhr.status})`))
+    xhr.onerror = () => reject(new Error('Upload fehlgeschlagen — Netzwerkfehler'))
+    xhr.onabort = () => reject(new Error('Upload abgebrochen'))
+    xhr.send(file)
+  })
+}
+
+/**
+ * Start an extraction: presign, upload direct to S3, then hand the portal a key.
+ *
+ * The file no longer passes through the portal at all. It used to go as a raw
+ * body, which meant a 2 GB service had to hold the whole deck in memory to
+ * accomplish a copy into S3 — the ceiling that made a 285 MB source impossible.
  */
 export async function startIngest(
   file: File,
   force = false,
+  onProgress: (fraction: number) => void = () => {},
 ): Promise<{ jobId: string; state: JobState; reused?: boolean }> {
+  const grant = await asJson<{ key: string; url: string; contentType: string }>(
+    await fetch(`${apiBaseUrl}/admin/media/upload-url`, {
+      method: 'POST',
+      headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: file.type || 'application/octet-stream',
+        size: file.size,
+      }),
+    }),
+  )
+
+  onProgress(0)
+  await putToS3(grant.url, file, grant.contentType, onProgress)
+  onProgress(1)
+
   const res = await fetch(`${apiBaseUrl}/admin/media/ingest${force ? '?force=true' : ''}`, {
     method: 'POST',
-    headers: {
-      ...authHeaders(),
-      'Content-Type': file.type || 'application/octet-stream',
-      'X-Filename': encodeURIComponent(file.name),
-    },
-    body: file,
+    headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ documentKey: grant.key, filename: file.name }),
   })
   return asJson(res)
 }

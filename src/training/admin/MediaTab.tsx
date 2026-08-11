@@ -116,6 +116,10 @@ export default function MediaTab() {
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [preview, setPreview] = useState<MediaAsset | null>(null)
+  // null while nothing is uploading. The upload now goes straight to S3 and can
+  // take minutes for a large deck, so it needs its own progress — the job bar
+  // below only starts once the server has the file.
+  const [uploading, setUploading] = useState<{ name: string; fraction: number } | null>(null)
   const [loading, setLoading] = useState(true)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -177,12 +181,17 @@ export default function MediaTab() {
       setError(t.wrongType)
       return
     }
+    setUploading({ name: file.name, fraction: 0 })
     try {
-      const { reused } = await startIngest(file, force)
+      const { reused } = await startIngest(file, force, (fraction) =>
+        setUploading({ name: file.name, fraction }),
+      )
       if (reused) setError(t.reused)
       await refreshJobs()
     } catch (e) {
       setError((e as Error).message)
+    } finally {
+      setUploading(null)
     }
   }
 
@@ -286,6 +295,23 @@ export default function MediaTab() {
           }}
         />
       </div>
+
+      {uploading && (
+        <div className="space-y-1 rounded-md border border-mist bg-white px-3 py-2">
+          <div className="flex items-baseline justify-between gap-3">
+            <span className="truncate text-sm text-navy">{t.uploading(uploading.name)}</span>
+            <span className="shrink-0 text-xs tabular-nums text-slate-500">
+              {Math.round(uploading.fraction * 100)}%
+            </span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded bg-mist">
+            <div
+              className="h-full rounded bg-navy transition-[width] duration-150"
+              style={{ width: `${Math.max(2, uploading.fraction * 100)}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">

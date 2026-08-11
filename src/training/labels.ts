@@ -165,6 +165,7 @@ export const labels = {
     drop: 'PowerPoint oder PDF hierher ziehen oder klicken',
     formats: 'PPTX, PPTM, PDF',
     forceHint: 'Mit gedrückter Alt-Taste ablegen, um eine bereits ausgewertete Datei erneut zu verarbeiten.',
+    uploading: (name: string) => `${name} wird hochgeladen …`,
     wrongType: 'Nur PowerPoint (.pptx, .pptm) und PDF werden ausgewertet.',
     reused: 'Diese Datei wurde bereits ausgewertet — der bestehende Lauf wird angezeigt.',
     search: 'Suchen',
