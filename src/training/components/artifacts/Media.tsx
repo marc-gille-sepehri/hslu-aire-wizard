@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import type { MediaArtifact } from '../../schema/types'
 import { InlineMarkdown } from '../../lib/inlineMarkdown'
 import { useResource } from '../../state/ResourcesContext'
@@ -8,13 +9,33 @@ import { labels } from '../../labels'
 // Used both as an artifact (with full props) and inline via [[media:id]]
 // (with just a ref). The inline form uses `ref_` to avoid clashing with React's
 // reserved `ref` prop.
-type Props = { artifact: MediaArtifact } | { ref_: string; caption_override?: string | null }
+type Props =
+  | { artifact: MediaArtifact }
+  | { ref_: string; caption_override?: string | null; width?: number }
+
+/**
+ * Constrain a figure to a share of the reading column.
+ *
+ * A diagram extracted from a slide arrives at whatever size PowerPoint drew it
+ * and is then stretched to the full column, which turns a small legend into a
+ * wall-filling graphic. The constraint sits on the <figure>, not the <img>, so
+ * the caption stays as wide as the picture it describes.
+ *
+ * Anything narrower than full width is centred: a figure left-aligned in a
+ * column of text reads as a mistake unless the text wraps around it, and it
+ * does not.
+ */
+function figureStyle(width?: number): CSSProperties | undefined {
+  if (!width || width >= 100) return undefined
+  return { maxWidth: `${Math.max(10, width)}%`, marginInline: 'auto' }
+}
 
 export default function Media(props: Props) {
   const isArtifact = 'artifact' in props
   const ref = isArtifact ? props.artifact.ref : props.ref_
   const url = isArtifact ? props.artifact.url : undefined
   const captionOverride = isArtifact ? props.artifact.caption_override : props.caption_override
+  const style = figureStyle(isArtifact ? props.artifact.width : props.width)
   // Always call hooks unconditionally (rules of hooks); '' resolves to undefined.
   const resource = useResource(ref ?? '')
   const { editing } = useEditMode()
@@ -29,6 +50,7 @@ export default function Media(props: Props) {
         caption={caption}
         filename={isArtifact ? props.artifact.filename : undefined}
         filesize={isArtifact ? props.artifact.filesize : undefined}
+        style={style}
       />
     )
   }
@@ -55,7 +77,7 @@ export default function Media(props: Props) {
 
   if (resource.kind === 'video') {
     return (
-      <figure className="my-2">
+      <figure className="my-2" style={style}>
         <video
           src={resource.src}
           poster={resource.poster}
@@ -75,7 +97,7 @@ export default function Media(props: Props) {
     console.warn(`[training] resource '${ref}' is missing alt text`)
   }
   return (
-    <figure className="my-2">
+    <figure className="my-2" style={style}>
       <img
         src={resource.src}
         alt={resource.alt ?? ''}
@@ -101,18 +123,20 @@ function UrlMedia({
   caption,
   filename,
   filesize,
+  style,
 }: {
   url: string
   caption?: string
   filename?: string
   filesize?: number
+  style?: CSSProperties
 }) {
   const media = detectMedia(url)
   if (!media) return null
 
   if (media.kind === 'youtube' || media.kind === 'vimeo') {
     return (
-      <figure className="my-2">
+      <figure className="my-2" style={style}>
         <div className="relative w-full overflow-hidden rounded-md bg-black" style={{ aspectRatio: '16 / 9' }}>
           <iframe
             src={media.embedUrl}
@@ -130,7 +154,7 @@ function UrlMedia({
 
   if (media.kind === 'video') {
     return (
-      <figure className="my-2">
+      <figure className="my-2" style={style}>
         <video src={media.src} controls preload="metadata" className="w-full rounded-md bg-black" />
         {/* Playable and takeable: a workshop video is often wanted offline. */}
         <DownloadLink url={media.src} filename={filename} filesize={filesize} />
@@ -141,7 +165,7 @@ function UrlMedia({
 
   if (media.kind === 'file') {
     return (
-      <figure className="my-2">
+      <figure className="my-2" style={style}>
         <FileCard url={media.src} ext={media.ext} filename={filename} filesize={filesize} />
         {caption && <figcaption className="text-sm text-slate-600 mt-2"><InlineMarkdown text={caption} className="md-caption" /></figcaption>}
       </figure>
@@ -150,7 +174,7 @@ function UrlMedia({
 
   // image or unknown → best-effort image
   return (
-    <figure className="my-2">
+    <figure className="my-2" style={style}>
       <img
         src={media.src}
         alt={caption ?? ''}

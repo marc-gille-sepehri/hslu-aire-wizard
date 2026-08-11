@@ -263,6 +263,9 @@ export default function MarkdownEditor({
             )}
           </div>
           {uploadError && <p className="border-t border-mist bg-red-50 px-3 py-1.5 text-xs text-red-700">{uploadError}</p>}
+          {/* The only piece of non-standard syntax here, so it is worth naming
+              rather than leaving to be discovered. */}
+          <p className="border-t border-mist px-3 py-1.5 text-xs text-slate-400">{t.mdWidthHint}</p>
         </div>
       ) : (
         <div className="min-h-[12rem] px-4 py-3 font-serif text-[1.05rem] leading-relaxed text-slate-800">

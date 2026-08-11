@@ -84,6 +84,11 @@ export type MediaArtifact = BaseArtifact & {
   filename?: string
   /** Byte size at upload time, for the download label. */
   filesize?: number
+  /** Percent of the reading column, 10–100. Absent means full width.
+   *  A percentage rather than pixels: the column is already responsive, and a
+   *  figure fixed at 600px is either oversized on a phone or undersized on a
+   *  projector. Anything below 100 is centred. */
+  width?: number
   caption_override?: string | null
 }
 export type LlmPromptArtifact = BaseArtifact & {

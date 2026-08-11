@@ -24,6 +24,23 @@ marked.use({
       const inner = (marked.Renderer.prototype.table as any).call(this, token)
       return `<div class="md-table-wrap">${inner}</div>`
     },
+
+    // `![alt](url#w=50)` renders the image at 50% of the reading column.
+    //
+    // Markdown has no width syntax, and the alternatives are worse: an <img>
+    // tag written by hand loses the alt-text prompt and the error handling, and
+    // a bespoke token would not survive a round trip through any other Markdown
+    // tool. A URL fragment does: browsers never send it to the server, S3
+    // ignores it, and an editor that knows nothing about it still shows the
+    // picture at full width.
+    image(this: any, token: any) {
+      const html = (marked.Renderer.prototype.image as any).call(this, token)
+      const m = /#w=(\d{1,3})\b/.exec(String(token.href ?? ''))
+      if (!m) return html
+      const pct = Math.min(100, Math.max(10, Number(m[1])))
+      if (pct >= 100) return html
+      return html.replace('<img', `<img style="width:${pct}%;margin-inline:auto"`)
+    },
   },
 })
 

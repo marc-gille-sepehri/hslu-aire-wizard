@@ -647,6 +647,9 @@ export const labels = {
     mediaDetected: 'Erkannt',
     mediaUrlWins: 'Die URL wird verwendet, solange sie gesetzt ist.',
     mediaEmpty: 'Kein Medium – im Editor eine URL hinzufügen.',
+    fMediaWidth: 'Breite',
+    mediaWidthFull: 'Volle Breite',
+    mediaWidthHint: 'Schmaler als volle Breite wird zentriert dargestellt.',
     // BPMN modeling block
     bpmnSave: 'Diagramm speichern',
     bpmnSaving: 'Wird gespeichert …',
@@ -709,6 +712,7 @@ export const labels = {
     mdMedia: 'Medien einfügen',
     mdUpload: 'Datei hochladen',
     mdDropHint: 'Dateien hier ablegen zum Hochladen',
+    mdWidthHint: 'Bild verkleinern: #w=50 an die URL anhängen, z. B. ![Alt](https://…/bild.svg#w=50) für halbe Breite.',
     mdUploading: 'Lädt hoch …',
 
     // Fly-out rail of extracted figures, opposite the block palette.

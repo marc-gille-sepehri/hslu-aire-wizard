@@ -77,6 +77,9 @@ const mediaArtifact = baseArtifact.extend({
   // direct URL, or be temporarily empty (incomplete) without breaking the module.
   ref: z.string().optional(),
   url: z.string().optional(),
+  // Bounded, not free: below ~10% a diagram is unreadable and above 100 it
+  // would break out of the reading column.
+  width: z.number().min(10).max(100).optional(),
   caption_override: z.string().nullable().optional(),
 })
 

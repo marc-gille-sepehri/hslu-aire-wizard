@@ -478,9 +478,87 @@ function MediaEditor({
           {!!draft.url?.trim() && <p className="mt-1 text-xs text-slate-400">{t.mediaUrlWins}</p>}
         </Field>
       )}
+      <Field label={t.fMediaWidth}>
+        <WidthControl
+          value={draft.width}
+          onChange={(w) => set({ ...draft, width: w })}
+          preview={draft.url?.trim() || undefined}
+        />
+      </Field>
       <Field label={t.fCaption}>
         <TextInput value={draft.caption_override ?? ''} onChange={(v) => set({ ...draft, caption_override: v === '' ? null : v })} />
       </Field>
+    </div>
+  )
+}
+
+const WIDTH_PRESETS = [25, 50, 75, 100]
+
+/**
+ * Size a figure as a share of the reading column.
+ *
+ * Presets and a slider together, because the two questions are different: the
+ * presets answer "half or a quarter", which is what an author usually means,
+ * and the slider answers "a bit smaller than that". A number field alone would
+ * make both a typing exercise.
+ *
+ * `undefined` rather than 100 is stored for full width, so a block that was
+ * never sized carries no field at all.
+ */
+function WidthControl({
+  value,
+  onChange,
+  preview,
+}: {
+  value?: number
+  onChange: (w: number | undefined) => void
+  preview?: string
+}) {
+  const current = value ?? 100
+  const setWidth = (w: number) => onChange(w >= 100 ? undefined : w)
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        {WIDTH_PRESETS.map((p) => (
+          <button
+            key={p}
+            type="button"
+            onClick={() => setWidth(p)}
+            className={`rounded-md border px-2.5 py-1 text-xs font-semibold transition-colors ${
+              current === p
+                ? 'border-navy bg-navy text-white'
+                : 'border-mist text-slate-600 hover:border-navy hover:text-navy'
+            }`}
+          >
+            {p === 100 ? labels.editor.mediaWidthFull : `${p} %`}
+          </button>
+        ))}
+        <span className="ml-auto text-xs tabular-nums text-slate-500">{current} %</span>
+      </div>
+      <input
+        type="range"
+        min={10}
+        max={100}
+        step={5}
+        value={current}
+        onChange={(e) => setWidth(Number(e.target.value))}
+        className="w-full accent-navy"
+      />
+      {/* A number is hard to picture; the actual figure at the chosen width is not. */}
+      {preview && (
+        <div className="rounded-md border border-mist bg-cream/40 p-2">
+          <img
+            src={preview}
+            alt=""
+            style={{ maxWidth: `${current}%`, marginInline: 'auto' }}
+            className="block max-h-32 rounded object-contain"
+            onError={(e) => {
+              ;(e.currentTarget as HTMLImageElement).style.display = 'none'
+            }}
+          />
+        </div>
+      )}
+      <p className="text-xs text-slate-400">{labels.editor.mediaWidthHint}</p>
     </div>
   )
 }
