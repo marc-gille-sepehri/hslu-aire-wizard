@@ -1,0 +1,126 @@
+{
+  "module": {
+    "id": "modul-1",
+    "title": "Modul 1 — AI in Real Estate: Einführung",
+    "lang": "de",
+    "resources": {
+      "wertkette": {
+        "kind": "diagram",
+        "src": "/training-assets/wertkette.png",
+        "alt": "Schematische Darstellung der Immobilien-Wertschöpfungskette",
+        "caption": "Wertschöpfungsstufen: Entwicklung, Bau, Bewirtschaftung, Transaktion."
+      },
+      "portfolio-foto": {
+        "kind": "image",
+        "src": "/training-assets/portfolio.jpg",
+        "alt": "Luftaufnahme eines gemischten Immobilienportfolios",
+        "caption": "Beispielhaftes gemischtes Portfolio.",
+        "credit": "Foto: Platzhalter"
+      }
+    },
+    "sections": [
+      {
+        "id": "s1",
+        "title": "Worum geht es?",
+        "objectives": [
+          "Sie können in eigenen Worten erklären, wo AI entlang der Immobilien-Wertschöpfungskette ansetzt.",
+          "Sie unterscheiden Bewertungs-, Bewirtschaftungs- und Transaktionsanwendungen."
+        ],
+        "artifacts": [
+          {
+            "id": "intro-prose",
+            "type": "prose",
+            "body": "Künstliche Intelligenz verändert die Immobilienbranche schneller als die meisten Marktteilnehmer wahrnehmen. Entlang der gesamten Wertschöpfungskette entstehen neue Werkzeuge: für **Bewertung**, **Bau**, **Bewirtschaftung**, **ESG-Reporting** und **Transaktionen**.\n\nIn diesem Modul ordnen wir die wichtigsten Anwendungsfelder ein und schauen uns konkrete Beispiele an. [[media:wertkette]]"
+          },
+          {
+            "id": "intro-insight",
+            "type": "callout",
+            "variant": "insight",
+            "body": "AI ist kein Selbstzweck. Sie ist nur dann sinnvoll, wenn sie einen konkreten **Business Case** adressiert — Geschwindigkeit, Qualität oder Kosten."
+          },
+          {
+            "id": "anwendungs-bullets",
+            "type": "bullets",
+            "title": "Typische Anwendungsfelder",
+            "items": [
+              "**Bewertung**: automatisierte Vergleichswertanalysen, Predictive Pricing.",
+              "**Bewirtschaftung**: Tenant-Bots, Predictive Maintenance.",
+              "**Transaktion**: Due-Diligence-Copilots, Vertragsanalyse.",
+              "**ESG**: Energiedaten-Aggregation und CO₂-Pfade."
+            ]
+          },
+          {
+            "id": "portfolio-media",
+            "type": "media",
+            "ref": "portfolio-foto"
+          }
+        ]
+      },
+      {
+        "id": "s2",
+        "title": "Verstehen Sie es?",
+        "objectives": [
+          "Sie können die Aussage einer typischen AI-Anwendung im Real Estate korrekt einordnen."
+        ],
+        "artifacts": [
+          {
+            "id": "mcq-1",
+            "type": "mcq",
+            "stem": "Welcher der folgenden Use Cases ist **kein** typischer AI-Anwendungsfall in der Immobilienbewertung?",
+            "options": [
+              { "text": "Automatisierte Vergleichswertanalyse", "correct": false, "feedback": "Falsch — dies ist ein klassisches AI-Anwendungsfeld in der Bewertung." },
+              { "text": "Predictive Pricing für Mieten", "correct": false, "feedback": "Falsch — gehört direkt zur Bewertung." },
+              { "text": "Manuelle Excel-Tabelle für DCF-Berechnungen", "correct": true, "feedback": "Richtig — manuelle Excel-Modelle sind keine AI-Anwendung." },
+              { "text": "Bildanalyse von Standortqualitäten", "correct": false, "feedback": "Falsch — Computer Vision wird in der Bewertung zunehmend eingesetzt." }
+            ],
+            "explanation": "AI-Anwendungen in der Bewertung lernen aus Daten und treffen Vorhersagen — eine statische Excel-Tabelle erfüllt das nicht."
+          },
+          {
+            "id": "lab-1",
+            "type": "lab_select",
+            "scenario": "Ein Asset Manager möchte einen **AI-Use Case priorisieren**. Drei Optionen liegen auf dem Tisch — welche würden Sie als ersten Pilotfall empfehlen?",
+            "options": [
+              {
+                "id": "a",
+                "label": "Vollständig autonomer Vermietungs-Agent ohne Human-in-the-Loop",
+                "correct": false,
+                "feedback": "Zu hohes Risiko für einen ersten Pilotfall — regulatorische und reputative Konsequenzen sind schwer kontrollierbar."
+              },
+              {
+                "id": "b",
+                "label": "Automatisierte Erstklassifikation von Mietinteressenten mit Review-Schritt",
+                "correct": true,
+                "feedback": "Guter erster Pilot: klare Metrik (Zeitersparnis), kontrollierbares Risiko durch Human-in-the-Loop, schneller Mehrwert."
+              },
+              {
+                "id": "c",
+                "label": "Komplettes Reporting-Dashboard für alle ESG-Kennzahlen",
+                "correct": false,
+                "feedback": "Zu breit für einen Pilot. Erst Daten konsolidieren, dann AI darauf setzen — nicht umgekehrt."
+              }
+            ],
+            "explanation": "Pilotfälle sollten klein, messbar und reversibel sein."
+          }
+        ]
+      },
+      {
+        "id": "s3",
+        "title": "Was nehmen Sie mit?",
+        "artifacts": [
+          {
+            "id": "warn",
+            "type": "callout",
+            "variant": "warning",
+            "body": "Achten Sie auf **Datenqualität**, bevor Sie ein AI-Modell auswählen. Schlechte Daten führen unweigerlich zu schlechten Vorhersagen — auch mit dem besten Modell."
+          },
+          {
+            "id": "reflect-1",
+            "type": "reflect",
+            "prompt": "Notieren Sie drei AI-Anwendungsfälle, die in Ihrem eigenen Arbeitsumfeld den grössten Nutzen stiften könnten.",
+            "guidance": "Konkret sein: welche Daten liegen vor, welche Entscheidung würde unterstützt, wer profitiert?"
+          }
+        ]
+      }
+    ]
+  }
+}

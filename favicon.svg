@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="AI@RE">
+  <!--
+    AI@RE Bildmarke nach doc/AIRE-CI-Manual.pdf:
+    "Vier gleichwertige Ecken — Corporate Members, Startups, Solution- und
+    Strategic Partner — versammelt um ein gemeinsames Zentrum."
+    Geschlossene Form auf voller Navy-Fläche, Gold ausschliesslich im Zentrum.
+    Bei 16px bleiben Zentrum + Ecken erkennbar, das reicht als Signal.
+  -->
+  <rect width="32" height="32" rx="7" fill="#0B2447"/>
+  <g fill="#FFFFFF">
+    <rect x="6.5" y="6.5" width="6" height="6" rx="1.2"/>
+    <rect x="19.5" y="6.5" width="6" height="6" rx="1.2"/>
+    <rect x="6.5" y="19.5" width="6" height="6" rx="1.2"/>
+    <rect x="19.5" y="19.5" width="6" height="6" rx="1.2"/>
+  </g>
+  <!-- Das eine Zentrum -->
+  <rect x="13" y="13" width="6" height="6" rx="1.2" fill="#F2A93B"/>
+</svg>
