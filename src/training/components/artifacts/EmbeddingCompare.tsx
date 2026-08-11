@@ -3,7 +3,12 @@ import type { EmbeddingCompareArtifact } from '../../schema/types'
 import { labels } from '../../labels'
 import { chunkText } from '../../lib/chunking'
 import { embedTexts } from '../../lib/embeddingsApi'
-import { distanceMatrix, edgeDistortion, layoutInPlane } from '../../lib/embeddingGeometry'
+import {
+  angularDistance,
+  distanceMatrix,
+  edgeDistortion,
+  layoutInPlane,
+} from '../../lib/embeddingGeometry'
 
 const t = labels.embeddingCompare
 
@@ -43,6 +48,20 @@ type Computed = {
   dimensions: number
 }
 
+/** One query against every selected chunk — the second half of RAG. */
+type Retrieved = {
+  query: string
+  ids: string[]
+  /** Angular distance from the query to each id, same order. */
+  distances: number[]
+  model: string
+  dimensions: number
+}
+
+/** Beyond this many points the plane is a hairball, and says so. */
+const PLANE_IS_CROWDED_ABOVE = 8
+const DEFAULT_TOP_K = 3
+
 export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingCompareArtifact }) {
   const [items, setItems] = useState<Item[]>(() =>
     (artifact.samples ?? []).map((text, i) => ({ id: `s${i}`, text, selected: true })),
@@ -57,6 +76,10 @@ export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingComp
   const [overlap, setOverlap] = useState(() => artifact.chunkOverlap ?? DEFAULT_OVERLAP)
   const [dropping, setDropping] = useState(false)
   const [lastSplit, setLastSplit] = useState<number | null>(null)
+  const [mode, setMode] = useState<'plane' | 'retrieve'>('plane')
+  const [query, setQuery] = useState(artifact.defaultQuery ?? '')
+  const [topK, setTopK] = useState(() => artifact.topK ?? DEFAULT_TOP_K)
+  const [retrieved, setRetrieved] = useState<Retrieved | null>(null)
 
   // The overlap can never reach the window: past half, each chunk is mostly its
   // predecessor and the count grows while the content does not.
@@ -81,6 +104,16 @@ export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingComp
     const now = selected.map((i) => i.id).join('|')
     return now !== computed.ids.join('|')
   }, [computed, selected])
+
+  // Same rule for the ranking, plus the query itself: an edited question with an
+  // old ranking under it is the most misleading state this block could reach.
+  const retrievalStale = useMemo(() => {
+    if (!retrieved) return false
+    return (
+      selected.map((i) => i.id).join('|') !== retrieved.ids.join('|') ||
+      query.trim() !== retrieved.query
+    )
+  }, [retrieved, selected, query])
 
   /**
    * Add a text, split first if it is longer than the chunk size.
@@ -148,6 +181,48 @@ export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingComp
         raw: layout.raw,
         stress: layout.stress,
         exact: layout.exact,
+        model: res.model,
+        dimensions: res.dimensions,
+      })
+    } catch (e) {
+      setError((e as Error).message || t.error)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  /**
+   * Embed the question alongside the chunks and rank them by distance to it.
+   *
+   * This is what a retriever does, and it is deliberately shown as a list rather
+   * than as a picture. The plane answers "how do these texts relate to each
+   * other", which needs a projection and lies about it. A query needs no
+   * projection at all: distance-to-the-question is one number per chunk, and one
+   * number per row is a ranking, honestly drawn.
+   *
+   * The query rides in the same request as the chunks, so it is embedded by the
+   * same model in the same call — comparing vectors from two different models
+   * would produce numbers that mean nothing.
+   */
+  const retrieve = async () => {
+    const q = query.trim()
+    if (!q) {
+      setError(t.needQuery)
+      return
+    }
+    if (selected.length < 1) {
+      setError(t.needOne)
+      return
+    }
+    setBusy(true)
+    setError(null)
+    try {
+      const res = await embedTexts([q, ...selected.map((i) => i.text)])
+      const [queryVector, ...chunkVectors] = res.vectors
+      setRetrieved({
+        query: q,
+        ids: selected.map((i) => i.id),
+        distances: chunkVectors.map((v) => angularDistance(queryVector, v)),
         model: res.model,
         dimensions: res.dimensions,
       })
@@ -296,22 +371,105 @@ export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingComp
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={() => void compute()}
-          disabled={busy || selected.length < 2}
-          className="rounded-md bg-gold px-4 py-2 font-sans text-sm font-semibold text-navy transition-colors hover:bg-gold-dark disabled:bg-mist disabled:text-slate-400"
-        >
-          {busy ? t.computing : computed ? t.recompute : t.compute}
-        </button>
-        {stale && !busy && <span className="font-sans text-xs text-amber-800">{t.dirty}</span>}
-        {computed && !stale && (
-          <span className="font-sans text-xs text-slate-400">
-            {t.modelLine(computed.model, computed.dimensions)}
-          </span>
-        )}
+      {/* ── What to do with them ─────────────────────────────────────────── */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="inline-flex overflow-hidden rounded-md border border-mist">
+          {(['plane', 'retrieve'] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMode(m)}
+              className={`px-3 py-1.5 font-sans text-sm font-semibold transition-colors ${
+                mode === m ? 'bg-navy text-white' : 'bg-white text-slate-600 hover:bg-cream'
+              }`}
+            >
+              {m === 'plane' ? t.modePlane : t.modeRetrieve}
+            </button>
+          ))}
+        </div>
+        <span className="font-sans text-xs text-slate-400">
+          {mode === 'plane' ? t.modePlaneHint : t.modeRetrieveHint}
+        </span>
       </div>
+
+      {mode === 'plane' ? (
+        <>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => void compute()}
+              disabled={busy || selected.length < 2}
+              className="rounded-md bg-gold px-4 py-2 font-sans text-sm font-semibold text-navy transition-colors hover:bg-gold-dark disabled:bg-mist disabled:text-slate-400"
+            >
+              {busy ? t.computing : computed ? t.recompute : t.compute}
+            </button>
+            {stale && !busy && <span className="font-sans text-xs text-amber-800">{t.dirty}</span>}
+            {computed && !stale && (
+              <span className="font-sans text-xs text-slate-400">
+                {t.modelLine(computed.model, computed.dimensions)}
+              </span>
+            )}
+          </div>
+
+          {/* Every pair gets a line, so the drawing grows quadratically: eight
+              points have 28 edges, thirty have 435. Say so and offer the way
+              out rather than rendering a hairball and leaving it at that. */}
+          {selected.length > PLANE_IS_CROWDED_ABOVE && (
+            <p className="font-sans text-xs text-amber-800">
+              {t.tooManyForPlane(selected.length, (selected.length * (selected.length - 1)) / 2)}{' '}
+              <button
+                type="button"
+                onClick={() => setMode('retrieve')}
+                className="underline underline-offset-2 hover:text-navy"
+              >
+                {t.switchToRetrieve}
+              </button>
+            </p>
+          )}
+        </>
+      ) : (
+        <div className="space-y-3 rounded-md border border-mist bg-white px-4 py-3">
+          <label className="block">
+            <span className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">
+              {t.queryLabel}
+            </span>
+            <textarea
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              rows={2}
+              placeholder={t.queryPlaceholder}
+              className="mt-1 w-full rounded-md border border-slate-300 p-2 font-sans text-sm text-slate-800 focus:border-slate-500 focus:outline-none"
+            />
+          </label>
+          <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
+            <button
+              type="button"
+              onClick={() => void retrieve()}
+              disabled={busy || !query.trim() || selected.length < 1}
+              className="rounded-md bg-gold px-4 py-2 font-sans text-sm font-semibold text-navy transition-colors hover:bg-gold-dark disabled:bg-mist disabled:text-slate-400"
+            >
+              {busy ? t.computing : retrieved ? t.retrieveAgain : t.retrieveAction}
+            </button>
+            <Slider
+              label={t.topK}
+              value={Math.min(topK, Math.max(1, selected.length))}
+              min={1}
+              max={Math.max(1, Math.min(10, selected.length))}
+              step={1}
+              onChange={setTopK}
+              unit={t.chunks}
+            />
+          </div>
+          {retrievalStale && !busy && (
+            <p className="font-sans text-xs text-amber-800">{t.retrievalDirty}</p>
+          )}
+          {retrieved && !retrievalStale && (
+            <p className="font-sans text-xs text-slate-400">
+              {t.modelLine(retrieved.model, retrieved.dimensions)}
+            </p>
+          )}
+        </div>
+      )}
 
       {error && (
         <div className="rounded-md border border-red-300 bg-red-50 px-4 py-3 font-sans text-sm text-red-800">
@@ -319,12 +477,23 @@ export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingComp
         </div>
       )}
 
-      {computed && (
+      {mode === 'plane' && computed && (
         <Plot
           computed={computed}
           labelOf={(id) => items.find((i) => i.id === id)?.text ?? ''}
           colorOf={colorOf}
           dimmed={stale}
+        />
+      )}
+
+      {mode === 'retrieve' && retrieved && (
+        <Ranking
+          retrieved={retrieved}
+          topK={Math.min(topK, retrieved.ids.length)}
+          textOf={(id) => items.find((i) => i.id === id)?.text ?? ''}
+          chunkOf={(id) => items.find((i) => i.id === id)?.chunk}
+          colorOf={colorOf}
+          dimmed={retrievalStale}
         />
       )}
     </div>
@@ -333,6 +502,107 @@ export default function EmbeddingCompare({ artifact }: { artifact: EmbeddingComp
 
 function clamp(n: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, Math.round(n)))
+}
+
+/**
+ * The chunks, nearest first, with the retrieval cut drawn in.
+ *
+ * A list rather than a picture, on purpose. Distance to one query is a single
+ * number per chunk, so a ranking shows it without projecting anything away —
+ * whereas the plane, at thirty points, would be drawing 435 lines to say less.
+ *
+ * The line after the top k is the part worth arguing about in a seminar: that is
+ * the whole context the model would get. Everything below it exists in the
+ * corpus and will not be seen, however true it is.
+ */
+function Ranking({
+  retrieved,
+  topK,
+  textOf,
+  chunkOf,
+  colorOf,
+  dimmed,
+}: {
+  retrieved: Retrieved
+  topK: number
+  textOf: (id: string) => string
+  chunkOf: (id: string) => { index: number; total: number } | undefined
+  colorOf: (id: string) => string
+  dimmed: boolean
+}) {
+  const ranked = retrieved.ids
+    .map((id, i) => ({ id, distance: retrieved.distances[i] }))
+    .sort((a, b) => a.distance - b.distance)
+
+  // Scale the bars across the observed range, not 0–1: real distances for one
+  // query cluster in a narrow band, and a full-width axis would show every bar
+  // as the same length.
+  const lo = ranked[0]?.distance ?? 0
+  const hi = ranked[ranked.length - 1]?.distance ?? 1
+  const span = Math.max(hi - lo, 0.001)
+  const contextChars = ranked.slice(0, topK).reduce((n, r) => n + textOf(r.id).length, 0)
+
+  return (
+    <div className={`space-y-2 ${dimmed ? 'opacity-40' : ''}`}>
+      <ol className="overflow-hidden rounded-md border border-mist bg-white">
+        {ranked.map((row, rank) => (
+          <li key={row.id}>
+            {rank === topK && (
+              <div className="flex items-center gap-2 bg-cream px-4 py-1.5">
+                <span className="h-px flex-1 bg-mist" />
+                <span className="font-sans text-[0.65rem] font-semibold uppercase tracking-wide text-slate-500">
+                  {t.cutoff}
+                </span>
+                <span className="h-px flex-1 bg-mist" />
+              </div>
+            )}
+            <div
+              className={`flex items-start gap-3 border-t border-mist px-4 py-2.5 first:border-t-0 ${
+                rank < topK ? '' : 'opacity-60'
+              }`}
+            >
+              <span
+                className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-sans text-[0.65rem] font-bold text-white"
+                style={{ backgroundColor: rank < topK ? colorOf(row.id) : '#cfd8e6' }}
+              >
+                {rank + 1}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-baseline gap-2">
+                  {chunkOf(row.id) && (
+                    <span className="font-sans text-[0.65rem] font-semibold uppercase tracking-wide text-slate-400">
+                      {t.chunkBadge(chunkOf(row.id)!.index, chunkOf(row.id)!.total)}
+                    </span>
+                  )}
+                  <span className="font-sans text-xs tabular-nums text-slate-500">
+                    {row.distance.toFixed(3)}
+                  </span>
+                </span>
+                <span className="mt-1 block h-1 w-full overflow-hidden rounded bg-mist">
+                  {/* Nearer is longer, which is the direction people read as
+                      "more relevant" — the number beside it stays a distance. */}
+                  <span
+                    className="block h-full rounded"
+                    style={{
+                      width: `${Math.max(4, (1 - (row.distance - lo) / span) * 100)}%`,
+                      backgroundColor: rank < topK ? colorOf(row.id) : '#cfd8e6',
+                    }}
+                  />
+                </span>
+                <span className="mt-1 block whitespace-pre-wrap font-sans text-sm text-slate-700">
+                  {textOf(row.id)}
+                </span>
+              </span>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p className="font-sans text-xs text-slate-500">
+        {t.contextSummary(Math.min(topK, ranked.length), contextChars, ranked.length)}
+      </p>
+      <p className="max-w-prose font-sans text-xs text-slate-500">{t.retrievalNote}</p>
+    </div>
+  )
 }
 
 function Slider({

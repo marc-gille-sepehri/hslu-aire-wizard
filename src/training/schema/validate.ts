@@ -67,6 +67,8 @@ const embeddingCompareArtifact = baseArtifact.extend({
   // embedded at all, so it is not a size worth offering.
   chunkSize: z.number().min(100).max(4000).optional(),
   chunkOverlap: z.number().min(0).max(2000).optional(),
+  defaultQuery: z.string().optional(),
+  topK: z.number().min(1).max(10).optional(),
 })
 
 const reflectArtifact = baseArtifact.extend({

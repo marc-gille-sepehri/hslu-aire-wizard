@@ -242,6 +242,29 @@ export const labels = {
       + 'Als Faustregel entsprechen vier Zeichen etwa einem Token.',
     splitInto: (n: number) => `Zuletzt hinzugefügter Text wurde in ${n} Stücke zerlegt.`,
     chunkBadge: (i: number, total: number) => `Chunk ${i}/${total}`,
+    modePlane: 'Ebene',
+    modeRetrieve: 'Abruf',
+    modePlaneHint: 'Alle Stücke untereinander — gut für eine Handvoll Texte.',
+    modeRetrieveHint: 'Eine Frage gegen alle Stücke — so sucht RAG.',
+    tooManyForPlane: (n: number, edges: number) =>
+      `${n} Punkte ergeben ${edges} Verbindungslinien — das ist kaum noch lesbar.`,
+    switchToRetrieve: 'Zum Abruf wechseln',
+    queryLabel: 'Frage',
+    queryPlaceholder: 'Was soll gefunden werden? Zum Beispiel: Wer trägt die Kosten für die Wartung?',
+    retrieveAction: 'Abrufen',
+    retrieveAgain: 'Neu abrufen',
+    topK: 'Treffer im Kontext',
+    chunks: 'Stücke',
+    needQuery: 'Formuliere zuerst eine Frage.',
+    needOne: 'Wähle mindestens ein Textstück aus.',
+    retrievalDirty: 'Frage oder Auswahl hat sich geändert — neu abrufen.',
+    cutoff: 'Ab hier nicht mehr im Kontext',
+    contextSummary: (k: number, chars: number, total: number) =>
+      `${k} von ${total} Stücken gingen als Kontext an das Modell — zusammen ${chars} Zeichen.`,
+    retrievalNote:
+      'Das Modell sieht nur, was oberhalb der Linie steht. Alles darunter existiert weiterhin '
+      + 'in der Sammlung und kommt in der Antwort trotzdem nicht vor — auch wenn es richtig ist. '
+      + 'Genau hier entstehen die Lücken, die man später dem Modell anlastet.',
     colMedium: 'Medium',
     colDescription: 'Beschreibung',
     remove: 'Entfernen',
@@ -662,6 +685,13 @@ export const labels = {
       'Startwerte für die Zerlegung. Was Teilnehmende einfügen und was länger ist als die '
       + 'Chunk-Grösse, wird in mehrere Stücke geschnitten — wie in einer RAG-Pipeline. '
       + 'Die Werte lassen sich im Block selbst weiter verändern.',
+    fRetrieval: 'Abruf-Modus',
+    fDefaultQueryPlaceholder: 'Vorbelegte Frage (optional)',
+    fTopK: 'Treffer im Kontext',
+    retrievalHint:
+      'Im Abruf-Modus wird eine Frage gegen alle Stücke gerechnet und die Rangliste gezeigt. '
+      + '„Treffer im Kontext" ist die Grenze, ab der ein Stück nicht mehr ans Modell ginge — '
+      + 'der interessanteste Regler des Blocks.',
     fMediaUpload: 'Datei hochladen',
     fMediaUrl: 'Medien-URL',
     mediaUrlPlaceholder: 'https://… (Bild, Video oder YouTube/Vimeo)',

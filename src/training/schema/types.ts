@@ -171,4 +171,8 @@ export type EmbeddingCompareArtifact = BaseArtifact & {
   chunkSize?: number
   /** Characters each chunk repeats from the one before, 0 to half the size. */
   chunkOverlap?: number
+  /** Question the retrieval mode starts with. Participants can change it. */
+  defaultQuery?: string
+  /** How many nearest chunks count as "the context", 1–10. Default 3. */
+  topK?: number
 }

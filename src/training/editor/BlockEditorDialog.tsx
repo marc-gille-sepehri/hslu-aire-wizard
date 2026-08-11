@@ -385,6 +385,24 @@ function EmbeddingCompareEditor({
         </div>
         <p className="mt-1 text-xs text-slate-400">{t.chunkingHint}</p>
       </Field>
+      <Field label={t.fRetrieval}>
+        <TextInput
+          value={draft.defaultQuery ?? ''}
+          placeholder={t.fDefaultQueryPlaceholder}
+          onChange={(v) => set({ ...draft, defaultQuery: v || undefined })}
+        />
+        <div className="mt-2">
+          <NumberInput
+            label={t.fTopK}
+            value={draft.topK ?? 3}
+            min={1}
+            max={10}
+            step={1}
+            onChange={(v) => set({ ...draft, topK: v })}
+          />
+        </div>
+        <p className="mt-1 text-xs text-slate-400">{t.retrievalHint}</p>
+      </Field>
     </div>
   )
 }
