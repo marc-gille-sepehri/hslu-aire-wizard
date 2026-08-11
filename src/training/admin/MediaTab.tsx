@@ -343,10 +343,16 @@ export default function MediaTab() {
         </p>
       ) : (
         <div className="overflow-x-auto rounded-md border border-mist">
-          <table className="w-full text-left text-xs">
+          <table className="w-full table-fixed text-left text-xs">
+            <colgroup>
+              <col className="w-8" />
+              <col className="w-44" />
+              <col />
+              <col className="w-12" />
+            </colgroup>
             <thead className="bg-cream text-slate-500">
               <tr>
-                <th className="w-8 px-3 py-2">
+                <th className="px-3 py-2">
                   <input
                     type="checkbox"
                     checked={allSelected}
@@ -355,12 +361,8 @@ export default function MediaTab() {
                     className="cursor-pointer"
                   />
                 </th>
-                <th className="px-3 py-2 font-semibold">{t.colPreview}</th>
-                <th className="px-3 py-2 font-semibold">{t.colTags}</th>
-                <th className="px-3 py-2 font-semibold">{t.colMime}</th>
-                <th className="px-3 py-2 font-semibold">{t.colSize}</th>
-                <th className="px-3 py-2 font-semibold">{t.colDate}</th>
-                <th className="px-3 py-2 font-semibold">{t.colUploader}</th>
+                <th className="px-3 py-2 font-semibold">{t.colMedium}</th>
+                <th className="px-3 py-2 font-semibold">{t.colDescription}</th>
                 <th className="px-3 py-2 text-right">
                   <button
                     type="button"
@@ -385,7 +387,7 @@ export default function MediaTab() {
                   key={a.assetId}
                   className={`border-t border-mist align-top ${selected.has(a.assetId) ? 'bg-gold/10' : ''}`}
                 >
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-3">
                     <input
                       type="checkbox"
                       checked={selected.has(a.assetId)}
@@ -394,24 +396,38 @@ export default function MediaTab() {
                       className="cursor-pointer"
                     />
                   </td>
-                  <td className="px-3 py-2">
+
+                  {/* Thumbnail with its own facts stacked beneath — file type,
+                      size, date and uploader are footnotes about the object, and
+                      each cost a whole column while the text that matters was
+                      squeezed. */}
+                  <td className="px-3 py-3">
                     <button
                       type="button"
                       onClick={() => setPreview(a)}
                       title={t.preview}
                       aria-label={t.preview}
-                      className="rounded focus:outline-none focus:ring-2 focus:ring-gold"
+                      className="block rounded focus:outline-none focus:ring-2 focus:ring-gold"
                     >
                       <Preview asset={a} />
                     </button>
+                    <dl className="mt-1.5 space-y-0.5 text-[10px] leading-tight text-slate-400">
+                      <div className="truncate font-mono">{a.mediaType}</div>
+                      <div>{formatBytes(a.bytes ?? 0)}</div>
+                      <div>{formatDate(a.createdAt ?? '')}</div>
+                      <div className="truncate" title={a.uploadedBy ?? ''}>{a.uploadedBy ?? '—'}</div>
+                    </dl>
                   </td>
-                  <td className="px-3 py-2">
+
+                  {/* Everything left over. The description is what an agent will
+                      retrieve on, so it gets the width. */}
+                  <td className="px-3 py-3">
                     <p className="font-medium text-navy">{a.descriptors?.altText ?? '—'}</p>
                     {a.descriptors?.description && (
-                      <p className="mt-0.5 text-slate-500">{a.descriptors.description}</p>
+                      <p className="mt-1 leading-relaxed text-slate-600">{a.descriptors.description}</p>
                     )}
                     {(a.descriptors?.tags?.length ?? 0) > 0 && (
-                      <div className="mt-1 flex flex-wrap gap-1">
+                      <div className="mt-1.5 flex flex-wrap gap-1">
                         {(a.descriptors?.tags ?? []).map((tag) => (
                           <span key={tag} className="rounded bg-navy/10 px-1.5 py-0.5 text-[10px] text-navy">
                             {tag}
@@ -419,16 +435,13 @@ export default function MediaTab() {
                         ))}
                       </div>
                     )}
-                    <p className="mt-1 text-[10px] text-slate-400">
+                    <p className="mt-1.5 text-[10px] text-slate-400">
                       {a.provenance?.sourceDoc ?? '—'} · {t.slide} {a.provenance?.locator?.slide ?? '?'}
                       {a.descriptors?.altTextSource === 'author' && ` · ${t.authorAlt}`}
                     </p>
                   </td>
-                  <td className="px-3 py-2 font-mono text-[11px] text-slate-500">{a.mediaType}</td>
-                  <td className="px-3 py-2 text-slate-500">{formatBytes(a.bytes ?? 0)}</td>
-                  <td className="px-3 py-2 text-slate-500">{formatDate(a.createdAt ?? '')}</td>
-                  <td className="px-3 py-2 text-slate-500">{a.uploadedBy ?? '—'}</td>
-                  <td className="px-3 py-2 text-right">
+
+                  <td className="px-3 py-3 text-right">
                     <button
                       type="button"
                       onClick={() => void remove(a)}
