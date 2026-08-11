@@ -10,6 +10,7 @@ import { labels } from '../labels'
 import { ModuleEditorProvider, useModuleEditor } from '../editor/ModuleEditorContext'
 import { useEditMode } from '../editor/EditModeContext'
 import BlockPalette from '../editor/BlockPalette'
+import MediaRail from '../editor/MediaRail'
 import SaveNoteDialog, { ConflictDialog } from '../editor/SaveNoteDialog'
 import HistoryDrawer from '../editor/HistoryDrawer'
 import RevisionPreview from '../editor/RevisionPreview'
@@ -362,10 +363,15 @@ function ModuleViewInner({
           <SectionView section={currentSection} />
 
           {editing && currentSection && (
-            <BlockPalette
-              sectionId={currentSection.id}
-              appendIndex={currentSection.artifacts.length}
-            />
+            <>
+              {/* Blocks on the right, figures on the left — the two things an
+                  author drags into a section, one rail each. */}
+              <BlockPalette
+                sectionId={currentSection.id}
+                appendIndex={currentSection.artifacts.length}
+              />
+              <MediaRail />
+            </>
           )}
 
           <footer className="mt-12 pt-6 border-t border-slate-200 flex justify-between">
