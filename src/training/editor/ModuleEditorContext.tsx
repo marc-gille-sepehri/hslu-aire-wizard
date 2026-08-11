@@ -37,6 +37,11 @@ export type DragState =
   // A figure dragged out of the media rail. Carries what a media block needs, so
   // the drop can build a filled-in artifact instead of an empty one the author
   // then has to configure.
+  //
+  // `altText` is the generated description: it belongs in an alt attribute, for
+  // screen readers and for retrieval. It is deliberately not used as a caption —
+  // a caption is editorial prose the author writes, not machine output shown
+  // under every picture.
   | { kind: 'media'; url: string; altText: string; filename: string; bytes: number }
   | null
 

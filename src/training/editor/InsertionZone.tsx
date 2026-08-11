@@ -47,7 +47,11 @@ export default function InsertionZone({
         url: dragState.url,
         filename: dragState.filename,
         filesize: dragState.bytes,
-        caption_override: dragState.altText || null,
+        // Explicitly no caption. The generated description is alt text — it
+        // exists for screen readers and for retrieval, not as editorial prose
+        // under the picture. `null` suppresses the figcaption; leaving it out
+        // would fall back to the resource's own caption.
+        caption_override: null,
       })
     } else {
       moveArtifact(sectionId, dragState.index, index)
