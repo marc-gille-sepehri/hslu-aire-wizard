@@ -377,7 +377,22 @@ export default function MediaTab() {
                 <th className="px-3 py-2 font-semibold">{t.colSize}</th>
                 <th className="px-3 py-2 font-semibold">{t.colDate}</th>
                 <th className="px-3 py-2 font-semibold">{t.colUploader}</th>
-                <th className="px-3 py-2" />
+                <th className="px-3 py-2 text-right">
+                  <button
+                    type="button"
+                    onClick={() => void removeSelected()}
+                    disabled={selected.size === 0}
+                    title={selected.size > 0 ? t.removeSelectedTitle(selected.size) : t.removeSelectedNone}
+                    aria-label={t.removeSelected}
+                    className={`rounded border p-1.5 transition-colors ${
+                      selected.size > 0
+                        ? 'border-red-300 text-red-700 hover:bg-red-50'
+                        : 'cursor-not-allowed border-mist text-slate-300'
+                    }`}
+                  >
+                    <TrashIcon />
+                  </button>
+                </th>
               </tr>
             </thead>
             <tbody>

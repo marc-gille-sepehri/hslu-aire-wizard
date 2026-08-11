@@ -187,6 +187,8 @@ export const labels = {
     selectedCount: (n: number) => `${n} ausgewählt`,
     clearSelection: 'Auswahl aufheben',
     removeSelected: 'Ausgewählte entfernen',
+    removeSelectedTitle: (n: number) => `${n} ausgewählte Einträge entfernen`,
+    removeSelectedNone: 'Erst Einträge auswählen',
     removeManyConfirm: (n: number) =>
       `${n} Einträge aus der Mediathek entfernen? Die Dateien bleiben gespeichert.`,
     removeConfirm: (name: string) => `„${name}" aus der Mediathek entfernen?`,
@@ -230,6 +232,8 @@ export const labels = {
     selectedCount: (n: number) => `${n} ausgewählt`,
     clearSelection: 'Auswahl aufheben',
     removeSelected: 'Ausgewählte entfernen',
+    removeSelectedTitle: (n: number) => `${n} ausgewählte Einträge entfernen`,
+    removeSelectedNone: 'Erst Einträge auswählen',
     removeManyConfirm: (n: number) =>
       `${n} Einträge aus der Mediathek entfernen? Die Dateien bleiben gespeichert.`,
     empty: 'Noch keine Textstücke. Füge zwei oder mehr ein, um sie zu vergleichen.',
