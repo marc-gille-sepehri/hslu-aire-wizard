@@ -77,7 +77,7 @@ export default function MediaRail() {
     <aside className="fixed left-0 top-1/2 z-40 hidden -translate-y-1/2 lg:block">
       <div className="flex items-stretch">
         {open && (
-          <div className="max-h-[70vh] w-72 overflow-y-auto rounded-r-xl border border-l-0 border-mist bg-white/95 p-3 shadow-lg backdrop-blur">
+          <div className="max-h-[calc(100vh-8rem)] w-72 overflow-y-auto rounded-r-xl border border-l-0 border-mist bg-white/95 p-3 shadow-lg backdrop-blur">
             <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-kicker text-gold">
               {t.title}
             </p>

@@ -26,7 +26,10 @@ export default function BlockPalette({
 
   return (
     <aside className="fixed right-4 top-1/2 z-40 hidden w-48 -translate-y-1/2 lg:block">
-      <div className="rounded-xl border border-mist bg-white/95 p-3 shadow-lg backdrop-blur">
+      {/* Bounded and scrollable: 18 block types are taller than a laptop
+          viewport, and a vertically centred rail then runs off the top of the
+          screen and disappears behind the header. */}
+      <div className="max-h-[calc(100vh-8rem)] overflow-y-auto rounded-xl border border-mist bg-white/95 p-3 shadow-lg backdrop-blur">
         <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-kicker text-gold">
           {t.paletteTitle}
         </p>
