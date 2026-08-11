@@ -3,10 +3,6 @@
 import { apiBaseUrl } from '../../config/configuration'
 import { getStoredToken } from '../auth/AuthContext'
 
-export interface ExcelSheetSerialized {
-  name: string
-  serialized: string
-}
 export interface CellsSheet {
   name: string
   text: string
@@ -48,8 +44,6 @@ export interface ExcelAnalysisSheet {
 export interface ExcelResult {
   filename: string
   markdown: string
-  /** @deprecated superseded by `cells` — 0-based numeric indices, no merges, no escaping. */
-  serialized: ExcelSheetSerialized[]
   analysis: ExcelAnalysisSheet[]
   cells?: CellsResult
 }
