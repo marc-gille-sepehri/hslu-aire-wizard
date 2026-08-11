@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build && cp dist/index.html dist/404.html",
     "preview": "vite preview",
-    "deploy": "npm run build && gh-pages -d dist"
+    "deploy": "VITE_CONFIG_MODE=production npm run build && gh-pages -d dist"
   },
   "dependencies": {
     "@types/cytoscape": "^3.21.9",
