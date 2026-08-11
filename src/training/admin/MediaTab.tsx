@@ -328,29 +328,6 @@ export default function MediaTab() {
         </button>
       </div>
 
-      {selected.size > 0 && (
-        <div className="flex items-center justify-between rounded-md border border-navy/20 bg-navy/5 px-3 py-2">
-          <span className="text-sm text-navy">{t.selectedCount(selected.size)}</span>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setSelected(new Set())}
-              className="rounded border border-mist bg-white px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-cream"
-            >
-              {t.clearSelection}
-            </button>
-            <button
-              type="button"
-              onClick={() => void removeSelected()}
-              className="flex items-center gap-1.5 rounded border border-red-300 bg-white px-2.5 py-1 text-xs font-semibold text-red-700 hover:bg-red-50"
-            >
-              <TrashIcon />
-              {t.removeSelected}
-            </button>
-          </div>
-        </div>
-      )}
-
       {loading ? (
         <p className="text-sm text-slate-500">{labels.loading}</p>
       ) : assets.length === 0 ? (
