@@ -71,6 +71,14 @@ const embeddingCompareArtifact = baseArtifact.extend({
   topK: z.number().min(1).max(10).optional(),
 })
 
+const agentTraceArtifact = baseArtifact.extend({
+  type: z.literal('agent_trace'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+  scenarioId: z.string().optional(),
+  showTechnical: z.boolean().optional(),
+})
+
 const reflectArtifact = baseArtifact.extend({
   type: z.literal('reflect'),
   prompt: z.string(),
@@ -157,6 +165,7 @@ const artifact = z.discriminatedUnion('type', [
   objectGraphArtifact,
   docConvertArtifact,
   embeddingCompareArtifact,
+  agentTraceArtifact,
 ])
 
 const section = z.object({

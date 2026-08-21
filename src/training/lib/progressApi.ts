@@ -58,6 +58,16 @@ export type Interaction =
   | { type: 'ontology'; explored: boolean }
   | { type: 'dataquery'; ran: boolean }
   | { type: 'graphview'; expanded: boolean }
+  // How many of the agent's would-be actions the learner waved through is the
+  // measurement this block exists for — the approval rate, not the run count.
+  | {
+      type: 'agenttrace'
+      runId: string
+      steps: number
+      intents: number
+      approved: number
+      stoppedBy: string | null
+    }
   // Additive: the server stores the interaction as-is, so older records simply lack
   // the newer fields. `paneViewed` answers whether learners actually open the cell
   // format or stay on the familiar Markdown — the question the block exists to ask.

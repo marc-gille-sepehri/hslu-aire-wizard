@@ -39,6 +39,7 @@ export type Artifact =
   | ObjectGraphArtifact
   | DocConvertArtifact
   | EmbeddingCompareArtifact
+  | AgentTraceArtifact
 
 export type BaseArtifact = {
   id: string
@@ -156,6 +157,21 @@ export type DocConvertArtifact = BaseArtifact & {
   outputFormat?: 'markdown' | 'cells' | 'both'
   /** How formula cells render in the cells output. Ignored unless cells are shown. */
   formulaMode?: 'silent' | 'error' | 'formula'
+}
+
+export type AgentTraceArtifact = BaseArtifact & {
+  type: 'agent_trace'
+  title?: string
+  /** Explanatory text shown above the widget. */
+  instructions?: string
+  /**
+   * The scenario this section works with. The block never swaps it silently —
+   * the workspace is shared across all modules, so replacing its contents is
+   * offered as a confirmable banner, never done on render.
+   */
+  scenarioId?: string
+  /** Start with the technical view open. Off by default, as the spec asks. */
+  showTechnical?: boolean
 }
 
 export type EmbeddingCompareArtifact = BaseArtifact & {

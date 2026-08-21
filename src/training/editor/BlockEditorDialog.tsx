@@ -12,6 +12,7 @@ import type {
   MCQArtifact,
   MediaArtifact,
   EmbeddingCompareArtifact,
+  AgentTraceArtifact,
   ObjectGraphArtifact,
   OntologyArtifact,
   ProseArtifact,
@@ -330,6 +331,51 @@ function ReflectEditor({ draft, set }: { draft: ReflectArtifact; set: (d: Reflec
 }
 
 /** Title, intro and the texts the block starts with (one per line). */
+function AgentTraceEditor({
+  draft,
+  set,
+}: {
+  draft: AgentTraceArtifact
+  set: (d: AgentTraceArtifact) => void
+}) {
+  return (
+    <div className="space-y-4">
+      <Field label={t.fTitle}>
+        <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
+      </Field>
+      <Field label={t.fInstructions}>
+        <textarea
+          className={inputCls}
+          rows={4}
+          value={draft.instructions ?? ''}
+          onChange={(e) => set({ ...draft, instructions: e.target.value || undefined })}
+        />
+      </Field>
+      <Field label="Szenario">
+        <TextInput
+          value={draft.scenarioId ?? ''}
+          onChange={(v) => set({ ...draft, scenarioId: v || undefined })}
+        />
+        <p className="mt-1 text-xs text-slate-400">
+          Kennung eines autorisierten Szenarios, z. B. <code>scn_offerten_v1</code>. Leer lassen,
+          wenn der Abschnitt mit dem arbeitet, was gerade geladen ist. Der Arbeitsbereich gehört der
+          teilnehmenden Person und ist über alle Module hinweg derselbe — der Block tauscht die
+          Inhalte deshalb nie von selbst, sondern bietet den Wechsel zum Bestätigen an.
+        </p>
+      </Field>
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={Boolean(draft.showTechnical)}
+          onChange={(e) => set({ ...draft, showTechnical: e.target.checked || undefined })}
+          className="h-3.5 w-3.5 accent-navy"
+        />
+        <span className="text-sm text-slate-700">Technische Ansicht von Anfang an offen</span>
+      </label>
+    </div>
+  )
+}
+
 function EmbeddingCompareEditor({
   draft,
   set,
@@ -749,6 +795,8 @@ export default function BlockEditorDialog({
         return <DocConvertEditor draft={draft} set={setDraft} />
       case 'embedding_compare':
         return <EmbeddingCompareEditor draft={draft} set={setDraft} />
+      case 'agent_trace':
+        return <AgentTraceEditor draft={draft} set={setDraft} />
       default:
         return null
     }

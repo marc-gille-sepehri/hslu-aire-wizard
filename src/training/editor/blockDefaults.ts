@@ -29,6 +29,7 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: 'object_graph', label: 'Objekt-Graph', icon: '🕸️', hint: 'Datenraum als Graph erkunden' },
   { type: 'doc_convert', label: 'Dokument → Markdown', icon: '📄', hint: 'PDF/PPT/Excel nach Markdown konvertieren' },
   { type: 'embedding_compare', label: 'Embeddings vergleichen', icon: '📐', hint: 'Textstücke als Punkte mit Distanzen' },
+  { type: 'agent_trace', label: 'Agenten-Simulator', icon: '🤖', hint: 'Agent läuft mit; würde-tun statt tun' },
 ]
 
 export const BLOCK_TYPE_LABEL: Record<BlockType, string> = BLOCK_TYPES.reduce(
@@ -131,6 +132,15 @@ export function makeNewArtifact(type: BlockType): Artifact {
         title: 'Datenraum als Graph',
         instructions: 'Klicke einen Knoten, um seine Nachbarn zu laden, und erkunde so das Beziehungsnetz.',
         startType: 'Site',
+      }
+    case 'agent_trace':
+      return {
+        id,
+        type,
+        title: 'Agent bei der Arbeit',
+        instructions:
+          'Der Agent läuft mit echten Werkzeugen. Alles, was er anschaut, führt er wirklich aus. Alles, was nach aussen wirken würde — eine Mail, eine Datei, ein Termin —, wird nur festgehalten und dir als Entwurf vorgelegt. Schau dir die Schritte an und entscheide, was du freigibst.',
+        showTechnical: false,
       }
     case 'embedding_compare':
       return {
