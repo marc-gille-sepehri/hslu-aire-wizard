@@ -137,6 +137,8 @@ function UsersTab() {
   const [busyEmail, setBusyEmail] = useState<string | null>(null)
   const [importFile, setImportFile] = useState<File | null>(null)
   const [dragging, setDragging] = useState(false)
+  /** Half-successes: the user exists, something after it did not work. */
+  const [notice, setNotice] = useState<string | null>(null)
 
   const load = async (includeDeactivated: boolean) => {
     setError(null)
@@ -185,6 +187,9 @@ function UsersTab() {
       </div>
 
       {error && <div className="mb-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
+      {notice && (
+        <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">{notice}</div>
+      )}
 
       {/*
         Drop zone for a participant list. It sits above the table rather than
@@ -302,9 +307,9 @@ function UsersTab() {
         <UserDialog
           user={dialog.user}
           onClose={() => setDialog(null)}
-          onSaved={() => {
+          onSaved={(msg) => {
             setDialog(null)
-            load(showDeactivated)
+            load(showDeactivated).then(() => setNotice(msg ?? null))
           }}
         />
       )}
@@ -337,13 +342,16 @@ function UserDialog({
 }: {
   user: AdminUser | null
   onClose: () => void
-  onSaved: () => void
+  /** `notice` carries a half-success worth showing after the dialog closes. */
+  onSaved: (notice?: string) => void
 }) {
   const isEdit = user !== null
   const [firstName, setFirstName] = useState(user?.firstName ?? '')
   const [lastName, setLastName] = useState(user?.lastName ?? '')
   const [email, setEmail] = useState(user?.email ?? '')
   const [roles, setRoles] = useState<string[]>(user?.roles ?? ['Member'])
+  // Only meaningful while creating: an existing user has long since been told.
+  const [invite, setInvite] = useState(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -424,15 +432,21 @@ function UserDialog({
           ...(emailChanged ? { email: email.trim() } : {}),
         })
       } else {
-        await createUser({
+        const result = await createUser({
           email: email.trim(),
           firstName: firstName.trim(),
           lastName: lastName.trim(),
           roles,
+          invite,
           ...(isNewCustomer
             ? { newCustomer: { name: custName.trim(), address: addr } }
             : { customerId: customerChoice }),
         })
+        // The account exists either way, so the dialog closes and the list
+        // reloads. Reporting the failed invitation as a dialog error would
+        // invite a second click, and that one would fail as a duplicate.
+        onSaved(result.inviteError)
+        return
       }
       onSaved()
     } catch (e) {
@@ -558,6 +572,21 @@ function UserDialog({
               ))}
             </div>
           </div>
+
+          {!isEdit && (
+            <label className="flex items-start gap-2 rounded-md border border-mist bg-cream/60 p-3 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                className="mt-0.5"
+                checked={invite}
+                onChange={(e) => setInvite(e.target.checked)}
+              />
+              <span>
+                {t.invite.checkbox}
+                <span className="mt-0.5 block text-xs text-slate-500">{t.invite.hint}</span>
+              </span>
+            </label>
+          )}
 
           {error && <p className="text-sm text-red-700">{error}</p>}
         </div>

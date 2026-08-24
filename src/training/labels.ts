@@ -300,6 +300,15 @@ export const labels = {
     tabUsers: 'Nutzer',
     showDeactivated: 'Deaktivierte anzeigen',
     createUser: 'Nutzer erstellen',
+    // The invitation carries no login code — see sendInvitationEmail on the
+    // server for why. The hint says so, because "Einladung" otherwise reads as
+    // "enthält meinen Zugang".
+    invite: {
+      checkbox: 'Einladung per E-Mail senden',
+      checkboxBulk: (n: number) =>
+        n === 1 ? 'Einladung per E-Mail senden (1 Person)' : `Einladung per E-Mail senden (${n} Personen)`,
+      hint: 'Enthält den Link zum Trainingsbereich und die Erklärung des Anmeldeverfahrens — keinen Code. Den fordert die Person selbst auf der Anmeldeseite an.',
+    },
     // Bulk import: drop a participant list, a model reads it, an admin checks it.
     import: {
       dropHint: 'Teilnehmerliste hierher ziehen (CSV, Excel) — Vorname, Nachname und E-Mail genügen',
@@ -315,6 +324,10 @@ export const labels = {
       customerForAll: 'Kunde für alle übernommenen Nutzer',
       rolesForAll: 'Rollen für alle übernommenen Nutzer',
       willCreate: (n: number) => `${n} ${n === 1 ? 'Nutzer wird' : 'Nutzer werden'} angelegt`,
+      willCreateAndInvite: (n: number) =>
+        `${n} ${n === 1 ? 'Nutzer wird angelegt und eingeladen' : 'Nutzer werden angelegt und eingeladen'}`,
+      invitedCount: (n: number) => `${n} ${n === 1 ? 'Einladung' : 'Einladungen'} versendet.`,
+      inviteFailed: (n: number) => `${n} ${n === 1 ? 'Einladung' : 'Einladungen'} nicht zustellbar`,
       confirm: 'Nutzer anlegen',
       writing: 'Wird angelegt …',
       createdCount: (n: number) => `${n} ${n === 1 ? 'Nutzer' : 'Nutzer'} angelegt.`,

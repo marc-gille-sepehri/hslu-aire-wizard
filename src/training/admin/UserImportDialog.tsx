@@ -74,6 +74,7 @@ export default function UserImportDialog({
     country: 'CH',
   })
   const [chosenRoles, setChosenRoles] = useState<string[]>(['Member'])
+  const [invite, setInvite] = useState(true)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && stage !== 'writing' && onClose()
@@ -142,6 +143,7 @@ export default function UserImportDialog({
           email: r.email.trim().toLowerCase(),
         })),
         roles: chosenRoles,
+        invite,
         ...(isNewCustomer
           ? { newCustomer: { name: custName.trim(), address: addr } }
           : { customerId: customerChoice }),
@@ -185,7 +187,7 @@ export default function UserImportDialog({
           {error && <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">{error}</p>}
 
           {stage === 'done' && results ? (
-            <ResultList results={results} />
+            <ResultList results={results} invited={invite} />
           ) : (
             stage !== 'reading' && (
               <>
@@ -321,6 +323,19 @@ export default function UserImportDialog({
                       </div>
                     )}
 
+                    <label className="flex items-start gap-2 rounded-md border border-mist bg-cream/60 p-3 text-sm text-slate-700">
+                      <input
+                        type="checkbox"
+                        className="mt-0.5"
+                        checked={invite}
+                        onChange={(e) => setInvite(e.target.checked)}
+                      />
+                      <span>
+                        {t.invite.checkboxBulk(selected.length)}
+                        <span className="mt-0.5 block text-xs text-slate-500">{t.invite.hint}</span>
+                      </span>
+                    </label>
+
                     <div>
                       <span className={labelCls}>{ti.rolesForAll}</span>
                       <div className="grid grid-cols-2 gap-x-4 gap-y-2">
@@ -349,7 +364,11 @@ export default function UserImportDialog({
 
         <div className="flex items-center justify-between gap-2 border-t border-mist px-6 py-4">
           <span className="text-xs text-slate-400">
-            {stage === 'review' && rows.length > 0 ? ti.willCreate(selected.length) : ''}
+            {stage === 'review' && rows.length > 0
+              ? invite
+                ? ti.willCreateAndInvite(selected.length)
+                : ti.willCreate(selected.length)
+              : ''}
           </span>
           <div className="flex gap-2">
             <button
@@ -378,12 +397,32 @@ export default function UserImportDialog({
   )
 }
 
-function ResultList({ results }: { results: ImportRowResult[] }) {
+function ResultList({ results, invited }: { results: ImportRowResult[]; invited: boolean }) {
   const created = results.filter((r) => r.status === 'created')
   const rest = results.filter((r) => r.status !== 'created')
+  // Accounts exist; a mail that bounced is a separate, smaller problem, and it
+  // is named separately so nobody assumes thirty people were notified.
+  const notInvited = invited ? created.filter((r) => !r.invited) : []
   return (
     <div className="space-y-3">
       <p className="text-sm font-semibold text-emerald-700">{ti.createdCount(created.length)}</p>
+      {invited && (
+        <p className="text-sm text-slate-700">
+          {ti.invitedCount(created.length - notInvited.length)}
+        </p>
+      )}
+      {notInvited.length > 0 && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 p-3">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-kicker text-amber-900">
+            {ti.inviteFailed(notInvited.length)}
+          </p>
+          <ul className="space-y-0.5 text-xs text-amber-900">
+            {notInvited.map((r) => (
+              <li key={r.email}>{r.email}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       {rest.length > 0 && (
         <div className="rounded-md border border-amber-200 bg-amber-50 p-3">
           <p className="mb-1 text-xs font-semibold uppercase tracking-kicker text-amber-900">

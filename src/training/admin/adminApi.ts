@@ -93,17 +93,25 @@ export interface CreateUserInput {
   customerId?: string
   /** … or a new customer to create and attach. */
   newCustomer?: { name: string; address: CustomerAddress }
+  /** Send the invitation mail (portal link + how the login works, no code). */
+  invite?: boolean
 }
 
-export async function createUser(input: CreateUserInput): Promise<AdminUser> {
+export interface CreateUserResult {
+  user: AdminUser
+  invited?: boolean
+  /** Set when the account exists but the invitation could not be delivered. */
+  inviteError?: string
+}
+
+export async function createUser(input: CreateUserInput): Promise<CreateUserResult> {
   const res = await fetch(`${apiBaseUrl}/admin/users`, {
     method: 'POST',
     headers: authHeaders(),
     body: JSON.stringify(input),
   })
   if (!res.ok) throw await parseError(res)
-  const body = await res.json()
-  return body.user as AdminUser
+  return (await res.json()) as CreateUserResult
 }
 
 // ── Bulk import ──────────────────────────────────────────────────────────────
@@ -142,17 +150,22 @@ export interface ImportInput {
   roles: string[]
   customerId?: string
   newCustomer?: { name: string; address: CustomerAddress }
+  /** Send each created user the invitation mail. */
+  invite?: boolean
 }
 
 export interface ImportRowResult {
   email: string
   status: 'created' | 'duplicate' | 'invalid'
   message?: string
+  /** Only set on created rows when an invitation was requested. */
+  invited?: boolean
 }
 
 export interface ImportResult {
   results: ImportRowResult[]
   created: number
+  invited?: number
   customerId: string
 }
 
