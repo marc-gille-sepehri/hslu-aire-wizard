@@ -106,6 +106,66 @@ export async function createUser(input: CreateUserInput): Promise<AdminUser> {
   return body.user as AdminUser
 }
 
+// ── Bulk import ──────────────────────────────────────────────────────────────
+
+export interface ExtractedUser {
+  firstName: string
+  lastName: string
+  email: string
+}
+
+export interface SkippedRow {
+  value: string
+  reason: string
+}
+
+export interface ParseResult {
+  users: ExtractedUser[]
+  /** Rows the server refused, each with a reason the dialog shows verbatim. */
+  skipped: SkippedRow[]
+  model: string
+}
+
+/** Reads the list out of the file's text. Writes nothing. */
+export async function parseUserImport(text: string): Promise<ParseResult> {
+  const res = await fetch(`${apiBaseUrl}/admin/users/import/parse`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ text }),
+  })
+  if (!res.ok) throw await parseError(res)
+  return (await res.json()) as ParseResult
+}
+
+export interface ImportInput {
+  users: ExtractedUser[]
+  roles: string[]
+  customerId?: string
+  newCustomer?: { name: string; address: CustomerAddress }
+}
+
+export interface ImportRowResult {
+  email: string
+  status: 'created' | 'duplicate' | 'invalid'
+  message?: string
+}
+
+export interface ImportResult {
+  results: ImportRowResult[]
+  created: number
+  customerId: string
+}
+
+export async function importUsers(input: ImportInput): Promise<ImportResult> {
+  const res = await fetch(`${apiBaseUrl}/admin/users/import`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  })
+  if (!res.ok) throw await parseError(res)
+  return (await res.json()) as ImportResult
+}
+
 export interface UpdateUserInput {
   firstName: string
   lastName: string

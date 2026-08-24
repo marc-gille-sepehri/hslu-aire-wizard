@@ -16,6 +16,7 @@ import {
   type CountryCode,
   type CustomerAddress,
 } from './adminApi'
+import UserImportDialog from './UserImportDialog'
 import CustomersTab from './CustomersTab'
 import OrdersTab from './OrdersTab'
 import InstancesTab from './InstancesTab'
@@ -134,6 +135,8 @@ function UsersTab() {
   // null = closed; { user: null } = create; { user } = edit.
   const [dialog, setDialog] = useState<{ user: AdminUser | null } | null>(null)
   const [busyEmail, setBusyEmail] = useState<string | null>(null)
+  const [importFile, setImportFile] = useState<File | null>(null)
+  const [dragging, setDragging] = useState(false)
 
   const load = async (includeDeactivated: boolean) => {
     setError(null)
@@ -182,6 +185,41 @@ function UsersTab() {
       </div>
 
       {error && <div className="mb-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
+
+      {/*
+        Drop zone for a participant list. It sits above the table rather than
+        behind a button because the whole point is that an administrator can
+        drag the file they already have open in Excel straight onto the page.
+      */}
+      <label
+        onDragOver={(e) => {
+          e.preventDefault()
+          setDragging(true)
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault()
+          setDragging(false)
+          const file = e.dataTransfer.files?.[0]
+          if (file) setImportFile(file)
+        }}
+        className={`mb-4 flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed px-4 py-6 text-center text-sm transition-colors ${
+          dragging ? 'border-navy bg-cream text-navy' : 'border-mist text-slate-500 hover:border-navy hover:text-navy'
+        }`}
+        style={{ borderStyle: 'dashed' }}
+      >
+        <input
+          type="file"
+          accept=".csv,.tsv,.txt,.md,.xlsx,.xls,.xlsm,.ods"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            if (file) setImportFile(file)
+            e.target.value = ''
+          }}
+        />
+        {dragging ? t.import.dropActive : t.import.dropHint}
+      </label>
 
       <div className="overflow-x-auto rounded-lg border border-mist">
         <table className="w-full text-left text-sm">
@@ -268,6 +306,15 @@ function UsersTab() {
             setDialog(null)
             load(showDeactivated)
           }}
+        />
+      )}
+
+      {importFile && (
+        <UserImportDialog
+          file={importFile}
+          roles={ROLES.map((value) => ({ value, label: roleLabel(value) }))}
+          onClose={() => setImportFile(null)}
+          onImported={() => load(showDeactivated)}
         />
       )}
     </div>
