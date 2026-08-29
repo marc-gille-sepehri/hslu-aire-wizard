@@ -57,6 +57,19 @@ export interface AppliedRule {
   verdict: 'honoured' | 'violated' | 'not_applicable' | 'unchecked'
 }
 
+/** Was tatsächlich an das Modell ging, zerlegt in seine Teile. */
+export interface PromptParts {
+  system: string
+  toolbox: string
+  guidance: string
+  request: string
+  /** Die vollständige Nutzernachricht, genau wie gesendet. */
+  user: string
+  /** Das erzwungene Antwortformat (JSON Schema der Werkzeugdefinition). */
+  outputSchema: string
+  sizes: { system: number; toolbox: number; guidance: number; request: number; outputSchema: number }
+}
+
 export interface Plan {
   summary: string
   steps: PlanStep[]
@@ -67,6 +80,7 @@ export interface Plan {
   rules: AppliedRule[]
   waves: number
   model: string
+  prompt: PromptParts
 }
 
 export interface Limits {
@@ -115,6 +129,10 @@ export const resetToolbox = () => call<ToolboxResponse>('/reset', { method: 'POS
 
 export const requestPlan = (request: string) =>
   call<{ plan: Plan }>('/plan', { method: 'POST', body: JSON.stringify({ request }) })
+
+/** Derselbe Prompt, ohne Modellaufruf — zum Nachsehen, bevor geplant wird. */
+export const previewPrompt = (request: string) =>
+  call<{ prompt: PromptParts }>('/prompt', { method: 'POST', body: JSON.stringify({ request }) })
 
 /** Neues, leeres Werkzeug für den Editor. Die Id vergibt der Server endgültig. */
 export function blankTool(): ToolSpec {

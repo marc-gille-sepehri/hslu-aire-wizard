@@ -16,15 +16,18 @@ import { useRecordInteraction } from '../../state/ProgressContext'
 import { useLearner } from '../../state/LearnerStateContext'
 import {
   fetchToolbox,
+  previewPrompt,
   requestPlan,
   resetToolbox,
   saveToolbox,
   type Limits,
   type Plan,
+  type PromptParts,
   type ToolSpec,
 } from '../../orchestration/orchestrationApi'
 import ToolboxEditor from '../../orchestration/ToolboxEditor'
 import PlanView from '../../orchestration/PlanView'
+import PromptView from '../../orchestration/PromptView'
 import ExpandableBlock from '../ExpandableBlock'
 
 const DEFAULT_LIMITS: Limits = {
@@ -44,6 +47,8 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
   const [dirty, setDirty] = useState(false)
   const [request, setRequest] = useState(artifact.defaultRequest ?? '')
   const [plan, setPlan] = useState<Plan | null>(null)
+  /** Vorschau des Prompts, solange noch kein Plan da ist. */
+  const [preview, setPreview] = useState<PromptParts | null>(null)
   const [busy, setBusy] = useState(false)
   const [planning, setPlanning] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -249,13 +254,39 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
             )}
           </div>
 
+          {/*
+            Der Prompt steht ÜBER dem Plan, nicht darunter: er ist die Ursache,
+            und ein Plan, der aus dem Nichts erscheint, sieht nach Magie aus.
+          */}
+          {(plan?.prompt ?? preview) && (
+            <PromptView
+              prompt={(plan?.prompt ?? preview)!}
+              title={plan ? 'Was an das Modell ging' : 'Was an das Modell gehen würde'}
+            />
+          )}
+
           {plan ? (
             <PlanView plan={plan} />
           ) : (
-            <p className="rounded-md border border-mist bg-white px-4 py-6 font-sans text-sm text-slate-400">
-              Noch kein Plan. Der Server schickt deine Werkzeuge samt Parameterbeschreibungen
-              zusammen mit der Anfrage an das Modell und lässt einen Ablauf entwerfen.
-            </p>
+            <div className="rounded-md border border-mist bg-white px-4 py-6">
+              <p className="font-sans text-sm text-slate-400">
+                Noch kein Plan. Der Server schickt deine Werkzeuge samt Parameterbeschreibungen
+                zusammen mit der Anfrage an das Modell und lässt einen Ablauf entwerfen.
+              </p>
+              <button
+                type="button"
+                disabled={busy || planning}
+                onClick={() =>
+                  guard(async () => {
+                    const { prompt } = await previewPrompt(request)
+                    setPreview(prompt)
+                  })
+                }
+                className="mt-2 font-sans text-xs text-navy hover:underline disabled:text-slate-300"
+              >
+                Prompt vorab ansehen (ohne Modellaufruf)
+              </button>
+            </div>
           )}
         </div>
       </div>
