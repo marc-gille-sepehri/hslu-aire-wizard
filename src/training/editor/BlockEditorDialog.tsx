@@ -13,6 +13,7 @@ import type {
   MediaArtifact,
   EmbeddingCompareArtifact,
   AgentTraceArtifact,
+  OrchestrationArtifact,
   ObjectGraphArtifact,
   OntologyArtifact,
   ProseArtifact,
@@ -331,6 +332,43 @@ function ReflectEditor({ draft, set }: { draft: ReflectArtifact; set: (d: Reflec
 }
 
 /** Title, intro and the texts the block starts with (one per line). */
+function OrchestrationEditor({
+  draft,
+  set,
+}: {
+  draft: OrchestrationArtifact
+  set: (d: OrchestrationArtifact) => void
+}) {
+  return (
+    <div className="space-y-4">
+      <Field label={t.fTitle}>
+        <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
+      </Field>
+      <Field label={t.fInstructions}>
+        <textarea
+          className={inputCls}
+          rows={4}
+          value={draft.instructions ?? ''}
+          onChange={(e) => set({ ...draft, instructions: e.target.value || undefined })}
+        />
+      </Field>
+      <Field label="Vorbelegte Anfrage">
+        <textarea
+          className={inputCls}
+          rows={3}
+          value={draft.defaultRequest ?? ''}
+          onChange={(e) => set({ ...draft, defaultRequest: e.target.value || undefined })}
+        />
+        <p className="mt-1 text-xs text-slate-400">
+          Steht beim Öffnen im Anfragefeld und ist überschreibbar. Der Werkzeugkasten lässt sich
+          hier nicht setzen: er gehört der teilnehmenden Person und ist über alle Module hinweg
+          derselbe.
+        </p>
+      </Field>
+    </div>
+  )
+}
+
 function AgentTraceEditor({
   draft,
   set,
@@ -797,6 +835,8 @@ export default function BlockEditorDialog({
         return <EmbeddingCompareEditor draft={draft} set={setDraft} />
       case 'agent_trace':
         return <AgentTraceEditor draft={draft} set={setDraft} />
+      case 'orchestration':
+        return <OrchestrationEditor draft={draft} set={setDraft} />
       default:
         return null
     }

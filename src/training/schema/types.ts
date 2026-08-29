@@ -40,6 +40,7 @@ export type Artifact =
   | DocConvertArtifact
   | EmbeddingCompareArtifact
   | AgentTraceArtifact
+  | OrchestrationArtifact
 
 export type BaseArtifact = {
   id: string
@@ -157,6 +158,19 @@ export type DocConvertArtifact = BaseArtifact & {
   outputFormat?: 'markdown' | 'cells' | 'both'
   /** How formula cells render in the cells output. Ignored unless cells are shown. */
   formulaMode?: 'silent' | 'error' | 'formula'
+}
+
+export type OrchestrationArtifact = BaseArtifact & {
+  type: 'orchestration'
+  title?: string
+  /** Explanatory text shown above the widget. */
+  instructions?: string
+  /**
+   * Anfrage, mit der das Feld vorbelegt ist. Der Werkzeugkasten selbst gehört
+   * der teilnehmenden Person und ist in jedem Modul derselbe — er lässt sich
+   * hier deshalb nicht setzen.
+   */
+  defaultRequest?: string
 }
 
 export type AgentTraceArtifact = BaseArtifact & {

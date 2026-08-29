@@ -30,6 +30,7 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: 'doc_convert', label: 'Dokument → Markdown', icon: '📄', hint: 'PDF/PPT/Excel nach Markdown konvertieren' },
   { type: 'embedding_compare', label: 'Embeddings vergleichen', icon: '📐', hint: 'Textstücke als Punkte mit Distanzen' },
   { type: 'agent_trace', label: 'Agenten-Simulator', icon: '🤖', hint: 'Agent läuft mit; würde-tun statt tun' },
+  { type: 'orchestration', label: 'Orchestrierung', icon: '🧩', hint: 'Werkzeuge beschreiben, Ablauf planen lassen' },
 ]
 
 export const BLOCK_TYPE_LABEL: Record<BlockType, string> = BLOCK_TYPES.reduce(
@@ -132,6 +133,16 @@ export function makeNewArtifact(type: BlockType): Artifact {
         title: 'Datenraum als Graph',
         instructions: 'Klicke einen Knoten, um seine Nachbarn zu laden, und erkunde so das Beziehungsnetz.',
         startType: 'Site',
+      }
+    case 'orchestration':
+      return {
+        id,
+        type,
+        title: 'Agentische Orchestrierung',
+        instructions:
+          'Beschreibe Werkzeuge — Name, Zweck, Parameter. Stelle dann eine Aufgabe. Das Modell bekommt nur diese Beschreibungen und entwirft daraus einen Ablauf: welche Schritte, in welcher Reihenfolge, woher jedes Argument kommt. Ausgeführt wird nichts; hinter den Werkzeugen liegt nichts als ihre Beschreibung.',
+        defaultRequest:
+          'Prüfe für die Liegenschaft Sonnenrain 12, ob bei den laufenden Mietverträgen eine Anpassung fällig ist, und bereite die Mitteilung an die Mietenden vor.',
       }
     case 'agent_trace':
       return {

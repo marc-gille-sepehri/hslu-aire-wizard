@@ -16,6 +16,7 @@ import ObjectGraph from './ObjectGraph'
 import DocConvert from './DocConvert'
 import EmbeddingCompare from './EmbeddingCompare'
 import AgentTrace from './AgentTrace'
+import Orchestration from './Orchestration'
 
 type ArtifactComponent<T extends Artifact = Artifact> = ComponentType<{ artifact: T }>
 
@@ -36,4 +37,5 @@ export const artifactComponents: Record<Artifact['type'], ArtifactComponent<any>
   doc_convert: DocConvert,
   embedding_compare: EmbeddingCompare,
   agent_trace: AgentTrace,
+  orchestration: Orchestration,
 }

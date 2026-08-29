@@ -79,6 +79,13 @@ const agentTraceArtifact = baseArtifact.extend({
   showTechnical: z.boolean().optional(),
 })
 
+const orchestrationArtifact = baseArtifact.extend({
+  type: z.literal('orchestration'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+  defaultRequest: z.string().optional(),
+})
+
 const reflectArtifact = baseArtifact.extend({
   type: z.literal('reflect'),
   prompt: z.string(),
@@ -166,6 +173,7 @@ const artifact = z.discriminatedUnion('type', [
   docConvertArtifact,
   embeddingCompareArtifact,
   agentTraceArtifact,
+  orchestrationArtifact,
 ])
 
 const section = z.object({

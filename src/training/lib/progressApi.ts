@@ -58,6 +58,17 @@ export type Interaction =
   | { type: 'ontology'; explored: boolean }
   | { type: 'dataquery'; ran: boolean }
   | { type: 'graphview'; expanded: boolean }
+  // Wie viele Schritte in wie vielen Stufen — und ob das Modell Werkzeuge
+  // erfinden musste. Letzteres sagt mehr über den Werkzeugkasten als über das
+  // Modell, und genau darum geht es in dieser Übung.
+  | {
+      type: 'orchestration'
+      tools: number
+      steps: number
+      waves: number
+      rejected: number
+      gaps: number
+    }
   // How many of the agent's would-be actions the learner waved through is the
   // measurement this block exists for — the approval rate, not the run count.
   | {
