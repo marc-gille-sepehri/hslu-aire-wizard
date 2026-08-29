@@ -22,6 +22,18 @@ const SOURCE_CLS: Record<PlanArgument['source'], string> = {
   unknown: 'bg-amber-100 text-amber-900',
 }
 
+/**
+ * `unchecked` bekommt bewusst kein Häkchen. Das Modell sagt, es habe die Regel
+ * befolgt — nachgerechnet ist das nicht, und eine unbelegte Behauptung als
+ * erfüllt darzustellen wäre genau der Fehler, den dieser Baustein vorführt.
+ */
+const VERDICT: Record<Plan['rules'][number]['verdict'], { icon: string; label: string; cls: string }> = {
+  honoured: { icon: '✓', label: 'eingehalten (nachgerechnet)', cls: 'text-emerald-700' },
+  violated: { icon: '✗', label: 'nicht eingehalten', cls: 'text-red-700' },
+  not_applicable: { icon: '–', label: 'nicht anwendbar — Werkzeug kommt im Plan nicht vor', cls: 'text-slate-500' },
+  unchecked: { icon: '·', label: 'nicht nachprüfbar — nur die Aussage des Modells', cls: 'text-slate-500' },
+}
+
 export default function PlanView({ plan }: { plan: Plan }) {
   const waves: PlanStep[][] = []
   for (const step of plan.steps) {
@@ -119,6 +131,38 @@ export default function PlanView({ plan }: { plan: Plan }) {
           </div>
         </div>
       ))}
+
+      {plan.rules.length > 0 && (
+        <div className="rounded-md border border-mist bg-white px-3 py-2.5">
+          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">
+            Vorgaben
+          </p>
+          <ul className="mt-1.5 space-y-1.5">
+            {plan.rules.map((rule, i) => {
+              const mark = VERDICT[rule.verdict]
+              return (
+                <li key={i} className="flex items-start gap-2">
+                  <span className={`shrink-0 pt-0.5 text-xs ${mark.cls}`} aria-hidden>
+                    {mark.icon}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-sans text-sm text-slate-700">{rule.rule}</span>
+                    <span className="block font-sans text-xs text-slate-500">{rule.how}</span>
+                    <span className={`block font-sans text-xs ${mark.cls}`}>
+                      {mark.label}
+                      {rule.before && rule.after ? ` — ${rule.before} vor ${rule.after}` : ''}
+                    </span>
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+          <p className="mt-2 font-sans text-xs text-slate-400">
+            Geprüft wird gegen die Stufen, nicht gegen die Schrittnummern: zwei Schritte derselben
+            Stufe laufen nebeneinander. Eine Reihenfolge entsteht nur über eine Abhängigkeit.
+          </p>
+        </div>
+      )}
 
       {plan.rejected.length > 0 && (
         <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2.5" style={{ borderStyle: 'solid' }}>

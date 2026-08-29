@@ -25,14 +25,21 @@ import {
 } from '../../orchestration/orchestrationApi'
 import ToolboxEditor from '../../orchestration/ToolboxEditor'
 import PlanView from '../../orchestration/PlanView'
+import ExpandableBlock from '../ExpandableBlock'
 
-const DEFAULT_LIMITS: Limits = { maxTools: 20, maxParams: 10, maxPromptChars: 2000 }
+const DEFAULT_LIMITS: Limits = {
+  maxTools: 20,
+  maxParams: 10,
+  maxPromptChars: 2000,
+  maxGuidanceChars: 2000,
+}
 
 export default function Orchestration({ artifact }: { artifact: OrchestrationArtifact }) {
   const record = useRecordInteraction()
   const { markComplete } = useLearner()
 
   const [tools, setTools] = useState<ToolSpec[] | null>(null)
+  const [guidance, setGuidance] = useState('')
   const [limits, setLimits] = useState<Limits>(DEFAULT_LIMITS)
   const [dirty, setDirty] = useState(false)
   const [request, setRequest] = useState(artifact.defaultRequest ?? '')
@@ -46,6 +53,7 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
     fetchToolbox()
       .then((box) => {
         setTools(box.tools)
+        setGuidance(box.guidance ?? '')
         if (box.limits) setLimits(box.limits)
       })
       .catch((e) => setError((e as Error).message))
@@ -65,8 +73,9 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
 
   const persist = () =>
     guard(async () => {
-      const box = await saveToolbox(tools ?? [])
+      const box = await saveToolbox(tools ?? [], guidance)
       setTools(box.tools)
+      setGuidance(box.guidance ?? '')
       setDirty(false)
     })
 
@@ -78,8 +87,9 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
       // erst sichern, sonst plant das Widget gegen etwas, das der Server nicht
       // kennt — und der Lernende sucht den Fehler im Modell.
       if (dirty) {
-        const box = await saveToolbox(tools ?? [])
+        const box = await saveToolbox(tools ?? [], guidance)
         setTools(box.tools)
+        setGuidance(box.guidance ?? '')
         setDirty(false)
       }
       const { plan: result } = await requestPlan(request)
@@ -106,6 +116,7 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
   const tooLong = request.length > limits.maxPromptChars
 
   return (
+    <ExpandableBlock label={artifact.title || 'Agentische Orchestrierung'}>
     <div className="space-y-4">
       {artifact.title && <h3 className="font-display text-lg font-bold text-navy">{artifact.title}</h3>}
       {artifact.instructions && (
@@ -144,6 +155,38 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
             />
           )}
 
+          {/*
+            Vorgaben: das arme-Leute-Skill. Kein eigenes Format, nur Text, der
+            vor die Anfrage in den Prompt wandert und für jede Anfrage gilt.
+            Reihenfolgeregeln darin rechnet der Server hinterher gegen den Plan
+            nach — sonst behauptet das Modell die Einhaltung und niemand prüft.
+          */}
+          <div className="pt-2">
+            <div className="mb-1 flex items-baseline justify-between gap-2">
+              <span className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">
+                Vorgaben
+              </span>
+              <span className="font-sans text-xs text-slate-400">
+                {guidance.length} / {limits.maxGuidanceChars}
+              </span>
+            </div>
+            <textarea
+              rows={3}
+              value={guidance}
+              maxLength={limits.maxGuidanceChars}
+              onChange={(e) => {
+                setGuidance(e.target.value)
+                setDirty(true)
+              }}
+              placeholder={'Eine Regel pro Zeile, z. B.\nPrüfe den Referenzzinssatz, bevor du eine Mitteilung entwirfst.'}
+              className="w-full rounded-md border border-slate-300 px-2 py-1.5 font-sans text-sm text-slate-800 focus:border-slate-500 focus:outline-none"
+            />
+            <p className="mt-1 font-sans text-xs text-slate-500">
+              Gilt für jede Anfrage. Regeln zur Reihenfolge prüft der Server anschliessend gegen den
+              Plan nach und zeigt unter dem Plan, ob sie eingehalten wurden.
+            </p>
+          </div>
+
           <div className="flex flex-wrap items-center gap-3 pt-1">
             <button
               type="button"
@@ -161,6 +204,7 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
                 void guard(async () => {
                   const box = await resetToolbox()
                   setTools(box.tools)
+                  setGuidance(box.guidance ?? '')
                   setDirty(false)
                 })
               }}
@@ -216,5 +260,6 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
         </div>
       </div>
     </div>
+    </ExpandableBlock>
   )
 }

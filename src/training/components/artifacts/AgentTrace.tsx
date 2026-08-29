@@ -29,6 +29,7 @@ import { useAgentWorkspace } from '../../agent/useAgentWorkspace'
 import SourcePane, { focusFromInfluence, type Focus } from '../../agent/SourcePane'
 import IntentCard from '../../agent/IntentCard'
 import AgentForm from '../../agent/AgentForm'
+import ExpandableBlock from '../ExpandableBlock'
 
 /** Sehen, überlegen, würde tun. A non-technical learner needs no other model. */
 const VERB_ICON: Record<RunStep['verb'], string> = {
@@ -128,6 +129,7 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
       : undefined
 
   return (
+    <ExpandableBlock label={artifact.title || 'Agent bei der Arbeit'}>
     <div className="space-y-4">
       {artifact.title && <h3 className="font-display text-lg font-bold text-navy">{artifact.title}</h3>}
       {artifact.instructions && (
@@ -418,6 +420,7 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
         />
       )}
     </div>
+    </ExpandableBlock>
   )
 }
 

@@ -44,6 +44,19 @@ export interface PlanStep {
   wave: number
 }
 
+export interface AppliedRule {
+  rule: string
+  how: string
+  before?: string
+  after?: string
+  /**
+   * `honoured`/`violated` sind vom Server gegen den Plan nachgerechnet,
+   * `unchecked` heisst: keine Reihenfolgeregel, also nur die Aussage des
+   * Modells — und die wird nicht als erfüllt dargestellt.
+   */
+  verdict: 'honoured' | 'violated' | 'not_applicable' | 'unchecked'
+}
+
 export interface Plan {
   summary: string
   steps: PlanStep[]
@@ -51,6 +64,7 @@ export interface Plan {
   gaps: { need: string; why: string }[]
   assumptions: string[]
   missingRequired: { step: number; tool: string; params: string[] }[]
+  rules: AppliedRule[]
   waves: number
   model: string
 }
@@ -59,10 +73,12 @@ export interface Limits {
   maxTools: number
   maxParams: number
   maxPromptChars: number
+  maxGuidanceChars: number
 }
 
 export interface ToolboxResponse {
   tools: ToolSpec[]
+  guidance: string
   updatedAt: string
   limits?: Limits
 }
@@ -92,8 +108,8 @@ async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 export const fetchToolbox = () => call<ToolboxResponse>('/toolbox')
 
-export const saveToolbox = (tools: ToolSpec[]) =>
-  call<ToolboxResponse>('/toolbox', { method: 'PUT', body: JSON.stringify({ tools }) })
+export const saveToolbox = (tools: ToolSpec[], guidance: string) =>
+  call<ToolboxResponse>('/toolbox', { method: 'PUT', body: JSON.stringify({ tools, guidance }) })
 
 export const resetToolbox = () => call<ToolboxResponse>('/reset', { method: 'POST' })
 
