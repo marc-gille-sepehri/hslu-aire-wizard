@@ -96,6 +96,17 @@ export const labels = {
     close: 'Schliessen',
   },
 
+  // Dauerhafte Ablehnung durch den Server — ein Defekt der Plattform, kein
+  // Bedienfehler. Der Text sagt beides: dass es nicht an der Person liegt, und
+  // dass ihr Fortschritt in diesem Block nicht gespeichert wurde.
+  saveError: {
+    title: 'Fortschritt nicht gespeichert',
+    body:
+      'Dieser Baustein konnte auf dem Server nicht gespeichert werden. Das liegt nicht an Ihrer Eingabe — Sie können weiterarbeiten, aber dieser Baustein zählt vorerst nicht als erledigt. Bitte melden Sie es Ihrer Kursleitung.',
+    detail: (artifactId: string, code: string) => `Baustein ${artifactId} · ${code}`,
+    dismiss: 'Ausblenden',
+  },
+
   // LLM prompt block
   llm: {
     title: 'Prompt ausprobieren',

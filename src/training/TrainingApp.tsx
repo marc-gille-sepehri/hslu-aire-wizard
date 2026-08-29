@@ -8,6 +8,7 @@ import SchemaError from './components/SchemaError'
 import ModuleView from './components/ModuleView'
 import Catalog from './components/Catalog'
 import SeatErrorDialog from './components/SeatErrorDialog'
+import SaveErrorBanner from './components/SaveErrorBanner'
 import { ProgressProvider } from './state/ProgressContext'
 import { useAuth } from './auth/AuthContext'
 import LoginGate from './auth/LoginGate'
@@ -214,6 +215,7 @@ function TrainingContent({ courseIdOverride, moduleIdOverride, sectionIdOverride
           </div>
           {view}
           <SeatErrorDialog />
+          <SaveErrorBanner />
         </ProgressProvider>
       ) : (
         view

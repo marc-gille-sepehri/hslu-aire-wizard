@@ -1,5 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { fetchUserProgress, recordInteraction, SeatError, type Interaction } from '../lib/progressApi'
+import {
+  fetchUserProgress,
+  recordInteraction,
+  ProgressRejectedError,
+  SeatError,
+  type Interaction,
+} from '../lib/progressApi'
 import { useViewAs } from './ViewAsContext'
 
 interface ProgressContextValue {
@@ -10,6 +16,13 @@ interface ProgressContextValue {
   /** Set when the seat gate refuses (no order / no seats). */
   seatError: SeatError | null
   dismissSeatError: () => void
+  /**
+   * Set when the server refused an interaction outright — a platform defect,
+   * not a hiccup. Kept separate from `seatError` because the remedy is
+   * different: a seat problem is the learner's organisation, this one is ours.
+   */
+  saveError: { artifactId: string; message: string; code?: string } | null
+  dismissSaveError: () => void
   /** Server-saved interactions for this module, keyed by artifact id. */
   saved: Record<string, unknown>
   /** True once the server progress has been fetched (blocks may restore then). */
@@ -37,6 +50,7 @@ export function ProgressProvider({
   const { viewAs } = useViewAs()
   const viewAsEmail = viewAs?.email ?? null
   const [seatError, setSeatError] = useState<SeatError | null>(null)
+  const [saveError, setSaveError] = useState<ProgressContextValue['saveError']>(null)
   const [saved, setSaved] = useState<Record<string, unknown>>({})
   const [savedLoaded, setSavedLoaded] = useState(false)
 
@@ -71,8 +85,18 @@ export function ProgressProvider({
       void recordInteraction({ courseId, moduleId, artifactId, interaction }).catch((e) => {
         if (e instanceof SeatError) {
           setSeatError(e)
+        } else if (e instanceof ProgressRejectedError) {
+          // Dauerhaft abgelehnt: erneutes Versuchen ändert nichts, und die
+          // Person verliert genau die Arbeit, die sie gerade gemacht hat. Das
+          // muss sichtbar sein — nicht als Konsolenzeile, die niemand liest.
+          console.error(
+            `[training] progress rejected for ${artifactId} (${e.code ?? e.status}):`,
+            e.message,
+            interaction,
+          )
+          setSaveError({ artifactId, message: e.message, code: e.code })
         } else {
-          // Best-effort: never block the learner on a transient save failure.
+          // Vorübergehend (offline, 5xx): niemanden damit aufhalten.
           console.warn('[training] progress record failed:', (e as Error).message)
         }
       })
@@ -81,8 +105,18 @@ export function ProgressProvider({
   )
 
   const value = useMemo<ProgressContextValue>(
-    () => ({ courseId, moduleId, record, seatError, dismissSeatError: () => setSeatError(null), saved, savedLoaded }),
-    [courseId, moduleId, record, seatError, saved, savedLoaded],
+    () => ({
+      courseId,
+      moduleId,
+      record,
+      seatError,
+      dismissSeatError: () => setSeatError(null),
+      saveError,
+      dismissSaveError: () => setSaveError(null),
+      saved,
+      savedLoaded,
+    }),
+    [courseId, moduleId, record, seatError, saveError, saved, savedLoaded],
   )
 
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>

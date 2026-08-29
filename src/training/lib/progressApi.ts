@@ -154,9 +154,31 @@ export interface RecordResult {
 }
 
 /**
+ * Der Server hat die Interaktion abgelehnt — nicht "gerade nicht erreichbar",
+ * sondern "so nicht, auch beim zehnten Versuch nicht".
+ *
+ * Der Unterschied ist der Grund, warum es diese Klasse gibt. Eine wacklige
+ * Verbindung darf niemanden stören; ein Block, dessen Interaktionsart der
+ * Server nicht kennt, ist ein Defekt der Plattform, und die teilnehmende Person
+ * verliert dabei genau den Fortschritt, den sie gerade erarbeitet hat. Das
+ * lautlos wegzuloggen hat bei agent_trace eine Woche gekostet.
+ */
+export class ProgressRejectedError extends Error {
+  status: number
+  code?: string
+  constructor(status: number, message: string, code?: string) {
+    super(message)
+    this.name = 'ProgressRejectedError'
+    this.status = status
+    this.code = code
+  }
+}
+
+/**
  * Record one interactive-block input. Throws `SeatError` on 409 (no order / no
- * seats) so the caller can show the access dialog; other failures throw a plain
- * Error.
+ * seats) so the caller can show the access dialog, `ProgressRejectedError` on
+ * any other 4xx (permanent — retrying will not help), and a plain Error for
+ * everything else (transient: offline, 5xx, gateway).
  */
 export async function recordInteraction(input: RecordInput): Promise<RecordResult> {
   const res = await fetch(`${apiBaseUrl}/training/progress`, {
@@ -175,6 +197,20 @@ export async function recordInteraction(input: RecordInput): Promise<RecordResul
       // ignore
     }
     throw new SeatError(code, message)
+  }
+  // 401 bleibt draussen: ein abgelaufenes Token ist kein Defekt des Blocks,
+  // sondern führt ohnehin zurück auf die Anmeldung.
+  if (!res.ok && res.status >= 400 && res.status < 500 && res.status !== 401) {
+    let code: string | undefined
+    let message = ''
+    try {
+      const body = await res.json()
+      code = typeof body?.code === 'string' ? body.code : undefined
+      message = body?.error ?? ''
+    } catch {
+      // kein JSON-Body
+    }
+    throw new ProgressRejectedError(res.status, message || `Abgelehnt (${res.status})`, code)
   }
   if (!res.ok) throw new Error(await errorMessage(res))
   return res.json()
