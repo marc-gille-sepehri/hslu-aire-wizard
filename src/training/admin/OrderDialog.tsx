@@ -47,11 +47,15 @@ export default function OrderDialog({
   onClose: () => void
   onCreated: () => void
 }) {
-  const editing = Boolean(order)
+  // An der Id festgemacht, nicht am blossen Vorhandensein des Objekts: ein
+  // leeres Objekt darf die Auswahl nicht sperren.
+  const editing = Boolean(order?.id)
 
-  const [customers, setCustomers] = useState<CustomerWithUsers[]>([])
+  const [customers, setCustomers] = useState<CustomerWithUsers[] | null>(null)
   const [customerId, setCustomerId] = useState(order?.customerId ?? '')
-  const [courses, setCourses] = useState<CourseWithModules[]>([])
+  const [courses, setCourses] = useState<CourseWithModules[] | null>(null)
+  /** Warum eine der beiden Listen leer ist — Fehler oder wirklich leer. */
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [courseId, setCourseId] = useState(order?.courseId ?? '')
   const [seats, setSeats] = useState(String(order?.seats ?? 1))
   const [named, setNamed] = useState<string[]>(order?.namedUsers ?? [])
@@ -69,23 +73,32 @@ export default function OrderDialog({
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
+  // Fehler werden NICHT verschluckt. Ein `.catch(() => setCustomers([]))` macht
+  // aus "die Anfrage ist fehlgeschlagen" ein "es gibt keine Kunden" — und dann
+  // sucht man den Fehler in den Stammdaten statt in der Verbindung.
   useEffect(() => {
     listCustomersWithUsers()
       .then((list) => {
         setCustomers(list)
         if (!editing && list.length > 0) setCustomerId((prev) => prev || list[0].id)
       })
-      .catch(() => setCustomers([]))
+      .catch((e) => {
+        setCustomers([])
+        setLoadError((e as Error).message || t.loadFailed)
+      })
     listCourses()
       .then((list) => {
         setCourses(list)
         if (!editing && list.length > 0) setCourseId((prev) => prev || list[0].id)
       })
-      .catch(() => setCourses([]))
+      .catch((e) => {
+        setCourses([])
+        setLoadError((e as Error).message || t.loadFailed)
+      })
   }, [editing])
 
   const seatsNum = Number(seats)
-  const customer = customers.find((c) => c.id === customerId)
+  const customer = (customers ?? []).find((c) => c.id === customerId)
   // Nur aktive Nutzer des bestellenden Kunden — ein Platz gehört diesem Kunden.
   const candidates = useMemo(
     () => (customer?.users ?? []).filter((u) => !u.deactivated),
@@ -165,7 +178,9 @@ export default function OrderDialog({
         <div className="space-y-4 px-6 py-5">
           <label className="block">
             <span className={labelCls}>{t.fCourse}</span>
-            {courses.length === 0 ? (
+            {courses === null ? (
+              <p className="text-sm text-slate-400">{t.loading}</p>
+            ) : courses.length === 0 ? (
               <p className="text-sm text-amber-700">{t.noCoursesForOrder}</p>
             ) : (
               <select
@@ -182,7 +197,9 @@ export default function OrderDialog({
           </label>
           <label className="block">
             <span className={labelCls}>{t.fCustomer}</span>
-            {customers.length === 0 ? (
+            {customers === null ? (
+              <p className="text-sm text-slate-400">{t.loading}</p>
+            ) : customers.length === 0 ? (
               <p className="text-sm text-amber-700">{t.noCustomers}</p>
             ) : (
               <select
@@ -192,7 +209,9 @@ export default function OrderDialog({
                 onChange={(e) => setCustomerId(e.target.value)}
               >
                 {customers.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
                 ))}
               </select>
             )}
@@ -224,7 +243,14 @@ export default function OrderDialog({
             </div>
             <p className="mb-2 text-xs text-slate-500">{t.namedHint}</p>
 
-            {candidates.length === 0 ? (
+            {customers === null ? (
+              <p className="text-sm text-slate-400">{t.loading}</p>
+            ) : !customer ? (
+              // Der ausgewählte Kunde steckt nicht in der geladenen Liste. Das
+              // ist etwas anderes als "hat keine Nutzer" und muss anders heissen,
+              // sonst sucht man den Fehler bei den Nutzern.
+              <p className="text-sm text-amber-700">{t.customerNotLoaded}</p>
+            ) : candidates.length === 0 ? (
               <p className="text-sm text-slate-400">{t.noUsersForCustomer}</p>
             ) : (
               <div className="max-h-48 overflow-auto rounded-md border border-mist">
@@ -283,6 +309,11 @@ export default function OrderDialog({
           </div>
           <p className="-mt-2 text-xs text-slate-400">{t.datesHint}</p>
 
+          {loadError && (
+            <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">
+              {t.loadFailedWith(loadError)}
+            </p>
+          )}
           {error && <p className="text-sm text-red-700">{error}</p>}
         </div>
 

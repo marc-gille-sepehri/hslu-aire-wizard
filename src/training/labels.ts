@@ -530,15 +530,24 @@ export const labels = {
     save: 'Speichern',
     saving: 'Wird gespeichert …',
     lockedHint: 'Kunde und Kurs lassen sich nicht ändern — das wäre eine andere Bestellung.',
+    // "Durchführung" ist in diesem System der begleitet gehaltene Kurs. Für eine
+    // Person auf einem Platz heisst es Teilnahme — das eine mit dem anderen zu
+    // benennen verwechselt zwei Dinge, die nebeneinander existieren.
     fNamedUsers: 'Namentlich gebundene Plätze',
     namedHint:
-      'Diese Personen können den Kurs jederzeit durchführen, auch ausserhalb des Zeitraums. Ihr Platz ist reserviert, ob sie ihn nutzen oder nicht. Die übrigen Plätze stehen allen Nutzern des Kunden offen — im Zeitraum.',
+      'Diese Personen können jederzeit am Kurs teilnehmen, auch ausserhalb des Zeitraums. Ihr Platz ist für sie reserviert, ob sie ihn nutzen oder nicht. Die übrigen Plätze stehen allen Nutzern des Kunden offen — innerhalb des Zeitraums.',
     namedCount: (named: number, seats: number) => `${named} von ${seats} Plätzen gebunden`,
     noUsersForCustomer: 'Für diesen Kunden sind keine aktiven Nutzer angelegt.',
+    customerNotLoaded:
+      'Der Kunde dieser Bestellung ist in der geladenen Kundenliste nicht enthalten. Bitte die Seite neu laden.',
+    loading: 'Wird geladen …',
+    loadFailed: 'Die Liste konnte nicht geladen werden.',
+    loadFailedWith: (msg: string) => `Kunden oder Kurse konnten nicht geladen werden: ${msg}`,
     tooManyNamed: (named: number, seats: number) =>
       `${named} Personen benannt, aber nur ${seats} ${seats === 1 ? 'Platz' : 'Plätze'} bestellt.`,
     raiseSeats: (n: number) => `Auf ${n} Plätze aufstocken`,
-    datesHint: 'Gilt für die nicht gebundenen Plätze. Benannte Personen sind davon nicht betroffen.',
+    datesHint:
+      'Der Zeitraum gilt für die nicht gebundenen Plätze. Namentlich gebundene Personen können unabhängig davon teilnehmen.',
     colNamed: 'Gebunden',
   },
 
