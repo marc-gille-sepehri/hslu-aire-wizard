@@ -7,6 +7,11 @@ import {
   mcpInitialize,
   mcpListTools,
   mcpCallTool,
+  mcpProbe,
+  mcpCallToolViaServer,
+  mcpDisconnect,
+  runOAuthPopup,
+  McpAuthRequiredError,
   type McpToolDef,
   type McpServerInfo,
   type McpCallResult,
@@ -31,7 +36,13 @@ export default function McpInspector({ artifact }: { artifact: McpInspectorArtif
     saved && (saved as { type?: string }).type === 'mcp' ? (saved as SavedMcp) : null
 
   const [url, setUrl] = useState(savedMcp?.url ?? artifact.defaultUrl ?? '')
-  const [status, setStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle')
+  const [status, setStatus] = useState<
+    'idle' | 'connecting' | 'connected' | 'error' | 'auth' | 'signing_in'
+  >('idle')
+  /** 'direct' = aus dem Browser, 'proxy' = über unseren Server (mit Anmeldung). */
+  const [mode, setMode] = useState<'direct' | 'proxy'>('direct')
+  const [authUrl, setAuthUrl] = useState<string | null>(null)
+  const [authenticated, setAuthenticated] = useState(false)
   const [serverInfo, setServerInfo] = useState<McpServerInfo | null>(null)
   const [tools, setTools] = useState<McpToolDef[]>([])
   const [connectError, setConnectError] = useState<string | null>(null)
@@ -59,26 +70,92 @@ export default function McpInspector({ artifact }: { artifact: McpInspectorArtif
     forceRender((n) => n + 1)
   }
 
+  /**
+   * Verbinden in zwei Anläufen.
+   *
+   * Erst direkt aus dem Browser — so tut es das Widget seit jeher, und bei
+   * unseren eigenen Servern sieht der Lernende dabei den echten Verkehr im
+   * Netzwerk-Panel. Scheitert das (bei fremden Servern praktisch immer, weil
+   * kein CORS-Header für unseren Origin kommt), übernimmt der Server. Der sieht
+   * dann auch ein 401 und kann die Anmeldung anstossen — der Browser bekäme an
+   * dieser Stelle nur einen undurchsichtigen CORS-Fehler.
+   */
   const connect = async (e?: FormEvent) => {
     e?.preventDefault()
     const u = url.trim()
     if (!u || status === 'connecting') return
     setStatus('connecting')
     setConnectError(null)
+    setAuthUrl(null)
     setTools([])
     setSelected(null)
     setResult(null)
+
     try {
       // initialize is best-effort (nice server name); tools/list is the real goal.
       const [info, list] = await Promise.all([mcpInitialize(u).catch(() => ({})), mcpListTools(u)])
       setServerInfo(info)
       setTools(list)
+      setMode('direct')
+      setAuthenticated(false)
       setStatus('connected')
       persist({ urlEntered: true })
+      return
+    } catch {
+      // Weiter über den Server.
+    }
+
+    try {
+      const probe = await mcpProbe(u)
+      if (probe.state === 'connected') {
+        setServerInfo({})
+        setTools(probe.tools)
+        setMode('proxy')
+        setAuthenticated(probe.authenticated)
+        setStatus('connected')
+        persist({ urlEntered: true })
+        return
+      }
+      if (probe.state === 'auth_required') {
+        setAuthUrl(probe.authorizationUrl)
+        setMode('proxy')
+        setStatus('auth')
+        return
+      }
+      setStatus('error')
+      setConnectError(probe.error)
     } catch (err) {
       setStatus('error')
       setConnectError((err as Error).message)
     }
+  }
+
+  const signIn = async () => {
+    if (!authUrl) return
+    setStatus('signing_in')
+    setConnectError(null)
+    const ok = await runOAuthPopup(authUrl)
+    // Auch bei `false` nachfassen: manche Browser unterdrücken die Nachricht aus
+    // dem Fenster, die Anmeldung kann trotzdem geklappt haben.
+    const probe = await mcpProbe(url.trim()).catch(() => null)
+    if (probe?.state === 'connected') {
+      setTools(probe.tools)
+      setAuthenticated(probe.authenticated)
+      setStatus('connected')
+      persist({ urlEntered: true })
+      return
+    }
+    setStatus('auth')
+    if (probe?.state === 'auth_required') setAuthUrl(probe.authorizationUrl)
+    setConnectError(ok ? (probe?.state === 'error' ? probe.error : t.authFailed) : t.authFailed)
+  }
+
+  const signOut = async () => {
+    await mcpDisconnect(url.trim()).catch(() => undefined)
+    setAuthenticated(false)
+    setTools([])
+    setSelected(null)
+    setStatus('idle')
   }
 
   const pickTool = (tool: McpToolDef) => {
@@ -98,10 +175,23 @@ export default function McpInspector({ artifact }: { artifact: McpInspectorArtif
     setResult(null)
     setCallError(null)
     try {
-      const r = await mcpCallTool(url.trim(), selected.name, coerceArgs(selected, args))
+      const call = mode === 'proxy' ? mcpCallToolViaServer : mcpCallTool
+      const r = await call(url.trim(), selected.name, coerceArgs(selected, args))
       setResult(r)
       persist({ toolFired: true, toolName: selected.name })
     } catch (err) {
+      // Token abgelaufen oder zurückgezogen: zurück in den Anmeldezustand statt
+      // einer Fehlermeldung, mit der niemand etwas anfangen kann.
+      if (err instanceof McpAuthRequiredError) {
+        const probe = await mcpProbe(url.trim()).catch(() => null)
+        if (probe?.state === 'auth_required') {
+          setAuthUrl(probe.authorizationUrl)
+          setAuthenticated(false)
+          setStatus('auth')
+          setCalling(false)
+          return
+        }
+      }
       setCallError((err as Error).message)
     } finally {
       setCalling(false)
@@ -129,6 +219,42 @@ export default function McpInspector({ artifact }: { artifact: McpInspectorArtif
           {status === 'connecting' ? t.connecting : t.connect}
         </button>
       </form>
+
+      {/* Anmeldung, wenn der Server eine verlangt */}
+      {(status === 'auth' || status === 'signing_in') && (
+        <div className="rounded-md border border-amber-300 bg-amber-50 p-3">
+          <p className="text-sm font-semibold text-amber-900">{t.authRequired}</p>
+          <p className="mt-0.5 text-xs text-amber-900">{t.authHint}</p>
+          <button
+            type="button"
+            onClick={signIn}
+            disabled={status === 'signing_in' || !authUrl}
+            className="mt-2 rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-navy-light disabled:opacity-50"
+          >
+            {status === 'signing_in' ? t.signingIn : t.signIn}
+          </button>
+          {connectError && <p className="mt-2 text-xs text-red-800">{connectError}</p>}
+        </div>
+      )}
+
+      {/* Woher die Antworten kommen — direkt oder über uns, mit oder ohne Konto */}
+      {status === 'connected' && mode === 'proxy' && (
+        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <span className="rounded bg-cream px-1.5 py-0.5 font-semibold text-slate-600">
+            {t.viaProxy}
+          </span>
+          {authenticated && (
+            <>
+              <span className="rounded bg-emerald-50 px-1.5 py-0.5 font-semibold text-emerald-700">
+                {t.authenticated}
+              </span>
+              <button type="button" onClick={signOut} className="text-slate-400 hover:text-red-700">
+                {t.signOut}
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Progress steps */}
       <div className="flex flex-wrap items-center gap-2 text-xs">

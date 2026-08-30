@@ -1,3 +1,6 @@
+import { apiBaseUrl } from '../../config/configuration'
+import { getStoredToken } from '../auth/AuthContext'
+
 // Minimal MCP client over stateless Streamable HTTP — no SDK dependency.
 //
 // Our MCP servers (hslu-aire-server /mcp, /mcp/zapfloor, /mcp/salto) run
@@ -113,4 +116,116 @@ export async function mcpCallTool(
   signal?: AbortSignal,
 ): Promise<McpCallResult> {
   return rpc<McpCallResult>(url, 'tools/call', { name, arguments: args }, signal)
+}
+
+// ── Über unseren Server ─────────────────────────────────────────────────────
+//
+// Der direkte Weg oben funktioniert nur bei Servern, die CORS für unseren
+// Origin öffnen — also praktisch nur bei unseren eigenen. Alles andere läuft
+// über den Proxy, der nebenbei die Anmeldung erledigt: verlangt ein Server
+// OAuth, führt der Server den Dance und behält das Token. Im Browser landet es
+// nie, was bei einem Werkzeug, in das jemand sein echtes Konto hängt, die
+// richtige Seite ist.
+
+export type ProbeResult =
+  | { state: 'connected'; authenticated: boolean; tools: McpToolDef[] }
+  | { state: 'auth_required'; authorizationUrl: string; resourceMetadata?: string }
+  | { state: 'error'; error: string; code?: string }
+
+async function viaServer<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
+  const token = getStoredToken()
+  const res = await fetch(`${apiBaseUrl}/mcp-connect${path}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(body),
+    signal,
+  })
+  if (!res.ok) {
+    let message = `Der Server antwortete mit ${res.status}.`
+    try {
+      const b = await res.json()
+      if (b?.error) message = b.error
+    } catch {
+      // kein JSON-Body
+    }
+    throw new McpError(message)
+  }
+  return (await res.json()) as T
+}
+
+/** URL anfassen: verbunden, Anmeldung nötig, oder Fehler. */
+export function mcpProbe(url: string, signal?: AbortSignal): Promise<ProbeResult> {
+  return viaServer<ProbeResult>('/probe', { url }, signal)
+}
+
+type RpcEnvelope = { state: 'ok'; result: unknown } | { state: 'auth_required' } | { state: 'error'; error: string }
+
+async function proxyRpc<T>(url: string, method: string, params: unknown, signal?: AbortSignal): Promise<T> {
+  const out = await viaServer<RpcEnvelope>('/rpc', { url, method, params }, signal)
+  if (out.state === 'auth_required') throw new McpAuthRequiredError()
+  if (out.state === 'error') throw new McpError(out.error)
+  return out.result as T
+}
+
+/** Das Token ist abgelaufen oder wurde zurückgezogen — neu anmelden. */
+export class McpAuthRequiredError extends McpError {
+  constructor() {
+    super('Für diesen Server ist eine Anmeldung nötig.')
+    this.name = 'McpAuthRequiredError'
+  }
+}
+
+export async function mcpListToolsViaServer(url: string, signal?: AbortSignal): Promise<McpToolDef[]> {
+  const result = await proxyRpc<{ tools?: McpToolDef[] }>(url, 'tools/list', {}, signal)
+  return result?.tools ?? []
+}
+
+export function mcpCallToolViaServer(
+  url: string,
+  name: string,
+  args: Record<string, unknown>,
+  signal?: AbortSignal,
+): Promise<McpCallResult> {
+  return proxyRpc<McpCallResult>(url, 'tools/call', { name, arguments: args }, signal)
+}
+
+export async function mcpDisconnect(url: string): Promise<void> {
+  await viaServer('/disconnect', { url })
+}
+
+/**
+ * Öffnet das Anmeldefenster und wartet, bis der Callback sich meldet.
+ *
+ * Über `postMessage` und nicht über Polling: der Callback liegt auf unserem
+ * API-Origin, das Fenster kann also zurückrufen. Der Fallback auf `closed`
+ * fängt den Fall, dass jemand das Fenster einfach zumacht.
+ */
+export function runOAuthPopup(authorizationUrl: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const win = window.open(authorizationUrl, 'aire-mcp-oauth', 'width=520,height=700')
+    if (!win) {
+      resolve(false)
+      return
+    }
+    let settled = false
+    const finish = (ok: boolean) => {
+      if (settled) return
+      settled = true
+      window.removeEventListener('message', onMessage)
+      clearInterval(timer)
+      resolve(ok)
+    }
+    const onMessage = (e: MessageEvent) => {
+      if (e.data?.source === 'aire-mcp-oauth') finish(Boolean(e.data.ok))
+    }
+    window.addEventListener('message', onMessage)
+    // Zugeklappt ohne Nachricht: als Abbruch werten, aber die Verbindung
+    // trotzdem prüfen lassen — manche Browser blocken die Nachricht.
+    const timer = window.setInterval(() => {
+      if (win.closed) finish(false)
+    }, 500)
+  })
 }

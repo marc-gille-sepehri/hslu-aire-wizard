@@ -424,6 +424,18 @@ export const labels = {
     stepUrl: 'Server verbunden',
     stepTool: 'Tool ausgeführt',
     done: 'Abgeschlossen',
+    // Anmeldung: verlangt der Server OAuth, führt unser Server den Ablauf und
+    // behält das Token. Der Hinweis sagt das, weil man es sonst nicht sieht.
+    authRequired: 'Dieser Server verlangt eine Anmeldung',
+    authHint:
+      'Es öffnet sich das Anmeldefenster des Anbieters. Der Zugriff läuft danach über unseren Server; dein Zugriffstoken bleibt dort und wird nicht im Browser gespeichert.',
+    signIn: 'Anmelden',
+    signingIn: 'Anmeldung läuft …',
+    authFailed: 'Die Anmeldung wurde abgebrochen oder ist fehlgeschlagen.',
+    popupBlocked: 'Das Anmeldefenster wurde blockiert. Bitte Pop-ups für diese Seite erlauben.',
+    viaProxy: 'über unseren Server',
+    authenticated: 'angemeldet',
+    signOut: 'Abmelden',
   },
 
   // Ontology explorer block (data-room metamodel)
