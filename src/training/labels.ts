@@ -52,6 +52,9 @@ export const labels = {
     addCourse: 'Kurs hinzufügen',
     published: 'Veröffentlicht',
     publishedHint: 'Nur die aktive, veröffentlichte Version erscheint für Teilnehmende.',
+    requiresInstance: 'Braucht Durchführung',
+    requiresInstanceHint:
+      'Der Kurs wird begleitet gehalten, nicht im Selbststudium. Nur für gekennzeichnete Kurse lässt sich eine Durchführung anlegen.',
     version: (n: number) => `Version ${n}`,
     activeTag: 'aktiv',
     draftTag: 'Entwurf',
@@ -521,6 +524,22 @@ export const labels = {
     create: 'Bestellen',
     creating: 'Wird erstellt …',
     cancel: 'Abbrechen',
+    // Ändern + namentlich gebundene Plätze
+    editOrder: 'Bestellung ändern',
+    edit: 'Bearbeiten',
+    save: 'Speichern',
+    saving: 'Wird gespeichert …',
+    lockedHint: 'Kunde und Kurs lassen sich nicht ändern — das wäre eine andere Bestellung.',
+    fNamedUsers: 'Namentlich gebundene Plätze',
+    namedHint:
+      'Diese Personen können den Kurs jederzeit durchführen, auch ausserhalb des Zeitraums. Ihr Platz ist reserviert, ob sie ihn nutzen oder nicht. Die übrigen Plätze stehen allen Nutzern des Kunden offen — im Zeitraum.',
+    namedCount: (named: number, seats: number) => `${named} von ${seats} Plätzen gebunden`,
+    noUsersForCustomer: 'Für diesen Kunden sind keine aktiven Nutzer angelegt.',
+    tooManyNamed: (named: number, seats: number) =>
+      `${named} Personen benannt, aber nur ${seats} ${seats === 1 ? 'Platz' : 'Plätze'} bestellt.`,
+    raiseSeats: (n: number) => `Auf ${n} Plätze aufstocken`,
+    datesHint: 'Gilt für die nicht gebundenen Plätze. Benannte Personen sind davon nicht betroffen.',
+    colNamed: 'Gebunden',
   },
 
   // Admin: Kursdurchführung tab
@@ -550,7 +569,8 @@ export const labels = {
     fTrainers: 'Trainer',
     fStart: 'Startdatum',
     version: (n: number) => `Version ${n}`,
-    noCourses: 'Bitte zuerst einen Kurs anlegen.',
+    noCourses:
+      'Kein Kurs ist als „Braucht Durchführung" gekennzeichnet. Setze das Kennzeichen im Kurskatalog, dann lässt sich hier eine Durchführung anlegen.',
     searchPlaceholder: 'Nach Name oder E-Mail filtern …',
     noneSelected: 'Niemand ausgewählt',
     noMatches: 'Keine Treffer',

@@ -9,6 +9,8 @@ export interface CourseWithModules {
   title: string
   description?: string
   published: boolean
+  /** „Braucht Durchführung": nur solche Kurse dürfen eine Durchführung haben. */
+  requiresInstance: boolean
   familyId: string
   version: number
   active: boolean
@@ -73,7 +75,10 @@ export async function deleteCourse(id: string): Promise<void> {
 }
 
 /** Rename / re-describe a course. */
-export async function updateCourse(id: string, patch: { title?: string; description?: string; published?: boolean }): Promise<CourseWithModules> {
+export async function updateCourse(
+  id: string,
+  patch: { title?: string; description?: string; published?: boolean; requiresInstance?: boolean },
+): Promise<CourseWithModules> {
   const res = await fetch(`${apiBaseUrl}/admin/courses/${encodeURIComponent(id)}`, {
     method: 'PUT',
     headers: authHeaders(),

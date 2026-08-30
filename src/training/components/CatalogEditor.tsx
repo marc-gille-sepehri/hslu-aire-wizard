@@ -99,6 +99,11 @@ export default function CatalogEditor() {
     updateCourse(id, { published }).catch(fail)
   }
 
+  const toggleRequiresInstance = (id: string, requiresInstance: boolean) => {
+    patch(id, (c) => ({ ...c, requiresInstance }))
+    updateCourse(id, { requiresInstance }).catch(fail)
+  }
+
   const activate = async (courseId: string, familyId: string) => {
     setCourses((cs) => (cs ? cs.map((c) => (c.familyId === familyId ? { ...c, active: c.id === courseId } : c)) : cs))
     try {
@@ -188,6 +193,7 @@ export default function CatalogEditor() {
             onRenameCourse={(title) => renameCourse(course.id, title)}
             onDescribeCourse={(desc) => describeCourse(course.id, desc)}
             onTogglePublished={(p) => togglePublished(course.id, p)}
+            onToggleRequiresInstance={(r) => toggleRequiresInstance(course.id, r)}
             onDeleteCourse={() => removeCourse(course)}
             onAddModule={() => addModule(course.id)}
             onRemoveModule={(mid) => removeModule(course.id, mid)}
@@ -218,6 +224,7 @@ function FamilyCard({
   onRenameCourse,
   onDescribeCourse,
   onTogglePublished,
+  onToggleRequiresInstance,
   onDeleteCourse,
   onAddModule,
   onRemoveModule,
@@ -233,6 +240,7 @@ function FamilyCard({
   onRenameCourse: (title: string) => void
   onDescribeCourse: (description: string) => void
   onTogglePublished: (published: boolean) => void
+  onToggleRequiresInstance: (requiresInstance: boolean) => void
   onDeleteCourse: () => void
   onAddModule: () => void
   onRemoveModule: (moduleId: string) => void
@@ -290,6 +298,18 @@ function FamilyCard({
           <label className="flex cursor-pointer items-center gap-1.5 rounded-md border border-mist px-2 py-1 text-xs font-medium text-navy" title={t.publishedHint}>
             <input type="checkbox" checked={course.published} onChange={(e) => onTogglePublished(e.target.checked)} className="h-4 w-4 accent-navy" />
             {t.published}
+          </label>
+          <label
+            className="flex cursor-pointer items-center gap-1.5 rounded-md border border-mist px-2 py-1 text-xs font-medium text-navy"
+            title={t.requiresInstanceHint}
+          >
+            <input
+              type="checkbox"
+              checked={course.requiresInstance}
+              onChange={(e) => onToggleRequiresInstance(e.target.checked)}
+              className="h-4 w-4 accent-navy"
+            />
+            {t.requiresInstance}
           </label>
           <button
             type="button"

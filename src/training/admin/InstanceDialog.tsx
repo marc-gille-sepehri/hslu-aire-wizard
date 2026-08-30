@@ -51,9 +51,14 @@ export default function InstanceDialog({
   useEffect(() => {
     listCourses()
       .then((list) => {
-        setCourses(list)
-        // Default to the first course only when creating; keep the edited one.
-        if (!editing && list.length > 0) setCourseId(list[0].id)
+        // Nur begleitete Kurse. Der Server weist alles andere ohnehin ab; sie
+        // hier anzubieten hiesse, den Fehler erst beim Speichern zu zeigen.
+        // Ein bereits bearbeiteter Kurs bleibt in der Liste, auch wenn das
+        // Kennzeichen inzwischen entfernt wurde — sonst verschwindet er beim
+        // Öffnen wortlos aus seiner eigenen Durchführung.
+        const eligible = list.filter((c) => c.requiresInstance || c.id === instance?.courseId)
+        setCourses(eligible)
+        if (!editing && eligible.length > 0) setCourseId(eligible[0].id)
       })
       .catch(() => setCourses([]))
     listUsers(false)

@@ -16,7 +16,8 @@ function fmtDate(iso: string): string {
 export default function OrdersTab() {
   const [orders, setOrders] = useState<Order[] | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  // null = zu; { order: null } = neu; { order } = ändern.
+  const [dialog, setDialog] = useState<{ order: Order | null } | null>(null)
 
   const reload = useCallback(() => {
     listOrders()
@@ -34,7 +35,7 @@ export default function OrdersTab() {
         <h2 className="font-display text-lg font-bold text-navy">{t.heading}</h2>
         <button
           type="button"
-          onClick={() => setDialogOpen(true)}
+          onClick={() => setDialog({ order: null })}
           className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-gold-dark"
         >
           {t.order}
@@ -50,7 +51,9 @@ export default function OrdersTab() {
               <th className="px-4 py-3 font-semibold">{t.colCourse}</th>
               <th className="px-4 py-3 font-semibold">{t.colCustomer}</th>
               <th className="px-4 py-3 font-semibold">{t.colPeriod}</th>
+              <th className="px-4 py-3 font-semibold">{t.colNamed}</th>
               <th className="px-4 py-3 font-semibold text-right">{t.colSeats}</th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
@@ -61,12 +64,40 @@ export default function OrdersTab() {
                 <td className="px-4 py-3 text-slate-600">
                   {fmtDate(o.startDate)} – {fmtDate(o.endDate)}
                 </td>
+                <td className="px-4 py-3 text-slate-600">
+                  {o.namedUsers?.length ? (
+                    <span title={o.namedUsers.join('\n')}>
+                      {o.namedUsers.length}
+                      {/* Der freie Rest ist die Zahl, die im Alltag zählt: so viele
+                          beliebige Nutzer des Kunden können noch starten. */}
+                      <span className="ml-1 text-xs text-slate-400">
+                        (+{o.freeUnnamed ?? 0} frei)
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="text-slate-400">—</span>
+                  )}
+                </td>
                 <td className="px-4 py-3 text-right font-medium text-navy">{o.usedSeats ?? 0} / {o.seats}</td>
+                <td className="px-4 py-3 text-right">
+                  <button
+                    type="button"
+                    onClick={() => setDialog({ order: o })}
+                    aria-label={t.edit}
+                    title={t.edit}
+                    className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-cream hover:text-navy"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                    </svg>
+                  </button>
+                </td>
               </tr>
             ))}
             {orders && orders.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-sm text-slate-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-sm text-slate-400">
                   {t.noOrders}
                 </td>
               </tr>
@@ -75,11 +106,12 @@ export default function OrdersTab() {
         </table>
       </div>
 
-      {dialogOpen && (
+      {dialog && (
         <OrderDialog
-          onClose={() => setDialogOpen(false)}
+          order={dialog.order}
+          onClose={() => setDialog(null)}
           onCreated={() => {
-            setDialogOpen(false)
+            setDialog(null)
             reload()
           }}
         />

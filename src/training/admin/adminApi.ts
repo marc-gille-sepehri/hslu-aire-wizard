@@ -49,11 +49,18 @@ export function countryLabel(code: CountryCode): string {
 export class AdminError extends Error {
   code?: string
   status: number
-  constructor(message: string, status: number, code?: string) {
+  /**
+   * Der übrige Antwortkörper. Manche Fehler tragen Zahlen mit, aus denen ein
+   * Dialog sein Angebot baut — TOO_MANY_NAMED etwa liefert `named` und `seats`,
+   * damit gefragt werden kann: "auf 12 aufstocken?".
+   */
+  details: Record<string, unknown>
+  constructor(message: string, status: number, code?: string, details: Record<string, unknown> = {}) {
     super(message)
     this.name = 'AdminError'
     this.status = status
     this.code = code
+    this.details = details
   }
 }
 
@@ -72,7 +79,7 @@ async function parseError(res: Response): Promise<AdminError> {
   } catch {
     // no JSON body
   }
-  return new AdminError(body?.error || `Fehler (${res.status})`, res.status, body?.code)
+  return new AdminError(body?.error || `Fehler (${res.status})`, res.status, body?.code, body ?? {})
 }
 
 export async function listUsers(includeDeactivated: boolean): Promise<AdminUser[]> {
@@ -250,6 +257,13 @@ export interface Order {
   seats: number
   /** Consumed seats (one per user who started a module of the course). */
   usedSeats?: number
+  /**
+   * Namentlich gebundene Plätze. Diese Personen können den Kurs jederzeit
+   * durchführen — auch ausserhalb des Bestellzeitraums.
+   */
+  namedUsers?: string[]
+  /** Freie Plätze für alle übrigen Nutzer des Kunden. */
+  freeUnnamed?: number
   createdAt: string
 }
 
@@ -259,6 +273,25 @@ export interface CreateOrderInput {
   startDate: string
   endDate: string
   seats: number
+  namedUsers?: string[]
+}
+
+/** Kunde und Kurs sind nicht änderbar — das wäre eine andere Bestellung. */
+export interface UpdateOrderInput {
+  startDate: string
+  endDate: string
+  seats: number
+  namedUsers: string[]
+}
+
+export async function updateOrder(id: string, input: UpdateOrderInput): Promise<{ id: string }> {
+  const res = await fetch(`${apiBaseUrl}/admin/orders/${id}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  })
+  if (!res.ok) throw await parseError(res)
+  return (await res.json()).order as { id: string }
 }
 
 export async function listOrders(): Promise<Order[]> {
