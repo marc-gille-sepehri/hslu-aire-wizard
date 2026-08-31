@@ -49,7 +49,7 @@ export default function CustomersTab() {
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-4">
-        <h2 className="font-display text-lg font-bold text-navy">{t.heading}</h2>
+        {/* Keine Überschrift: der Reiter sagt bereits "Kunden". */}
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
