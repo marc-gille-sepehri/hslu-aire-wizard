@@ -358,6 +358,8 @@ export const labels = {
     deactivate: 'Deaktivieren',
     reactivate: 'Reaktivieren',
     noUsers: 'Keine Nutzer vorhanden.',
+    searchUsers: 'Suchen: Name, E-Mail, Kunde, Ort, Strasse …',
+    noSearchMatch: (total: number) => `Kein Treffer unter ${total} Nutzern.`,
     loadError: 'Nutzer konnten nicht geladen werden.',
     // Create dialog
     dialogTitle: 'Neuen Nutzer erstellen',
@@ -624,6 +626,10 @@ export const labels = {
     colActions: 'Aktionen',
     noUsers: '—',
     noCustomers: 'Noch keine Kunden vorhanden.',
+    searchCustomers: 'Suchen: Name, Ort, Strasse …',
+    // "Nichts gefunden" und "nichts vorhanden" sind verschiedene Aussagen. Die
+    // Gesamtzahl mitzugeben verhindert den Schreck, die Liste sei leer.
+    noSearchMatch: (total: number) => `Kein Treffer unter ${total} Einträgen.`,
     loadError: 'Kunden konnten nicht geladen werden.',
   },
 

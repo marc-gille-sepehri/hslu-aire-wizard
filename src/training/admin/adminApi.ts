@@ -10,6 +10,9 @@ export interface AdminUser {
   deactivated?: boolean
   customerId?: string
   customerName?: string
+  /** Adresse der Organisation — nicht angezeigt, aber durchsuchbar. */
+  customerCity?: string
+  customerStreet?: string
   createdAt?: string
   updatedAt?: string
   lastLoginAt?: string

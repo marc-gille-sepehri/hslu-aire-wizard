@@ -17,6 +17,7 @@ import {
   type CustomerAddress,
 } from './adminApi'
 import UserImportDialog from './UserImportDialog'
+import { matchesSearch } from './search'
 import CustomersTab from './CustomersTab'
 import OrdersTab from './OrdersTab'
 import InstancesTab from './InstancesTab'
@@ -139,6 +140,7 @@ function UsersTab() {
   const [dragging, setDragging] = useState(false)
   /** Half-successes: the user exists, something after it did not work. */
   const [notice, setNotice] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
 
   const load = async (includeDeactivated: boolean) => {
     setError(null)
@@ -166,9 +168,28 @@ function UsersTab() {
     }
   }
 
+  // Beide Listen sind vollständig geladen (Dutzende Einträge), also wird im
+  // Browser gefiltert — ein Server-Umweg brächte nur Wartezeit pro Tastendruck.
+  const shown = (users ?? []).filter((u) =>
+    matchesSearch(search, [
+      u.firstName,
+      u.lastName,
+      u.email,
+      u.customerName,
+      u.customerCity,
+      u.customerStreet,
+    ]),
+  )
+
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between gap-4">
+      <div className="mb-4 flex flex-wrap items-center gap-4">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t.searchUsers}
+          className="min-w-0 flex-1 rounded-md border border-mist bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-navy focus:ring-4 focus:ring-gold/20"
+        />
         <label className="flex items-center gap-2 text-sm text-slate-700">
           <input
             type="checkbox"
@@ -239,7 +260,7 @@ function UsersTab() {
             </tr>
           </thead>
           <tbody>
-            {users?.map((u) => (
+            {shown.map((u) => (
               <tr key={u.email} className={`border-t border-mist ${u.deactivated ? 'opacity-60' : ''}`}>
                 <td className="px-4 py-3 font-medium text-navy">
                   {u.firstName} {u.lastName}
@@ -292,10 +313,12 @@ function UsersTab() {
                 </td>
               </tr>
             ))}
-            {users && users.length === 0 && (
+            {users && shown.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-8 text-center text-sm text-slate-400">
-                  {t.noUsers}
+                  {/* "Nichts gefunden" und "keine Nutzer" sind verschiedene
+                      Aussagen — sonst glaubt man, die Liste sei leer. */}
+                  {search.trim() ? t.noSearchMatch(users.length) : t.noUsers}
                 </td>
               </tr>
             )}

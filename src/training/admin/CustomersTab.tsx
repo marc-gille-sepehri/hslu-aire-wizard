@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { labels } from '../labels'
+import { matchesSearch } from './search'
 import {
   listCustomersWithUsers,
   createCustomer,
@@ -20,6 +21,7 @@ export default function CustomersTab() {
   const [error, setError] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editing, setEditing] = useState<CustomerWithUsers | null>(null)
+  const [search, setSearch] = useState('')
 
   const load = async () => {
     setError(null)
@@ -34,10 +36,26 @@ export default function CustomersTab() {
     load()
   }, [])
 
+  const shown = (customers ?? []).filter((c) =>
+    matchesSearch(search, [
+      c.name,
+      c.address.street,
+      c.address.streetNumber,
+      c.address.postalCode,
+      c.address.city,
+    ]),
+  )
+
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between gap-4">
+      <div className="mb-4 flex flex-wrap items-center gap-4">
         <h2 className="font-display text-lg font-bold text-navy">{t.heading}</h2>
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t.searchCustomers}
+          className="min-w-0 flex-1 rounded-md border border-mist bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-navy focus:ring-4 focus:ring-gold/20"
+        />
         <button
           type="button"
           onClick={() => setDialogOpen(true)}
@@ -60,7 +78,7 @@ export default function CustomersTab() {
             </tr>
           </thead>
           <tbody>
-            {customers?.map((c) => (
+            {shown.map((c) => (
               <tr key={c.id} className="border-t border-mist align-top">
                 <td className="px-4 py-3 font-medium text-navy">{c.name}</td>
                 <td className="px-4 py-3 text-slate-600">
@@ -94,10 +112,10 @@ export default function CustomersTab() {
                 </td>
               </tr>
             ))}
-            {customers && customers.length === 0 && (
+            {customers && shown.length === 0 && (
               <tr>
                 <td colSpan={4} className="px-4 py-8 text-center text-sm text-slate-400">
-                  {t.noCustomers}
+                  {search.trim() ? t.noSearchMatch(customers.length) : t.noCustomers}
                 </td>
               </tr>
             )}
