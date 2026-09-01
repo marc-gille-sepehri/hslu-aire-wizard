@@ -11,6 +11,28 @@ const t = labels.editor
 
 // A blank diagram (one start event) used when there is neither a saved diagram
 // nor an admin-provided starter.
+/**
+ * Dateiname aus dem Blocktitel. Umlaute werden ersetzt statt entfernt, sonst
+ * wird aus „Prozessübersicht" ein „Prozessbersicht"; alles Übrige weicht einem
+ * Bindestrich, damit die Datei auf jedem System und in jedem Mailanhang trägt.
+ */
+function fileStem(title?: string): string {
+  const base = (title ?? '').trim() || 'prozessmodell'
+  return (
+    base
+      .toLowerCase()
+      .replace(/ä/g, 'ae')
+      .replace(/ö/g, 'oe')
+      .replace(/ü/g, 'ue')
+      .replace(/ß/g, 'ss')
+      .normalize('NFD')
+      .replace(/\p{M}/gu, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 60) || 'prozessmodell'
+  )
+}
+
 const EMPTY_DIAGRAM = `<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
   <bpmn:process id="Process_1" isExecutable="false">
@@ -122,6 +144,36 @@ export default function Bpmn({ artifact }: { artifact: BpmnArtifact }) {
     }
   }
 
+  /**
+   * Das Diagramm als .bpmn-Datei herunterladen.
+   *
+   * Aus dem Modeler geholt, nicht aus dem zuletzt Gespeicherten: sonst lädt man
+   * einen Stand herunter, den man auf dem Bildschirm gar nicht sieht.
+   *
+   * Die Endung ist `.bpmn`, weil bpmn.io, Camunda und Signavio danach filtern —
+   * als `.xml` müsste man beim Öffnen jedes Mal den Dateityp umstellen.
+   */
+  const onDownload = async () => {
+    const modeler = modelerRef.current
+    if (!modeler) return
+    try {
+      const { xml } = await modeler.saveXML({ format: true })
+      if (!xml) return
+      const url = URL.createObjectURL(new Blob([xml], { type: 'application/bpmn+xml' }))
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${fileStem(artifact.title)}.bpmn`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      // Freigeben, sonst hält der Objekt-URL das Diagramm im Speicher fest,
+      // solange die Seite offen ist — bei mehreren Downloads summiert sich das.
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      console.warn('[training] bpmn download failed:', (e as Error).message)
+    }
+  }
+
   // Re-fit the canvas when entering/leaving fullscreen (the container resized).
   useEffect(() => {
     const m = modelerRef.current
@@ -198,6 +250,20 @@ export default function Bpmn({ artifact }: { artifact: BpmnArtifact }) {
           className="rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-navy-light disabled:opacity-50"
         >
           {saving ? t.bpmnSaving : t.bpmnSave}
+        </button>
+        <button
+          type="button"
+          onClick={onDownload}
+          disabled={status !== 'ready'}
+          title={t.bpmnDownloadHint}
+          className="flex items-center gap-1.5 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-navy hover:text-navy disabled:opacity-50"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M12 3v12" />
+            <path d="m7 10 5 5 5-5" />
+            <path d="M5 21h14" />
+          </svg>
+          {t.bpmnDownload}
         </button>
         {savedAt && <span className="text-xs font-semibold text-emerald-700">{t.bpmnSaved}</span>}
         {expanded && (

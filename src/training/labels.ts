@@ -797,6 +797,9 @@ export const labels = {
     bpmnSave: 'Diagramm speichern',
     bpmnSaving: 'Wird gespeichert …',
     bpmnSaved: 'Gespeichert',
+    bpmnDownload: 'BPMN herunterladen',
+    bpmnDownloadHint:
+      'Lädt das Diagramm als .bpmn-Datei herunter — die lässt sich in bpmn.io, Camunda oder Signavio öffnen.',
     bpmnError: 'Der Modeler konnte nicht geladen werden.',
     bpmnExpand: 'Vollbild',
     bpmnCollapse: 'Vollbild verlassen',
