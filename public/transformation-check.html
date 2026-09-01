@@ -724,6 +724,11 @@
     }
   };
 
+  /* Statische Seite ausserhalb des React-Builds — sie kann
+     src/config/configuration.js nicht importieren. Die Produktions-API-Adresse
+     ist ohnehin oeffentlich. */
+  var API_BASE = 'https://api.ai-in-real-estate.ch';
+
   /* ============ SCORING ENGINE ============ */
   function computeDim(answers, qids){
     var sum=0; for(var i=0;i<qids.length;i++){ sum += answers[qids[i]]; }
@@ -1000,9 +1005,14 @@
     }).join('');
 
     var fullName = (c.firstName+' '+c.lastName).trim();
+    // Nur gesetzt, wenn der Server nicht erreichbar war und lokal gerechnet wurde.
+    var noticeHtml = state.submitNotice
+      ? '<div class="proto-banner"><span>i</span><span>'+state.submitNotice+'</span></div>'
+      : '';
 
     return '\
-    <div class="proto-banner"><span>ⓘ</span><span><b>Interaktiver Prototyp.</b> Fragen, Scoring und Ergebnis-Logik entsprechen dem Grundkonzept. E-Mail-Versand und Datenbank-Speicherung sind technisch vorbereitet, aber noch nicht angebunden — dafür braucht es die im Chat abgestimmten Zugänge (E-Mail-Dienst, Supabase).</span></div>\
+    \
+    '+noticeHtml+'\
     <div class="results-header">\
       <div class="eyebrow">Ihr Ergebnis</div>\
       <h1>Ihr AI@RE Transformation Profile</h1>\
@@ -1097,8 +1107,33 @@
       if(!emailOk){ state.formError='Bitte geben Sie eine gültige E-Mail-Adresse ein.'; render(); return; }
       if(!consent){ state.formError='Bitte bestätigen Sie die Einwilligung zur Datenverarbeitung.'; render(); return; }
 
-      var result = computeResults(state.answers);
-      setState({screen:'results', result:result, formError:''});
+      // Der Server rechnet, speichert und mailt; er ist die Quelle der Wahrheit.
+      // Faellt er aus, rechnen wir lokal weiter — die Person soll ihr Ergebnis
+      // in jedem Fall sehen, nur ohne Speicherung und ohne Mail.
+      if(state.submitting) return;
+      state.submitting = true;
+      state.formError = '';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Wird gesendet \u2026';
+
+      var done = function(result, notice){
+        state.submitting = false;
+        submitBtn.disabled = false;
+        setState({screen:'results', result:result, formError:'', submitNotice:notice||''});
+      };
+
+      fetch(API_BASE + '/transformation-check', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({contact: state.contact, answers: state.answers})
+      }).then(function(res){
+        return res.json().then(function(body){ return {ok: res.ok, body: body}; }, function(){ return {ok:false, body:null}; });
+      }).then(function(r){
+        if(r.ok && r.body && r.body.ok && r.body.result){ done(r.body.result, ''); }
+        else { done(computeResults(state.answers), 'Auswertung konnte nicht versendet werden.'); }
+      }).catch(function(){
+        done(computeResults(state.answers), 'Auswertung konnte nicht versendet werden.');
+      });
     });
 
     var restartBtn = document.getElementById('restart-btn');
