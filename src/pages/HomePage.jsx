@@ -14,7 +14,7 @@ function HomePage({ onContactSubmit }) {
             <div className="hero-award-block">
               <h3 className="hero-award-title">Rückblick: AI@RE 2026</h3>
               <p className="hero-award-text">
-                Die AI@RE-Konferenz hat stattgefunden. Über 150 Teilnehmer. Inspirierende
+                Die AI@RE-Konferenz hat stattgefunden. Über 160 Teilnehmer. Inspirierende
                 Keynotes. Spannende Deep Dives. Intensive Break-out Sessions. Und beeindruckende
                 AI@RE Award Winners. Danke allen und vor allem unseren Sponsoren.
               </p>
