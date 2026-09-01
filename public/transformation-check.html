@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<title>AIRE Transformation Check</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    /* light theme — "blueline" diazo print: cream paper, ink-blue lines */
+    --bg:#F3EEE0;
+    --surface:#FFFFFA;
+    --surface-2:#EAE2CB;
+    --text:#1E3A5F;
+    --text-secondary:#4F6685;
+    --text-tertiary:#8497B0;
+    --line:#C3D2E6;
+    --line-strong:#9FB6D4;
+    --accent:#A9701F;
+    --accent-strong:#7E5416;
+    --accent-soft:#F0DFC0;
+    --accent-ink:#FFFFFA;
+    --shadow: 0 1px 0 rgba(30,58,95,0.06);
+
+    --sem-beginning:#7E8CA3;
+    --sem-activating:#3E7FA0;
+    --sem-transforming:#C97F2E;
+    --sem-leading:#A9701F;
+
+    --warn-bg:#F7E4D6;
+    --warn-border:#C97F2E;
+    --warn-text:#7A431A;
+
+    --font-display:'Bahnschrift','DIN Alternate','Arial Narrow',sans-serif;
+    --font-body:Charter,'Iowan Old Style',Georgia,'Times New Roman',serif;
+    --font-mono:'Cascadia Mono','JetBrains Mono',Consolas,'SF Mono',monospace;
+
+    --radius:3px;
+  }
+  /* dark theme — "cyanotype": deep blueprint ink, cream lines */
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0F2748;
+      --surface:#16335C;
+      --surface-2:#1E4272;
+      --text:#F1E8D4;
+      --text-secondary:#BED2EB;
+      --text-tertiary:#7F9AC2;
+      --line:#2E5387;
+      --line-strong:#3F6BA3;
+      --accent:#E4AC55;
+      --accent-strong:#F1C378;
+      --accent-soft:rgba(228,172,85,0.16);
+      --accent-ink:#12233F;
+      --shadow: 0 1px 0 rgba(0,0,0,0.2);
+
+      --sem-beginning:#8CA0BF;
+      --sem-activating:#5FA9CE;
+      --sem-transforming:#E2A24E;
+      --sem-leading:#E4AC55;
+
+      --warn-bg:rgba(228,140,55,0.14);
+      --warn-border:#E2A24E;
+      --warn-text:#F3CE9C;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0F2748;
+    --surface:#16335C;
+    --surface-2:#1E4272;
+    --text:#F1E8D4;
+    --text-secondary:#BED2EB;
+    --text-tertiary:#7F9AC2;
+    --line:#2E5387;
+    --line-strong:#3F6BA3;
+    --accent:#E4AC55;
+    --accent-strong:#F1C378;
+    --accent-soft:rgba(228,172,85,0.16);
+    --accent-ink:#12233F;
+    --shadow: 0 1px 0 rgba(0,0,0,0.2);
+
+    --sem-beginning:#8CA0BF;
+    --sem-activating:#5FA9CE;
+    --sem-transforming:#E2A24E;
+    --sem-leading:#E4AC55;
+
+    --warn-bg:rgba(228,140,55,0.14);
+    --warn-border:#E2A24E;
+    --warn-text:#F3CE9C;
+  }
+
+  /* ============ BASE ============ */
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:var(--font-display);font-weight:700;text-wrap:balance;margin:0;color:var(--text);}
+  p{margin:0;}
+  button{font-family:inherit;}
+  input:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+
+  .app-shell{
+    max-width:980px;
+    margin:0 auto;
+    padding:0 20px 64px;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--accent);
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.02em;
+    padding:13px 24px;
+    border-radius:var(--radius);
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:background 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  }
+  .btn-primary{
+    background:var(--accent);
+    color:var(--accent-ink);
+  }
+  .btn-primary:hover:not(:disabled){background:var(--accent-strong);}
+  .btn-primary:disabled{opacity:0.4;cursor:not-allowed;}
+  .btn-ghost{
+    background:transparent;
+    color:var(--text-secondary);
+    border-color:var(--line-strong);
+  }
+  .btn-ghost:hover{color:var(--text);border-color:var(--text-secondary);}
+
+  /* ============ TOP BAR ============ */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 20px 18px;
+    max-width:980px;
+    margin:0 auto;
+  }
+  .brand{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.04em;
+    color:var(--text);
+  }
+  .brand span{color:var(--accent);}
+
+  /* ============ LANDING ============ */
+  .hero{
+    position:relative;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:var(--surface);
+    overflow:hidden;
+    display:grid;
+    grid-template-columns:1.15fr 0.85fr;
+  }
+  @media (max-width:760px){ .hero{grid-template-columns:1fr;} }
+
+  .hero-copy{
+    padding:48px 44px 44px;
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+  }
+  .hero-title{
+    font-size:clamp(28px,4vw,42px);
+    line-height:1.08;
+    letter-spacing:-0.01em;
+  }
+  .hero-sub{
+    font-family:var(--font-mono);
+    font-size:14px;
+    color:var(--text-secondary);
+    letter-spacing:0.02em;
+  }
+  .benefit-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .benefit-list li{
+    display:flex;
+    gap:12px;
+    align-items:baseline;
+    font-size:15.5px;
+    color:var(--text-secondary);
+  }
+  .benefit-list li::before{
+    content:'';
+    flex:none;
+    width:6px;height:6px;
+    margin-top:7px;
+    background:var(--accent);
+    transform:rotate(45deg);
+  }
+  .punchline{
+    font-family:var(--font-body);
+    font-style:italic;
+    font-size:18px;
+    color:var(--text);
+    border-left:2px solid var(--accent);
+    padding-left:16px;
+  }
+  .hero-actions{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-top:6px;
+  }
+  .hero-meta{
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--text-tertiary);
+  }
+
+  .hero-panel{
+    position:relative;
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px),
+      var(--surface-2);
+    background-size:22px 22px, 22px 22px, auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px;
+    border-left:1px solid var(--line);
+  }
+  @media (max-width:760px){ .hero-panel{border-left:none;border-top:1px solid var(--line);min-height:260px;} }
+  .corner-mark{position:absolute;width:16px;height:16px;}
+  .corner-mark::before,.corner-mark::after{content:'';position:absolute;background:var(--line-strong);}
+  .corner-mark::before{width:100%;height:1px;top:50%;}
+  .corner-mark::after{height:100%;width:1px;left:50%;}
+  .cm-tl{top:14px;left:14px;} .cm-br{bottom:14px;right:14px;}
+
+  /* ============ QUIZ ============ */
+  .quiz-progress{
+    margin-bottom:28px;
+  }
+  .ruler{
+    display:flex;
+    gap:3px;
+    margin-bottom:8px;
+  }
+  .ruler-seg{
+    flex:1;
+    height:5px;
+    background:var(--line);
+    border-radius:2px;
+    overflow:hidden;
+    position:relative;
+  }
+  .ruler-seg-fill{
+    position:absolute;inset:0;
+    background:var(--accent);
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform 0.25s ease;
+  }
+  .progress-meta{
+    display:flex;
+    justify-content:space-between;
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--text-tertiary);
+  }
+
+  .dim-header{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .dim-index{
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--accent);
+  }
+  .dim-name{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--text-secondary);
+  }
+  .dim-tagline{
+    font-family:var(--font-body);
+    font-style:italic;
+    color:var(--text-tertiary);
+    font-size:14px;
+  }
+
+  .question-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:36px 40px;
+  }
+  @media (max-width:600px){ .question-card{padding:26px 20px;} }
+  .question-text{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:clamp(19px,2.6vw,24px);
+    line-height:1.25;
+    margin-bottom:26px;
+    text-wrap:balance;
+  }
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+    padding:15px 18px;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:var(--surface);
+    cursor:pointer;
+    text-align:left;
+    transition:border-color 0.12s ease, background 0.12s ease;
+    width:100%;
+  }
+  .option:hover{border-color:var(--line-strong);}
+  .option.selected{
+    border-color:var(--accent);
+    background:var(--accent-soft);
+  }
+  .option-num{
+    flex:none;
+    width:26px;height:26px;
+    border-radius:50%;
+    border:1px solid var(--line-strong);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--text-secondary);
+    font-variant-numeric:tabular-nums;
+  }
+  .option.selected .option-num{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:var(--accent-ink);
+  }
+  .option-text{
+    font-size:15px;
+    color:var(--text);
+    padding-top:3px;
+  }
+
+  .quiz-nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:26px;
+  }
+
+  /* ============ CONTACT ============ */
+  .contact-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:44px;
+  }
+  @media (max-width:600px){ .contact-card{padding:26px 20px;} }
+  .contact-intro{margin-bottom:28px;}
+  .contact-intro h2{font-size:26px;margin-bottom:8px;}
+  .contact-intro p{color:var(--text-secondary);font-size:15px;}
+  .field-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px 20px;
+    margin-bottom:20px;
+  }
+  @media (max-width:560px){ .field-grid{grid-template-columns:1fr;} }
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field.full{grid-column:1/-1;}
+  .field label{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--text-secondary);
+  }
+  .field input{
+    font-family:var(--font-body);
+    font-size:15px;
+    padding:11px 12px;
+    border:1px solid var(--line-strong);
+    border-radius:var(--radius);
+    background:var(--bg);
+    color:var(--text);
+  }
+  .field input::placeholder{color:var(--text-tertiary);}
+  .checkbox-field{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    margin:18px 0 26px;
+    font-size:13.5px;
+    color:var(--text-secondary);
+  }
+  .checkbox-field input{margin-top:3px;flex:none;}
+  .form-error{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    color:var(--warn-text);
+    margin-bottom:14px;
+    min-height:16px;
+  }
+
+  /* ============ RESULTS ============ */
+  .proto-banner{
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    background:var(--surface-2);
+    border:1px dashed var(--line-strong);
+    border-radius:var(--radius);
+    padding:14px 18px;
+    font-size:13px;
+    color:var(--text-secondary);
+    margin-bottom:28px;
+  }
+  .proto-banner b{color:var(--text);}
+
+  .results-header{margin-bottom:8px;}
+  .results-header .eyebrow{margin-bottom:8px;}
+  .results-header h1{font-size:clamp(24px,3.4vw,32px);margin-bottom:6px;}
+  .results-header .sub{color:var(--text-secondary);font-size:14.5px;}
+  .type-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:14px;
+    padding:6px 14px;
+    border:1px solid var(--accent);
+    border-radius:20px;
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:0.04em;
+    color:var(--accent);
+  }
+
+  .score-trio{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+    margin:32px 0;
+  }
+  @media (max-width:700px){ .score-trio{grid-template-columns:1fr;} }
+  .score-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px 22px 20px;
+  }
+  .score-label{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:0.08em;
+    color:var(--text-secondary);
+    margin-bottom:10px;
+  }
+  .score-figure{
+    font-family:var(--font-mono);
+    font-size:38px;
+    font-variant-numeric:tabular-nums;
+    font-weight:700;
+    line-height:1;
+    margin-bottom:4px;
+  }
+  .score-band{
+    font-family:var(--font-display);
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    margin-bottom:12px;
+  }
+  .score-ruler{
+    height:6px;
+    background:var(--line);
+    border-radius:3px;
+    position:relative;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .score-ruler-fill{height:100%;border-radius:3px;}
+  .score-desc{font-size:13.5px;color:var(--text-secondary);}
+
+  .gates{display:flex;flex-direction:column;gap:10px;margin-bottom:32px;}
+  .gate-warning{
+    background:var(--warn-bg);
+    border:1px solid var(--warn-border);
+    border-radius:var(--radius);
+    padding:14px 18px;
+    display:flex;
+    gap:12px;
+  }
+  .gate-warning .g-icon{
+    flex:none;
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--warn-text);
+    letter-spacing:0.06em;
+    padding-top:2px;
+  }
+  .gate-warning .g-body b{display:block;color:var(--warn-text);font-family:var(--font-display);font-size:13.5px;margin-bottom:3px;}
+  .gate-warning .g-body span{font-size:13.5px;color:var(--text);}
+
+  .section-block{margin:36px 0;}
+  .section-title{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin-bottom:14px;
+  }
+
+  .radar-wrap{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:32px;
+    align-items:center;
+  }
+  @media (max-width:700px){ .radar-wrap{grid-template-columns:1fr;justify-items:center;} }
+  .dim-bars{display:flex;flex-direction:column;gap:14px;}
+  .dim-bar-row{display:grid;grid-template-columns:170px 1fr 48px;align-items:center;gap:12px;}
+  @media (max-width:520px){ .dim-bar-row{grid-template-columns:1fr;gap:4px;} }
+  .dim-bar-name{font-size:13.5px;color:var(--text-secondary);}
+  .dim-bar-track{height:8px;background:var(--line);border-radius:4px;overflow:hidden;}
+  .dim-bar-fill{height:100%;background:var(--accent);border-radius:4px;}
+  .dim-bar-val{font-family:var(--font-mono);font-size:13px;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);}
+
+  .diagnosis-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px 30px;
+  }
+  .diagnosis-lead{font-family:var(--font-display);font-weight:700;font-size:19px;margin-bottom:10px;}
+  .diagnosis-body{font-size:15px;color:var(--text-secondary);}
+
+  .priorities{display:flex;flex-direction:column;gap:14px;}
+  .priority-item{
+    display:grid;
+    grid-template-columns:34px 1fr;
+    gap:16px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 20px;
+  }
+  .priority-num{
+    font-family:var(--font-mono);
+    font-size:18px;
+    color:var(--accent);
+    font-variant-numeric:tabular-nums;
+  }
+  .priority-title{font-family:var(--font-display);font-weight:700;font-size:15px;margin-bottom:4px;}
+  .priority-desc{font-size:13.5px;color:var(--text-secondary);}
+
+  .recommendation{
+    background:var(--surface-2);
+    border:1px solid var(--line-strong);
+    border-radius:var(--radius);
+    padding:32px 34px;
+  }
+  .recommendation .rec-title{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:22px;
+    color:var(--accent);
+    margin-bottom:10px;
+  }
+  .recommendation .rec-lead{font-size:16px;font-weight:600;margin-bottom:10px;}
+  .recommendation .rec-body{font-size:14.5px;color:var(--text-secondary);margin-bottom:8px;}
+  .recommendation .rec-note{font-size:13.5px;color:var(--text-secondary);font-style:italic;margin-bottom:20px;}
+
+  .restart-link{
+    display:inline-block;
+    margin-top:30px;
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    color:var(--text-tertiary);
+    text-decoration:underline;
+    cursor:pointer;
+    background:none;border:none;padding:0;
+  }
+  .restart-link:hover{color:var(--text-secondary);}
+
+  .footer-note{
+    margin-top:48px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    color:var(--text-tertiary);
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">AI<span>@RE</span> TRANSFORMATION CHECK</div>
+</div>
+<div class="app-shell" id="app"></div>
+
+<script>
+(function(){
+
+  /* ============ DATA ============ */
+  var DIMENSIONS = [
+    {id:'D1', num:1, name:'Capability & Adoption', tagline:'Können Ihre Menschen AI?', qids:[1,2,3], lowLabel:'Menschen befähigen', lowDesc:'Bauen Sie die AI-Kompetenz und die produktive Nutzung in der Breite Ihrer Belegschaft auf.'},
+    {id:'D2', num:2, name:'Use Cases & Business Value', tagline:'Wissen Sie, wo AI Wert schafft?', qids:[4,5,6], lowLabel:'AI-Wert sichtbar machen und priorisieren', lowDesc:'Identifizieren Sie die Anwendungen und Prozesse mit dem größten Business Impact.'},
+    {id:'D3', num:3, name:'Processes & Automation', tagline:'Verändert AI bereits, wie Ihr Unternehmen arbeitet?', qids:[7,8,9], lowLabel:'Arbeit und Prozesse neu gestalten', lowDesc:'Gehen Sie vom persönlichen AI-Assistenten zu standardisierten Workflows und Automation.'},
+    {id:'D4', num:4, name:'Strategy & Operating Model', tagline:'Wissen Sie, welches Unternehmen Sie bauen wollen?', qids:[10,11,12], lowLabel:'Strategische Richtung und Operating Model klären', lowDesc:'Definieren Sie, wie Menschen, AI, Daten und Systeme künftig zusammenspielen.'},
+    {id:'D5', num:5, name:'Foundations & Governance', tagline:'Haben Sie die Voraussetzungen geschaffen?', qids:[13,14,15], lowLabel:'AI-Fundament schaffen', lowDesc:'Schaffen Sie eine belastbare Basis aus Daten, Technologie und Governance für skalierte AI-Nutzung.'},
+    {id:'D6', num:6, name:'Leadership & Execution', tagline:'Können Sie die Transformation umsetzen?', qids:[16,17,18], lowLabel:'Führung und Umsetzungskraft stärken', lowDesc:'Verankern Sie AI als Managementaufgabe und bauen Sie die interne Umsetzungskompetenz aus.'}
+  ];
+
+  var QUESTIONS = [
+    {id:1, dim:'D1', text:'Wie verbreitet ist die produktive Nutzung von AI in Ihrem Unternehmen heute?', options:[
+      'AI wird kaum genutzt.','Einzelne Pioniere nutzen AI regelmäßig.','AI wird in mehreren Teams und Funktionen regelmäßig eingesetzt.','Ein großer Teil der relevanten Mitarbeitenden nutzt AI produktiv.','AI ist selbstverständlicher Bestandteil der täglichen Arbeit.']},
+    {id:2, dim:'D1', text:'Wie kompetent können Ihre Mitarbeitenden AI einsetzen und die Ergebnisse beurteilen?', options:[
+      'Kaum systematische AI-Kompetenz vorhanden.','Grundlagen sind bei einzelnen Mitarbeitenden vorhanden.','Viele Mitarbeitende können AI für typische Aufgaben sinnvoll einsetzen.','Breite professionelle Anwendung inklusive Qualitätskontrolle.','Hohe Kompetenz im Umgang mit Möglichkeiten, Grenzen, Risiken und Qualität.']},
+    {id:3, dim:'D1', text:'Wie stark verbessert AI heute bereits die tägliche Arbeit Ihrer Mitarbeitenden?', options:[
+      'Kaum erkennbarer Nutzen.','Einzelne positive Beispiele.','Regelmäßige Verbesserungen bei ausgewählten Aufgaben.','Deutliche Produktivitäts- oder Qualitätsgewinne in vielen Bereichen.','Breiter und systematisch erfasster Business Impact.']},
+    {id:4, dim:'D2', text:'Wie gut wissen Sie, wofür AI in Ihrem Unternehmen heute tatsächlich eingesetzt wird?', options:[
+      'Praktisch keine Transparenz.','Einzelne bekannte Beispiele.','Die wichtigsten Anwendungen sind grundsätzlich bekannt.','Anwendungen und Nutzen werden systematisch erfasst.','Hohe Transparenz über Nutzung, Nutzen und relevante Potenziale.']},
+    {id:5, dim:'D2', text:'Wie systematisch haben Sie Ihre wichtigsten AI-Potenziale identifiziert und priorisiert?', options:[
+      'Noch nicht.','Sammlung einzelner Ideen und Use Cases.','Relevante Use Cases wurden bewertet.','Priorisierung nach Business Impact und Machbarkeit besteht.','Ein strategisches Opportunity Portfolio steuert Investitionen und Umsetzung.']},
+    {id:6, dim:'D2', text:'Wie systematisch werden erfolgreiche AI-Anwendungen im Unternehmen übertragen und skaliert?', options:[
+      'Praktisch gar nicht.','Informeller Austausch zwischen Einzelnen.','Einzelne Anwendungen werden bewusst übertragen.','Erfolgreiche Anwendungen werden systematisch standardisiert und skaliert.','Skalierung erfolgreicher Anwendungen ist etablierter Bestandteil der AI-Steuerung.']},
+    {id:7, dim:'D3', text:'Auf welcher Ebene setzen Sie AI heute überwiegend ein?', options:[
+      'Einzelne persönliche Aufgaben wie Schreiben oder Recherche.','Erweiterte Einzelaufgaben und erste teambezogene Anwendungen.','Erste Workflows werden mit AI systematisch verbessert.','Mehrere Prozesse werden neu gestaltet und teilweise automatisiert.','AI ist systematisch in End-to-End-Prozesse integriert.']},
+    {id:8, dim:'D3', text:'Wie systematisch haben Sie untersucht, welche Arbeit standardisiert, automatisiert oder grundsätzlich neu gestaltet werden sollte?', options:[
+      'Noch nicht.','Einzelne offensichtliche Möglichkeiten wurden identifiziert.','In ausgewählten Bereichen wurden Aufgaben und Prozesse analysiert.','Die wichtigsten Prozesse wurden systematisch auf AI- und Automationspotenziale geprüft.','Prozessoptimierung und Automation werden unternehmensweit kontinuierlich gesteuert.']},
+    {id:9, dim:'D3', text:'Wie gut arbeiten Menschen, AI, Daten und Systeme heute bereits zusammen?', options:[
+      'Weitgehend getrennte Welten.','AI wird überwiegend als separates Tool genutzt.','Erste Integrationen und automatisierte Workflows bestehen.','Mehrere relevante Prozesse sind integriert.','Menschen, AI, Daten und Systeme arbeiten systematisch orchestriert zusammen.']},
+    {id:10, dim:'D4', text:'Wie klar ist im Management die strategische Ambition für AI?', options:[
+      'Es gibt kein gemeinsames Zielbild.','Unterschiedliche Vorstellungen und einzelne Initiativen.','Grundsätzliche Richtung ist abgestimmt.','Klare AI-Ambition und gemeinsames Zielbild.','AI-Ambition ist integraler Bestandteil der Unternehmensstrategie.']},
+    {id:11, dim:'D4', text:'Wie klar haben Sie definiert, wie AI künftig Rollen, Aufgaben, Zusammenarbeit und Organisation verändern soll?', options:[
+      'Noch gar nicht.','Erste Überlegungen.','Veränderungen in ausgewählten Bereichen sind definiert.','Ein weitgehend klares zukünftiges Operating Model besteht.','Das AI Target Operating Model ist definiert und wird bereits umgesetzt.']},
+    {id:12, dim:'D4', text:'Wie konkret ist Ihre Roadmap für die AI-Transformation?', options:[
+      'Keine Roadmap.','Liste von Ideen und Projekten.','Priorisierte Initiativen und erste Verantwortlichkeiten.','Klare Roadmap mit Prioritäten, Verantwortlichkeiten, Piloten und KPIs.','Roadmap wird aktiv gesteuert, gemessen und laufend weiterentwickelt.']},
+    {id:13, dim:'D5', text:'Wie gut sind Ihre relevanten Daten und Ihr Unternehmenswissen für AI nutzbar?', options:[
+      'Stark fragmentiert oder schwer zugänglich.','Einzelne nutzbare Daten- und Wissensquellen.','Relevante Grundlagen sind teilweise strukturiert verfügbar.','Gute Verfügbarkeit und systematische Nutzung für AI-Anwendungen.','Daten und Unternehmenswissen sind strategisch organisiert und AI-ready.']},
+    {id:14, dim:'D5', text:'Wie klar ist Ihre technologische AI-Architektur?', options:[
+      'Weitgehend ungeklärt.','Verschiedene Einzeltools ohne gemeinsame Architektur.','Zugelassene Kernlösungen und erste Integrationen.','Definierter AI Stack mit klarer Integrationslogik.','Skalierbare AI-Architektur, integriert in relevante Unternehmenssysteme.']},
+    {id:15, dim:'D5', text:'Wie klar sind Governance, Sicherheit, Qualität und Verantwortlichkeiten geregelt?', options:[
+      'Weitgehend ungeklärt.','Erste Richtlinien vorhanden.','Wesentliche Regeln und Verantwortlichkeiten sind definiert.','Governance inklusive Qualität und Human-in-the-Loop ist etabliert.','Governance ist im Arbeitsalltag verankert, überprüfbar und wird kontinuierlich weiterentwickelt.']},
+    {id:16, dim:'D6', text:'Wie stark wird die AI-Transformation von Geschäftsleitung und Führung aktiv getragen?', options:[
+      'Kaum Management-Commitment.','Einzelne engagierte Führungskräfte.','Grundsätzliches Commitment der Geschäftsleitung.','Klare C-Level-Priorität mit aktiver Führung.','AI-Transformation ist zentrale Managementaufgabe und wird entsprechend gesteuert.']},
+    {id:17, dim:'D6', text:'Verfügen Sie intern über die Kompetenz, Ressourcen und Verantwortlichkeiten, um Ihre AI-Transformation selbst zu gestalten?', options:[
+      'Klar nicht.','Einzelne Kompetenzen, aber keine ausreichende Kapazität.','Grundsätzlich vorhanden, jedoch mit relevanten Lücken.','Starkes internes Transformationsteam.','Hohe interne Kompetenz und ausreichende Ressourcen für eigenständige Transformation.']},
+    {id:18, dim:'D6', text:'Wie erfolgreich setzt Ihr Unternehmen komplexe, funktionsübergreifende Veränderungen normalerweise um?', options:[
+      'Transformationen scheitern häufig oder kommen kaum voran.','Umsetzung ist oft langsam und fragmentiert.','Größere Veränderungen können grundsätzlich umgesetzt werden.','Gute, nachgewiesene Umsetzungskompetenz.','Hohe Veränderungsgeschwindigkeit und konsequente Execution.']}
+  ];
+
+  var BANDS = [
+    {max:40, key:'beginning', label:'BEGINNING'},
+    {max:60, key:'activating', label:'ACTIVATING'},
+    {max:80, key:'transforming', label:'TRANSFORMING'},
+    {max:101,key:'leading', label:'LEADING'}
+  ];
+  function bandOf(score){
+    for(var i=0;i<BANDS.length;i++){ if(score < BANDS[i].max) return BANDS[i]; }
+    return BANDS[BANDS.length-1];
+  }
+  var SCORE_TEXT = {
+    AI_NOW:{
+      beginning:'AI wird in Ihrem Unternehmen heute kaum genutzt.',
+      activating:'Ihre Organisation beginnt, AI im Alltag zu nutzen.',
+      transforming:'Ihre Organisation nutzt AI bereits substanziell.',
+      leading:'AI ist selbstverständlicher Teil der täglichen Arbeit.'
+    },
+    AI_NEXT:{
+      beginning:'Ihr Unternehmen hat die Voraussetzungen für die nächste Stufe noch kaum geschaffen.',
+      activating:'Erste Grundlagen sind gelegt, aber Ihre Unternehmensarchitektur hält mit dieser Entwicklung noch nicht Schritt.',
+      transforming:'Ihr Unternehmen baut systematisch die Fähigkeiten für die nächste AI-Stufe auf.',
+      leading:'Ihre Unternehmensarchitektur ist weitgehend auf die nächste AI-Stufe vorbereitet.'
+    },
+    EXECUTION:{
+      beginning:'Für die Transformation fehlen aktuell Ressourcen, Kompetenz und Umsetzungskraft.',
+      activating:'Management-Commitment ist vorhanden, für die Transformation fehlen jedoch noch Ressourcen und Umsetzungskraft.',
+      transforming:'Sie verfügen über spürbares Management-Commitment und wachsende interne Umsetzungskompetenz.',
+      leading:'Sie verfügen über ausreichend Management-Commitment und interne Umsetzungskompetenz für eine eigenständige Transformation.'
+    }
+  };
+
+  /* ============ SCORING ENGINE ============ */
+  function computeDim(answers, qids){
+    var sum=0; for(var i=0;i<qids.length;i++){ sum += answers[qids[i]]; }
+    var avg = sum/qids.length;
+    return (avg-1)/4*100;
+  }
+
+  function computeResults(answers){
+    var dimScores = {};
+    DIMENSIONS.forEach(function(d){ dimScores[d.id] = computeDim(answers, d.qids); });
+
+    var AI_NOW = 0.50*dimScores.D1 + 0.30*dimScores.D2 + 0.20*dimScores.D3;
+    var AI_NEXT = 0.15*dimScores.D2 + 0.25*dimScores.D3 + 0.30*dimScores.D4 + 0.30*dimScores.D5;
+    var EXECUTION = dimScores.D6;
+
+    /* routing (priority order, first match wins) */
+    var route;
+    if(AI_NOW>=75 && AI_NEXT>=75 && EXECUTION>=70){
+      route='ROUTE5';
+    } else if(AI_NOW<50 && AI_NEXT<50){
+      route='ROUTE2';
+    } else if(AI_NOW<45){
+      route='ROUTE1';
+    } else if(AI_NOW>=50 && AI_NEXT<60){
+      route = (EXECUTION>=65) ? 'ROUTE3_DIY' : 'ROUTE4';
+    } else if(AI_NEXT<70 && EXECUTION<65){
+      route='ROUTE4';
+    } else {
+      route='ROUTE3_GENERAL';
+    }
+
+    /* transformation type */
+    var type;
+    if(AI_NOW>=75 && AI_NEXT>=75 && EXECUTION>=70) type='AI_LEADER';
+    else if(AI_NOW<50) type='EXPLORER';
+    else if((AI_NOW-AI_NEXT)>=15 || (AI_NOW>=50 && AI_NEXT<60)) type='ACTIVATOR';
+    else type='TRANSFORMER';
+
+    /* gap diagnosis */
+    var gap;
+    if(AI_NOW - AI_NEXT >= 15) gap='PEOPLE_AHEAD';
+    else if(AI_NEXT - AI_NOW >= 15) gap='STRATEGY_AHEAD';
+    else gap='BALANCED';
+
+    /* critical gates */
+    var gates=[];
+    if(answers[15] <= 2) gates.push('GOVERNANCE');
+    if(answers[16] <= 2) gates.push('LEADERSHIP');
+    if(answers[13] <= 2 && dimScores.D3 >= 50) gates.push('FOUNDATION');
+
+    /* top 3 priorities: lowest dimension scores */
+    var ranked = DIMENSIONS.slice().sort(function(a,b){ return dimScores[a.id]-dimScores[b.id]; });
+    var priorities = ranked.slice(0,3);
+
+    return {dimScores:dimScores, AI_NOW:AI_NOW, AI_NEXT:AI_NEXT, EXECUTION:EXECUTION, route:route, type:type, gap:gap, gates:gates, priorities:priorities};
+  }
+
+  var ROUTE_COPY = {
+    ROUTE1:{title:'AI@RE WORK', lead:'Ihr größter Hebel sind Ihre Menschen.',
+      body:'AI ist in Ihrem Unternehmen angekommen, wird aber noch nicht breit und professionell genug genutzt. Bevor Sie das volle Transformationspotenzial realisieren können, müssen mehr Mitarbeitende lernen, AI sicher und produktiv auf ihre tatsächliche Arbeit anzuwenden.',
+      note:'Priorität 1: AI@RE WORK. Parallel sollte das Management bereits die wichtigsten AI-NEXT-Fragen vorbereiten.'},
+    ROUTE2:{title:'AI@RE WORK + AI@RE TRANSFORM', lead:'Sie müssen Menschen und Unternehmen gleichzeitig entwickeln.',
+      body:'Weder breite Adoption noch die notwendigen organisationalen Voraussetzungen sind heute ausreichend entwickelt. Nur Mitarbeitende zu schulen wäre zu wenig — nur eine AI-Strategie zu entwickeln ebenfalls.',
+      note:'Bottom-up Kompetenz und Anwendungen aufbauen, top-down gleichzeitig Ambition, Prioritäten und Voraussetzungen schaffen. AI NOW und AI NEXT parallel starten.'},
+    ROUTE3_DIY:{title:'AI@RE TRANSFORM', lead:'Ihre Menschen sind Ihrer Organisation voraus.',
+      body:'AI wird bereits genutzt und erzeugt erste relevante Ergebnisse. Der Engpass liegt nicht mehr primär bei der individuellen Anwendung. Jetzt müssen Sie erfolgreiche Anwendungen skalieren, Prozesse neu gestalten und die Voraussetzungen für die nächste Entwicklungsstufe schaffen.',
+      note:'DIY ist für Sie realistisch: Sie verfügen über ausreichend Management-Commitment und interne Umsetzungskompetenz.'},
+    ROUTE3_GENERAL:{title:'AI@RE TRANSFORM', lead:'Sie stehen am Übergang von AI-Nutzung zu AI-Transformation.',
+      body:'Ihre Grundlagen sind solide. Jetzt zählt, erfolgreiche Anwendungen zu skalieren, Prozesse neu zu gestalten und die nächste Entwicklungsstufe organisatorisch zu verankern.',
+      note:''},
+    ROUTE4:{title:'AI@RE TRANSFORMATION CIRCLE', lead:'Sie brauchen nicht mehr Ideen. Sie brauchen Transformation.',
+      body:'Ihr Unternehmen erkennt die Bedeutung von AI und verfügt bereits über relevante Grundlagen. Der Engpass liegt jetzt in Priorisierung, Entscheidungen, funktionsübergreifender Gestaltung und konsequenter Umsetzung.',
+      note:'Die begleitete Variante hilft Ihnen, Entscheidungen schneller zu treffen, typische Umwege zu vermeiden und die Transformation konsequent in die Umsetzung zu bringen.'},
+    ROUTE5:{title:'Advanced WORK Tracks & Transformation Circle', lead:'Sie gehören zu den AI-Vorreitern.',
+      body:'AI ist in Ihrem Unternehmen bereits weit mehr als ein Experiment. Menschen, Prozesse und Management entwickeln sich systematisch weiter. Ihr nächster Hebel liegt weniger im Aufbau von Grundlagen als in Skalierung, Automation, neuen Operating Models und kontinuierlicher Weiterentwicklung.',
+      note:'Selektive Advanced WORK Tracks, vertiefende TRANSFORM-Elemente, Benchmarking und bei strategischen Transformationsvorhaben gegebenenfalls Transformation Circle.'}
+  };
+
+  var TYPE_COPY = {
+    EXPLORER:{name:'THE EXPLORER', lead:'Sie entdecken das Potenzial.', body:'AI ist angekommen, aber Kompetenz, Adoption und systematische Anwendung stehen noch am Anfang.', focus:'PEOPLE'},
+    ACTIVATOR:{name:'THE ACTIVATOR', lead:'Jetzt muss aus Aktivität Unternehmensfähigkeit werden.', body:'Ihre Mitarbeitenden und Teams erzeugen bereits relevante Anwendungen und Quick Wins. Organisation und Prozesse halten jedoch noch nicht Schritt.', focus:'COMPANY'},
+    TRANSFORMER:{name:'THE TRANSFORMER', lead:'Sie wissen, wohin Sie wollen. Jetzt zählt Umsetzung.', body:'AI ist strategisch angekommen. Der nächste Engpass liegt in Priorisierung, Prozessveränderung und Execution.', focus:'EXECUTION'},
+    AI_LEADER:{name:'THE AI LEADER', lead:'Sie gestalten bereits das Unternehmen von morgen.', body:'AI wird systematisch in Menschen, Prozesse und Unternehmensarchitektur integriert.', focus:'SCALE & LEAD'}
+  };
+
+  var GAP_COPY = {
+    PEOPLE_AHEAD:{lead:'Ihre Menschen sind Ihrer Organisation voraus.', body:'AI wird bereits genutzt — aber Ihr Unternehmen hat noch nicht die Strukturen geschaffen, um daraus den vollen Wert zu ziehen.'},
+    STRATEGY_AHEAD:{lead:'Ihre Strategie ist Ihren Menschen voraus.', body:'Sie haben wichtige Voraussetzungen geschaffen — aber die Möglichkeiten kommen noch nicht ausreichend in der täglichen Arbeit an.'},
+    BALANCED:{lead:'Menschen und Unternehmen entwickeln sich gemeinsam.', body:'Das absolute Niveau Ihrer Scores entscheidet darüber, was als Nächstes für Sie sinnvoll ist.'}
+  };
+
+  var GATE_COPY = {
+    GOVERNANCE:{title:'Governance-Lücke', body:'Ihre AI-Nutzung entwickelt sich schneller als die notwendigen Leitplanken. Datenschutz, Qualität, Verantwortlichkeiten und Human-in-the-Loop sollten kurzfristig geklärt werden.'},
+    LEADERSHIP:{title:'Leadership-Lücke', body:'Eine nachhaltige AI-Transformation ist ohne klares Management-Commitment kaum skalierbar. Bevor Sie größere Initiativen starten, sollte die strategische Verantwortung geklärt werden.'},
+    FOUNDATION:{title:'Foundation-Lücke', body:'Ihre Ambitionen bei Automation und Prozessen stoßen zunehmend an Grenzen, solange Daten und Unternehmenswissen nicht ausreichend AI-ready sind.'}
+  };
+
+  /* ============ STATE ============ */
+  var state = {
+    screen:'landing',
+    qIndex:0,
+    answers:{},
+    contact:{firstName:'',lastName:'',company:'',position:'',email:'',consent:false},
+    formError:'',
+    result:null
+  };
+
+  function setState(patch){ Object.assign(state, patch); render(); window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'}); }
+
+  /* ============ RENDER HELPERS ============ */
+  function el(html){ var t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; }
+
+  function renderLanding(){
+    return '\
+    <section class="hero">\
+      <div class="hero-copy">\
+        <div class="eyebrow">AIRE Transformation Check</div>\
+        <h1 class="hero-title">Ist Ihr Unternehmen bereit für die AI-Zukunft?</h1>\
+        <div class="hero-sub">18 Fragen · ca. 8 Minuten · ein klares Ergebnis</div>\
+        <ul class="benefit-list">\
+          <li>wie gut Sie AI heute bereits nutzen</li>\
+          <li>wie weit Ihr Unternehmen für die nächste AI-Entwicklungsstufe aufgestellt ist</li>\
+          <li>wo Ihre größten Stärken und Lücken liegen</li>\
+          <li>welche drei Themen Sie jetzt priorisieren sollten</li>\
+          <li>und welcher nächste Schritt für Ihr Unternehmen sinnvoll ist</li>\
+        </ul>\
+        <p class="punchline">Nicht mehr AI-Aktivität. Sondern der richtige nächste Schritt.</p>\
+        <div class="hero-actions">\
+          <button class="btn btn-primary" id="start-btn">Check starten →</button>\
+          <span class="hero-meta">Kostenlos &amp; unverbindlich</span>\
+        </div>\
+      </div>\
+      <div class="hero-panel">\
+        <span class="corner-mark cm-tl"></span><span class="corner-mark cm-br"></span>\
+        ' + heroDialSVG() + '\
+      </div>\
+    </section>';
+  }
+
+  function heroDialSVG(){
+    var cx=110, cy=110, labels=['People','Value','Process','Strategy','Foundation','Execution'];
+    var rings=[0.35,0.6,0.85];
+    var pts = function(r){
+      var out=[];
+      for(var k=0;k<6;k++){
+        var ang = (-90 + 60*k) * Math.PI/180;
+        out.push((cx+r*Math.cos(ang)).toFixed(1)+','+(cy+r*Math.sin(ang)).toFixed(1));
+      }
+      return out.join(' ');
+    };
+    var poly='';
+    rings.forEach(function(f){ poly += '<polygon points="'+pts(88*f)+'" fill="none" stroke="var(--line-strong)" stroke-width="1"/>'; });
+    var spokes='';
+    for(var k=0;k<6;k++){
+      var ang=(-90+60*k)*Math.PI/180;
+      var x=(cx+88*Math.cos(ang)).toFixed(1), y=(cy+88*Math.sin(ang)).toFixed(1);
+      spokes += '<line x1="'+cx+'" y1="'+cy+'" x2="'+x+'" y2="'+y+'" stroke="var(--line-strong)" stroke-width="1"/>';
+    }
+    var svg = '<svg width="220" height="240" viewBox="0 0 220 240" role="img" aria-label="AIRE Sechs-Dimensionen-Kompass">'+
+      spokes + poly +
+      '<circle cx="'+cx+'" cy="'+cy+'" r="3" fill="var(--accent)"/>' +
+      '<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+66)+'" y2="'+(cy-40)+'" stroke="var(--accent)" stroke-width="1.5"/>' +
+      '</svg>';
+    return svg;
+  }
+
+  function renderQuiz(){
+    var q = QUESTIONS[state.qIndex];
+    var dim = DIMENSIONS.filter(function(d){return d.id===q.dim;})[0];
+    var selected = state.answers[q.id];
+
+    var segs='';
+    for(var i=0;i<18;i++){
+      var filled = i<=state.qIndex ? 1:0;
+      segs += '<div class="ruler-seg"><div class="ruler-seg-fill" style="transform:scaleX('+filled+')"></div></div>';
+    }
+
+    var opts='';
+    q.options.forEach(function(txt, idx){
+      var v = idx+1;
+      var sel = selected===v ? ' selected' : '';
+      opts += '<button class="option'+sel+'" data-val="'+v+'">' +
+        '<span class="option-num">'+v+'</span><span class="option-text">'+txt+'</span></button>';
+    });
+
+    return '\
+    <div class="quiz-progress">\
+      <div class="ruler">'+segs+'</div>\
+      <div class="progress-meta"><span>Frage '+(state.qIndex+1)+' von 18</span><span>'+dim.name+'</span></div>\
+    </div>\
+    <div class="dim-header">\
+      <span class="dim-index">D'+dim.num+'</span><span class="dim-name">'+dim.name+'</span><span class="dim-tagline">— '+dim.tagline+'</span>\
+    </div>\
+    <div class="question-card">\
+      <div class="question-text">'+q.text+'</div>\
+      <div class="options">'+opts+'</div>\
+    </div>\
+    <div class="quiz-nav">\
+      <button class="btn btn-ghost" id="back-btn">← Zurück</button>\
+      <button class="btn btn-primary" id="next-btn" '+(selected?'':'disabled')+'>'+(state.qIndex===17?'Weiter zu Ihren Daten':'Weiter')+' →</button>\
+    </div>';
+  }
+
+  function renderContact(){
+    var c = state.contact;
+    return '\
+    <div class="contact-card">\
+      <div class="contact-intro">\
+        <div class="eyebrow">Fast geschafft</div>\
+        <h2>Wohin dürfen wir Ihre Auswertung schicken?</h2>\
+        <p>Sie erhalten Ihr persönliches AI@RE Transformation Profile direkt im Anschluss — und zusätzlich per E-Mail.</p>\
+      </div>\
+      <div class="field-grid">\
+        <div class="field"><label for="f-first">Vorname</label><input id="f-first" type="text" autocomplete="given-name" value="'+escapeAttr(c.firstName)+'" placeholder="Anna"/></div>\
+        <div class="field"><label for="f-last">Nachname</label><input id="f-last" type="text" autocomplete="family-name" value="'+escapeAttr(c.lastName)+'" placeholder="Muster"/></div>\
+        <div class="field"><label for="f-company">Firma</label><input id="f-company" type="text" autocomplete="organization" value="'+escapeAttr(c.company)+'" placeholder="Muster Immobilien AG"/></div>\
+        <div class="field"><label for="f-position">Position</label><input id="f-position" type="text" autocomplete="organization-title" value="'+escapeAttr(c.position)+'" placeholder="Geschäftsleitung"/></div>\
+        <div class="field full"><label for="f-email">E-Mail</label><input id="f-email" type="email" autocomplete="email" value="'+escapeAttr(c.email)+'" placeholder="anna.muster@firma.ch"/></div>\
+      </div>\
+      <label class="checkbox-field"><input type="checkbox" id="f-consent" '+(c.consent?'checked':'')+'/> Ich bin einverstanden, dass meine Angaben und die Ergebnisse dieses Checks gespeichert und zur Zusendung meiner persönlichen Auswertung verarbeitet werden.</label>\
+      <div class="form-error">'+(state.formError||'')+'</div>\
+      <div class="quiz-nav">\
+        <button class="btn btn-ghost" id="back-btn">← Zurück</button>\
+        <button class="btn btn-primary" id="submit-btn">Auswertung anzeigen →</button>\
+      </div>\
+    </div>';
+  }
+
+  function escapeAttr(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+  function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function scoreColorVar(score){
+    var b = bandOf(score).key;
+    return 'var(--sem-'+b+')';
+  }
+
+  function renderScoreCard(label, score, textKey){
+    var band = bandOf(score);
+    var color = scoreColorVar(score);
+    return '\
+    <div class="score-card">\
+      <div class="score-label">'+label+'</div>\
+      <div class="score-figure" style="color:'+color+'">'+Math.round(score)+'%</div>\
+      <div class="score-band" style="color:'+color+'">'+band.label+'</div>\
+      <div class="score-ruler"><div class="score-ruler-fill" style="width:'+score+'%;background:'+color+'"></div></div>\
+      <div class="score-desc">'+SCORE_TEXT[textKey][band.key]+'</div>\
+    </div>';
+  }
+
+  function renderResults(){
+    var r = state.result;
+    var c = state.contact;
+    var typeInfo = TYPE_COPY[r.type];
+    var gapInfo = GAP_COPY[r.gap];
+    var routeInfo = ROUTE_COPY[r.route];
+
+    var gatesHtml='';
+    if(r.gates.length){
+      gatesHtml = '<div class="gates">' + r.gates.map(function(g){
+        var gc = GATE_COPY[g];
+        return '<div class="gate-warning"><span class="g-icon">ACHTUNG</span><div class="g-body"><b>'+gc.title+'</b><span>'+gc.body+'</span></div></div>';
+      }).join('') + '</div>';
+    }
+
+    var barsHtml = DIMENSIONS.map(function(d){
+      var s = r.dimScores[d.id];
+      return '<div class="dim-bar-row"><div class="dim-bar-name">D'+d.num+' — '+d.name+'</div>' +
+        '<div class="dim-bar-track"><div class="dim-bar-fill" style="width:'+s+'%;background:'+scoreColorVar(s)+'"></div></div>' +
+        '<div class="dim-bar-val">'+Math.round(s)+'%</div></div>';
+    }).join('');
+
+    var prioritiesHtml = r.priorities.map(function(d,i){
+      return '<div class="priority-item"><div class="priority-num">'+(i+1)+'</div><div><div class="priority-title">'+d.lowLabel+'</div><div class="priority-desc">'+d.lowDesc+'</div></div></div>';
+    }).join('');
+
+    var fullName = (c.firstName+' '+c.lastName).trim();
+
+    return '\
+    <div class="proto-banner"><span>ⓘ</span><span><b>Interaktiver Prototyp.</b> Fragen, Scoring und Ergebnis-Logik entsprechen dem Grundkonzept. E-Mail-Versand und Datenbank-Speicherung sind technisch vorbereitet, aber noch nicht angebunden — dafür braucht es die im Chat abgestimmten Zugänge (E-Mail-Dienst, Supabase).</span></div>\
+    <div class="results-header">\
+      <div class="eyebrow">Ihr Ergebnis</div>\
+      <h1>Ihr AI@RE Transformation Profile</h1>\
+      <div class="sub">'+(fullName?escapeHtml(fullName)+(c.company?' · '+escapeHtml(c.company):''):'')+'</div>\
+      <div class="type-pill">'+typeInfo.name+' · Fokus: '+typeInfo.focus+'</div>\
+    </div>\
+    <div class="score-trio">\
+      '+renderScoreCard('AI NOW', r.AI_NOW, 'AI_NOW')+'\
+      '+renderScoreCard('AI NEXT', r.AI_NEXT, 'AI_NEXT')+'\
+      '+renderScoreCard('EXECUTION', r.EXECUTION, 'EXECUTION')+'\
+    </div>\
+    '+gatesHtml+'\
+    <div class="section-block">\
+      <div class="section-title">Ihre sechs Dimensionen</div>\
+      <div class="radar-wrap"><div class="dim-bars">'+barsHtml+'</div></div>\
+    </div>\
+    <div class="section-block">\
+      <div class="section-title">Ihre Diagnose</div>\
+      <div class="diagnosis-card">\
+        <div class="diagnosis-lead">'+gapInfo.lead+'</div>\
+        <div class="diagnosis-body">'+gapInfo.body+' '+typeInfo.body+'</div>\
+      </div>\
+    </div>\
+    <div class="section-block">\
+      <div class="section-title">Ihre drei Prioritäten</div>\
+      <div class="priorities">'+prioritiesHtml+'</div>\
+    </div>\
+    <div class="section-block">\
+      <div class="section-title">Unsere Empfehlung</div>\
+      <div class="recommendation">\
+        <div class="rec-title">'+routeInfo.title+'</div>\
+        <div class="rec-lead">'+routeInfo.lead+'</div>\
+        <div class="rec-body">'+routeInfo.body+'</div>\
+        '+(routeInfo.note?'<div class="rec-note">'+routeInfo.note+'</div>':'')+'\
+      </div>\
+    </div>\
+    <button class="restart-link" id="restart-btn">↻ Check neu starten</button>\
+    <div class="footer-note">Ihr Ziel ist nicht mehr AI. Ihr Ziel ist ein leistungsfähigeres Unternehmen.</div>';
+  }
+
+  /* ============ MAIN RENDER + EVENTS ============ */
+  function render(){
+    var app = document.getElementById('app');
+    var html='';
+    if(state.screen==='landing') html = renderLanding();
+    else if(state.screen==='quiz') html = renderQuiz();
+    else if(state.screen==='contact') html = renderContact();
+    else if(state.screen==='results') html = renderResults();
+    app.innerHTML = html;
+    wireEvents();
+  }
+
+  function wireEvents(){
+    var startBtn = document.getElementById('start-btn');
+    if(startBtn) startBtn.addEventListener('click', function(){ setState({screen:'quiz', qIndex:0}); });
+
+    var opts = document.querySelectorAll('.option');
+    opts.forEach(function(o){
+      o.addEventListener('click', function(){
+        var q = QUESTIONS[state.qIndex];
+        state.answers[q.id] = parseInt(o.getAttribute('data-val'),10);
+        render();
+      });
+    });
+
+    var backBtn = document.getElementById('back-btn');
+    if(backBtn) backBtn.addEventListener('click', function(){
+      if(state.screen==='contact'){ setState({screen:'quiz', qIndex:17}); return; }
+      if(state.qIndex===0){ setState({screen:'landing'}); }
+      else { setState({qIndex: state.qIndex-1}); }
+    });
+
+    var nextBtn = document.getElementById('next-btn');
+    if(nextBtn) nextBtn.addEventListener('click', function(){
+      if(state.qIndex===17){ setState({screen:'contact'}); }
+      else { setState({qIndex: state.qIndex+1}); }
+    });
+
+    var submitBtn = document.getElementById('submit-btn');
+    if(submitBtn) submitBtn.addEventListener('click', function(){
+      var first=document.getElementById('f-first').value.trim();
+      var last=document.getElementById('f-last').value.trim();
+      var company=document.getElementById('f-company').value.trim();
+      var position=document.getElementById('f-position').value.trim();
+      var email=document.getElementById('f-email').value.trim();
+      var consent=document.getElementById('f-consent').checked;
+
+      state.contact = {firstName:first,lastName:last,company:company,position:position,email:email,consent:consent};
+
+      var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if(!first || !last || !company || !email){ state.formError='Bitte füllen Sie Vorname, Nachname, Firma und E-Mail aus.'; render(); return; }
+      if(!emailOk){ state.formError='Bitte geben Sie eine gültige E-Mail-Adresse ein.'; render(); return; }
+      if(!consent){ state.formError='Bitte bestätigen Sie die Einwilligung zur Datenverarbeitung.'; render(); return; }
+
+      var result = computeResults(state.answers);
+      setState({screen:'results', result:result, formError:''});
+    });
+
+    var restartBtn = document.getElementById('restart-btn');
+    if(restartBtn) restartBtn.addEventListener('click', function(){
+      setState({screen:'landing', qIndex:0, answers:{}, contact:{firstName:'',lastName:'',company:'',position:'',email:'',consent:false}, formError:'', result:null});
+    });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

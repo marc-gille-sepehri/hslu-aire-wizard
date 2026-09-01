@@ -68,6 +68,9 @@ function HomePage({ onContactSubmit }) {
               <Link to="/check" className="cta-button cta-button-secondary">
                 Readiness Check starten
               </Link>
+              <a href="/transformation-check.html" className="cta-button cta-button-secondary">
+                Transformation Check starten
+              </a>
               <Link to="/statistics" className="cta-button cta-button-secondary">
                 Statistiken ansehen
               </Link>
