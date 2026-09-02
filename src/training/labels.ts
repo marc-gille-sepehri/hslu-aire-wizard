@@ -368,6 +368,7 @@ export const labels = {
     fEmail: 'E-Mail-Adresse',
     fRoles: 'Rollen',
     roleAdministrator: 'Administrator',
+    roleCustomerAdmin: 'Kundenadministrator',
     roleMember: 'Member',
     roleCoder: 'Kodierer (Enforcement-Signal)',
     roleStudyAdmin: 'Studienadministration (Enforcement-Signal)',

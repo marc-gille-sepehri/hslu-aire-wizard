@@ -13,6 +13,7 @@ import EnforcementSignalApp from './training/enforcement/EnforcementSignalApp'
 import CourseRouter, { NotFound as CourseNotFound } from './training/routing/CourseRouter'
 import { hasCoderAccess } from './training/enforcement/enforcementApi'
 import { useAuth } from './training/auth/AuthContext'
+import RegisterDialog from './training/auth/RegisterDialog'
 import { apiBaseUrl, contactEmail } from './config/configuration'
 import './App.css'
 
@@ -22,7 +23,10 @@ function App() {
   const location = useLocation()
   const navigate = useNavigate()
   const { status, user, logout } = useAuth()
-  const isAdmin = !!user?.roles?.includes('Administrator')
+  const [registerOpen, setRegisterOpen] = useState(false)
+  // Der Kundenadministrator kommt ebenfalls in den Administrationsbereich —
+  // sieht dort aber nur die eigene Organisation (der Server schneidet zu).
+  const isAdmin = !!user?.roles?.some((r) => r === 'Administrator' || r === 'Kundenadministrator')
   // Same gate as the server: coders and Administrators reach the coding route.
   const isCoder = hasCoderAccess(user?.roles)
 
@@ -119,7 +123,7 @@ function App() {
                 </span>
               ) : status === 'anonymous' ? (
                 <span className="nav-auth">
-                  <button type="button" className="nav-auth-btn" onClick={() => navigate('/training')}>Anmelden</button>
+                  <button type="button" className="nav-auth-btn" onClick={() => setRegisterOpen(true)}>Registrieren</button>
                 </span>
               ) : null}
             </nav>
@@ -159,6 +163,16 @@ function App() {
           <Route path="*" element={<CourseNotFound />} />
         </Routes>
       </main>
+
+      {registerOpen && (
+        <RegisterDialog
+          onClose={() => setRegisterOpen(false)}
+          onLogin={() => {
+            setRegisterOpen(false)
+            navigate('/training')
+          }}
+        />
+      )}
 
       <footer className="site-footer">
         <div className="container">

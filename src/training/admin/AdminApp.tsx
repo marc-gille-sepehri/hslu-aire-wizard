@@ -28,10 +28,17 @@ const t = labels.admin
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 // Mirrors ALLOWED_ROLES on the server. The study roles are listed here so the
 // coding route can be staffed from this panel instead of by hand in the DB.
-const ROLES = ['Administrator', 'Member', 'enforcement-signal-coder', 'enforcement-signal-admin'] as const
+const ROLES = [
+  'Administrator',
+  'Kundenadministrator',
+  'Member',
+  'enforcement-signal-coder',
+  'enforcement-signal-admin',
+] as const
 
 const ROLE_LABELS: Record<string, string> = {
   Administrator: t.roleAdministrator,
+  Kundenadministrator: t.roleCustomerAdmin,
   Member: t.roleMember,
   'enforcement-signal-coder': t.roleCoder,
   'enforcement-signal-admin': t.roleStudyAdmin,
@@ -50,6 +57,10 @@ const roleChip = (role: string) => ROLE_SHORT[role] ?? roleLabel(role)
 export default function AdminApp() {
   const { status, user } = useAuth()
   const isAdmin = !!user?.roles?.includes('Administrator')
+  // Kundenadministrator: darf herein, sieht aber nur die eigene Organisation.
+  // Der Zuschnitt passiert am Server; hier werden nur die Reiter weggelassen,
+  // die für ihn ohnehin leer oder verboten wären.
+  const isCustomerAdmin = !isAdmin && !!user?.roles?.includes('Kundenadministrator')
 
   if (status === 'checking') {
     return (
@@ -65,7 +76,7 @@ export default function AdminApp() {
       </div>
     )
   }
-  if (!isAdmin) {
+  if (!isAdmin && !isCustomerAdmin) {
     return (
       <div className="training-root font-sans">
         <div className="max-w-prose mx-auto px-4 py-16">
@@ -74,10 +85,10 @@ export default function AdminApp() {
       </div>
     )
   }
-  return <AdminPanel />
+  return <AdminPanel limited={isCustomerAdmin} />
 }
 
-function AdminPanel() {
+function AdminPanel({ limited }: { limited: boolean }) {
   const [tab, setTab] = useState<'users' | 'customers' | 'orders' | 'instances' | 'media' | 'skill'>('users')
 
   const tabCls = (active: boolean) =>
@@ -94,25 +105,31 @@ function AdminPanel() {
           <button type="button" onClick={() => setTab('users')} className={tabCls(tab === 'users')}>
             {t.tabUsers}
           </button>
-          <button type="button" onClick={() => setTab('customers')} className={tabCls(tab === 'customers')}>
-            {labels.adminCustomers.tab}
-          </button>
+          {!limited && (
+            <button type="button" onClick={() => setTab('customers')} className={tabCls(tab === 'customers')}>
+              {labels.adminCustomers.tab}
+            </button>
+          )}
           <button type="button" onClick={() => setTab('orders')} className={tabCls(tab === 'orders')}>
             {labels.adminOrders.tab}
           </button>
-          <button type="button" onClick={() => setTab('instances')} className={tabCls(tab === 'instances')}>
-            {labels.adminInstances.tab}
-          </button>
-          <button type="button" onClick={() => setTab('media')} className={tabCls(tab === 'media')}>
-            {labels.adminMedia.tab}
-          </button>
-          <button type="button" onClick={() => setTab('skill')} className={tabCls(tab === 'skill')}>
-            {labels.adminSkill.tab}
-          </button>
+          {!limited && (
+            <>
+              <button type="button" onClick={() => setTab('instances')} className={tabCls(tab === 'instances')}>
+                {labels.adminInstances.tab}
+              </button>
+              <button type="button" onClick={() => setTab('media')} className={tabCls(tab === 'media')}>
+                {labels.adminMedia.tab}
+              </button>
+              <button type="button" onClick={() => setTab('skill')} className={tabCls(tab === 'skill')}>
+                {labels.adminSkill.tab}
+              </button>
+            </>
+          )}
         </div>
 
         {tab === 'users' ? (
-          <UsersTab />
+          <UsersTab limited={limited} />
         ) : tab === 'customers' ? (
           <CustomersTab />
         ) : tab === 'orders' ? (
@@ -129,7 +146,13 @@ function AdminPanel() {
   )
 }
 
-function UsersTab() {
+/**
+ * `limited` = Kundenadministrator: sieht die Nutzer der eigenen Organisation,
+ * ändert aber keine. Anlegen, Bearbeiten, Deaktivieren und der Import bleiben
+ * der plattformweiten Rolle vorbehalten — der Server weist sie ohnehin ab, und
+ * Knöpfe anzubieten, die in ein 403 laufen, ist schlechter als keine Knöpfe.
+ */
+function UsersTab({ limited = false }: { limited?: boolean }) {
   const [users, setUsers] = useState<AdminUser[] | null>(null)
   const [showDeactivated, setShowDeactivated] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -198,13 +221,15 @@ function UsersTab() {
           />
           {t.showDeactivated}
         </label>
-        <button
-          type="button"
-          onClick={() => setDialog({ user: null })}
-          className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-gold-dark"
-        >
-          + {t.createUser}
-        </button>
+        {!limited && (
+          <button
+            type="button"
+            onClick={() => setDialog({ user: null })}
+            className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-gold-dark"
+          >
+            + {t.createUser}
+          </button>
+        )}
       </div>
 
       {error && <div className="mb-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
@@ -218,6 +243,7 @@ function UsersTab() {
         drag the file they already have open in Excel straight onto the page.
       */}
       <label
+        hidden={limited}
         onDragOver={(e) => {
           e.preventDefault()
           setDragging(true)
@@ -285,6 +311,10 @@ function UsersTab() {
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-2">
+                  {limited ? (
+                    <span className="text-xs text-slate-400">—</span>
+                  ) : (
+                  <>
                   <button
                     type="button"
                     onClick={() => setDialog({ user: u })}
@@ -309,6 +339,8 @@ function UsersTab() {
                   >
                     {u.deactivated ? t.reactivate : t.deactivate}
                   </button>
+                  </>
+                  )}
                   </div>
                 </td>
               </tr>
