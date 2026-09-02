@@ -123,7 +123,8 @@ function App() {
                 </span>
               ) : status === 'anonymous' ? (
                 <span className="nav-auth">
-                  <button type="button" className="nav-auth-btn" onClick={() => setRegisterOpen(true)}>Registrieren</button>
+                  <button type="button" className="nav-auth-btn nav-auth-btn--primary" onClick={() => setRegisterOpen(true)}>Registrieren</button>
+                  <button type="button" className="nav-auth-btn" onClick={() => navigate('/training')}>Anmelden</button>
                 </span>
               ) : null}
             </nav>
