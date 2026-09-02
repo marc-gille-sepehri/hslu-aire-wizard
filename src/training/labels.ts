@@ -52,6 +52,7 @@ export const labels = {
     addCourse: 'Kurs hinzufügen',
     published: 'Veröffentlicht',
     publishedHint: 'Nur die aktive, veröffentlichte Version erscheint für Teilnehmende.',
+    pricingLabel: 'Bepreisung',
     perSeat: 'pro Platz',
     seatsLabel: 'Plätze',
     upToSeats: 'für bis zu',

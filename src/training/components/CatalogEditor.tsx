@@ -336,8 +336,33 @@ function FamilyCard({
             />
             {t.requiresInstance}
           </label>
-          {/* Bepreisung. Leer heisst: dieser Kurs wird nicht fakturiert — eine
-              Bestellung entsteht dann ohne Rechnung. */}
+          <button
+            type="button"
+            onClick={onClone}
+            title={t.clone}
+            className="rounded-md border border-mist px-2.5 py-1 text-xs font-semibold text-navy transition-colors hover:border-navy hover:bg-cream"
+          >
+            {t.clone}
+          </button>
+          <button
+            type="button"
+            onClick={onDeleteCourse}
+            title={t.deleteVersion}
+            aria-label={t.deleteVersion}
+            className="rounded-md border border-mist p-1.5 text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700"
+          >
+            <TrashIcon />
+          </button>
+        </div>
+      </div>
+
+      {/* Zweite Zeile: Bepreisung. In der Versionsleiste wurde es zu eng —
+          Modellauswahl, Betrag und Platzgrenze brauchen zusammen mehr Platz,
+          als neben Version, Veröffentlichung und den Knöpfen übrig bleibt. */}
+      <div className="mb-3 flex flex-wrap items-center gap-2 border-b border-mist pb-3">
+        <span className="text-xs font-semibold uppercase tracking-kicker text-slate-500">
+          {t.pricingLabel}
+        </span>
           <span
             className="flex items-center gap-1.5 rounded-md border border-mist px-2 py-1 text-xs font-medium text-navy"
             title={t.priceHint}
@@ -396,24 +421,6 @@ function FamilyCard({
               {(course.pricingModel ?? 'per_seat') === 'per_seat' ? t.perSeat : t.seatsLabel}
             </span>
           </span>
-          <button
-            type="button"
-            onClick={onClone}
-            title={t.clone}
-            className="rounded-md border border-mist px-2.5 py-1 text-xs font-semibold text-navy transition-colors hover:border-navy hover:bg-cream"
-          >
-            {t.clone}
-          </button>
-          <button
-            type="button"
-            onClick={onDeleteCourse}
-            title={t.deleteVersion}
-            aria-label={t.deleteVersion}
-            className="rounded-md border border-mist p-1.5 text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700"
-          >
-            <TrashIcon />
-          </button>
-        </div>
       </div>
 
       {/* Selected version content */}
