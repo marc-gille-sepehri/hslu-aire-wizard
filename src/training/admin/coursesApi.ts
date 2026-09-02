@@ -55,6 +55,31 @@ export async function listCourses(): Promise<CourseWithModules[]> {
   return body.courses as CourseWithModules[]
 }
 
+/** Kurz für den Bestelldialog: id, Titel, Version. */
+export interface OrderableCourse {
+  id: string
+  title: string
+  description?: string
+  version: number
+  active: boolean
+  published: boolean
+}
+
+/**
+ * Kurse, für die bestellt werden kann.
+ *
+ * Eigener Endpunkt statt `listCourses`: jener ist der plattformweiten Rolle
+ * vorbehalten (403 für einen Kundenadministrator) und liefert Entwürfe, alte
+ * Versionen und die vollen Modullisten. Hier sieht der Kundenadministrator das
+ * veröffentlichte Angebot, die Plattformadministration weiterhin alles.
+ */
+export async function listOrderableCourses(): Promise<OrderableCourse[]> {
+  const res = await fetch(`${apiBaseUrl}/admin/orderable-courses`, { headers: authHeaders() })
+  if (!res.ok) throw await parseError(res)
+  const body = await res.json()
+  return body.courses as OrderableCourse[]
+}
+
 export async function createCourse(input: { title: string; description?: string }): Promise<CourseWithModules> {
   const res = await fetch(`${apiBaseUrl}/admin/courses`, {
     method: 'POST',

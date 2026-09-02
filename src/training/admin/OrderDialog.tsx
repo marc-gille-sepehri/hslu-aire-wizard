@@ -8,7 +8,7 @@ import {
   type CustomerWithUsers,
   type Order,
 } from './adminApi'
-import { listCourses, type CourseWithModules } from './coursesApi'
+import { listOrderableCourses, type OrderableCourse } from './coursesApi'
 
 const t = labels.adminOrders
 
@@ -53,7 +53,7 @@ export default function OrderDialog({
 
   const [customers, setCustomers] = useState<CustomerWithUsers[] | null>(null)
   const [customerId, setCustomerId] = useState(order?.customerId ?? '')
-  const [courses, setCourses] = useState<CourseWithModules[] | null>(null)
+  const [courses, setCourses] = useState<OrderableCourse[] | null>(null)
   /** Warum eine der beiden Listen leer ist — Fehler oder wirklich leer. */
   const [loadError, setLoadError] = useState<string | null>(null)
   const [courseId, setCourseId] = useState(order?.courseId ?? '')
@@ -86,7 +86,7 @@ export default function OrderDialog({
         setCustomers([])
         setLoadError((e as Error).message || t.loadFailed)
       })
-    listCourses()
+    listOrderableCourses()
       .then((list) => {
         setCourses(list)
         if (!editing && list.length > 0) setCourseId((prev) => prev || list[0].id)
