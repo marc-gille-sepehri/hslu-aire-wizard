@@ -11,6 +11,8 @@ export interface CourseWithModules {
   published: boolean
   /** „Braucht Durchführung": nur solche Kurse dürfen eine Durchführung haben. */
   requiresInstance: boolean
+  /** Standardpreis je Platz in Rappen; fehlt, wenn nicht fakturiert wird. */
+  pricePerSeatRappen?: number
   familyId: string
   version: number
   active: boolean
@@ -63,6 +65,8 @@ export interface OrderableCourse {
   version: number
   active: boolean
   published: boolean
+  /** Standardpreis je Platz in Rappen; fehlt, wenn nicht fakturiert wird. */
+  pricePerSeatRappen?: number
 }
 
 /**
@@ -102,7 +106,14 @@ export async function deleteCourse(id: string): Promise<void> {
 /** Rename / re-describe a course. */
 export async function updateCourse(
   id: string,
-  patch: { title?: string; description?: string; published?: boolean; requiresInstance?: boolean },
+  patch: {
+    title?: string
+    description?: string
+    published?: boolean
+    requiresInstance?: boolean
+    /** In Franken, wie eingegeben. Leerstring oder null löscht den Preis. */
+    pricePerSeat?: number | string | null
+  },
 ): Promise<CourseWithModules> {
   const res = await fetch(`${apiBaseUrl}/admin/courses/${encodeURIComponent(id)}`, {
     method: 'PUT',

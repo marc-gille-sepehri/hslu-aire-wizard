@@ -18,6 +18,8 @@ export default function OrdersTab() {
   const [error, setError] = useState<string | null>(null)
   // null = zu; { order: null } = neu; { order } = ändern.
   const [dialog, setDialog] = useState<{ order: Order | null } | null>(null)
+  /** Rückmeldung zur entstandenen Rechnung. */
+  const [notice, setNotice] = useState<string | null>(null)
 
   const reload = useCallback(() => {
     listOrders()
@@ -43,6 +45,11 @@ export default function OrdersTab() {
       </div>
 
       {error && <div className="mb-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
+      {notice && (
+        <div className="mb-4 rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-900">
+          {notice}
+        </div>
+      )}
 
       <div className="overflow-x-auto rounded-lg border border-mist">
         <table className="w-full text-left text-sm">
@@ -53,6 +60,7 @@ export default function OrdersTab() {
               <th className="px-4 py-3 font-semibold">{t.colPeriod}</th>
               <th className="px-4 py-3 font-semibold">{t.colNamed}</th>
               <th className="px-4 py-3 font-semibold text-right">{t.colSeats}</th>
+              <th className="px-4 py-3 font-semibold text-right">{t.colInvoices}</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
@@ -79,6 +87,9 @@ export default function OrdersTab() {
                   )}
                 </td>
                 <td className="px-4 py-3 text-right font-medium text-navy">{o.usedSeats ?? 0} / {o.seats}</td>
+                <td className="px-4 py-3 text-right text-slate-600">
+                  {o.invoices ? o.invoices : <span className="text-slate-400">—</span>}
+                </td>
                 <td className="px-4 py-3 text-right">
                   <button
                     type="button"
@@ -97,7 +108,7 @@ export default function OrdersTab() {
             ))}
             {orders && orders.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-sm text-slate-400">
+                <td colSpan={7} className="px-4 py-8 text-center text-sm text-slate-400">
                   {t.noOrders}
                 </td>
               </tr>
@@ -110,9 +121,10 @@ export default function OrdersTab() {
         <OrderDialog
           order={dialog.order}
           onClose={() => setDialog(null)}
-          onCreated={() => {
+          onCreated={(msg) => {
             setDialog(null)
             reload()
+            setNotice(msg ?? null)
           }}
         />
       )}

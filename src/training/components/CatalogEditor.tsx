@@ -104,6 +104,14 @@ export default function CatalogEditor() {
     updateCourse(id, { requiresInstance }).catch(fail)
   }
 
+  /** Preis je Platz. Eingabe in Franken, gespeichert wird in Rappen. */
+  const setPrice = (id: string, francs: string) => {
+    const trimmed = francs.trim()
+    updateCourse(id, { pricePerSeat: trimmed === '' ? null : trimmed })
+      .then((c) => patch(id, () => c))
+      .catch(fail)
+  }
+
   const activate = async (courseId: string, familyId: string) => {
     setCourses((cs) => (cs ? cs.map((c) => (c.familyId === familyId ? { ...c, active: c.id === courseId } : c)) : cs))
     try {
@@ -194,6 +202,7 @@ export default function CatalogEditor() {
             onDescribeCourse={(desc) => describeCourse(course.id, desc)}
             onTogglePublished={(p) => togglePublished(course.id, p)}
             onToggleRequiresInstance={(r) => toggleRequiresInstance(course.id, r)}
+            onSetPrice={(p) => setPrice(course.id, p)}
             onDeleteCourse={() => removeCourse(course)}
             onAddModule={() => addModule(course.id)}
             onRemoveModule={(mid) => removeModule(course.id, mid)}
@@ -225,6 +234,7 @@ function FamilyCard({
   onDescribeCourse,
   onTogglePublished,
   onToggleRequiresInstance,
+  onSetPrice,
   onDeleteCourse,
   onAddModule,
   onRemoveModule,
@@ -241,6 +251,8 @@ function FamilyCard({
   onDescribeCourse: (description: string) => void
   onTogglePublished: (published: boolean) => void
   onToggleRequiresInstance: (requiresInstance: boolean) => void
+  /** Preis je Platz in Franken; leer löscht ihn. */
+  onSetPrice: (francs: string) => void
   onDeleteCourse: () => void
   onAddModule: () => void
   onRemoveModule: (moduleId: string) => void
@@ -310,6 +322,27 @@ function FamilyCard({
               className="h-4 w-4 accent-navy"
             />
             {t.requiresInstance}
+          </label>
+          {/* Preis je Platz. Leer heisst: dieser Kurs wird nicht fakturiert —
+              eine Bestellung entsteht dann ohne Rechnung. */}
+          <label
+            className="flex items-center gap-1.5 rounded-md border border-mist px-2 py-1 text-xs font-medium text-navy"
+            title={t.priceHint}
+          >
+            <span className="text-slate-500">CHF</span>
+            <input
+              type="number"
+              min={0}
+              step="0.05"
+              defaultValue={
+                course.pricePerSeatRappen != null ? (course.pricePerSeatRappen / 100).toFixed(2) : ''
+              }
+              onBlur={(e) => onSetPrice(e.target.value)}
+              placeholder={t.pricePlaceholder}
+              className="w-24 rounded border border-mist bg-white px-1.5 py-0.5 text-right text-xs text-navy outline-none focus:border-navy"
+              style={{ borderStyle: 'solid' }}
+            />
+            <span className="text-slate-500">{t.perSeat}</span>
           </label>
           <button
             type="button"

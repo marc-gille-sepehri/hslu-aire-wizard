@@ -9,6 +9,7 @@ import {
   type Order,
 } from './adminApi'
 import { listOrderableCourses, type OrderableCourse } from './coursesApi'
+import { computeAmounts, formatChf, VAT_RATE_PERCENT } from './money'
 
 const t = labels.adminOrders
 
@@ -45,7 +46,8 @@ export default function OrderDialog({
   /** Gesetzt: ändern. Leer: neu anlegen. */
   order?: Order | null
   onClose: () => void
-  onCreated: () => void
+  /** `notice` meldet die entstandene Rechnung — oder nichts, wenn keine entstand. */
+  onCreated: (notice?: string) => void
 }) {
   // An der Id festgemacht, nicht am blossen Vorhandensein des Objekts: ein
   // leeres Objekt darf die Auswahl nicht sperren.
@@ -133,12 +135,18 @@ export default function OrderDialog({
     if (!canSubmit) return
     setBusy(true)
     try {
-      if (order) {
-        await updateOrder(order.id, { startDate, endDate, seats: seatsNum, namedUsers: named })
-      } else {
-        await createOrder({ courseId, customerId, startDate, endDate, seats: seatsNum, namedUsers: named })
-      }
-      onCreated()
+      const result = order
+        ? await updateOrder(order.id, { startDate, endDate, seats: seatsNum, namedUsers: named })
+        : await createOrder({ courseId, customerId, startDate, endDate, seats: seatsNum, namedUsers: named })
+      // Ob eine Rechnung entstanden ist und ob sie ankam, gehört gesagt — sonst
+      // erfährt man vom Betrag erst aus dem Postfach.
+      onCreated(
+        result.invoice
+          ? result.invoice.sent
+            ? t.invoiceSent(result.invoice.number, formatChf(result.invoice.grossRappen))
+            : t.invoiceNotSent(result.invoice.number)
+          : undefined,
+      )
     } catch (e) {
       const ae = e as AdminError
       // Der Server rechnet dasselbe nach. Kommt er auf zu wenige Plätze, bietet
@@ -232,6 +240,42 @@ export default function OrderDialog({
               }}
             />
           </label>
+
+          {/* Was das kostet — vor dem Bestellen, nicht erst auf der Rechnung.
+              Bei einer Erhöhung wird nur die Differenz berechnet, und genau das
+              steht dann hier. */}
+          {(() => {
+            const course = (courses ?? []).find((c) => c.id === courseId)
+            const unit = course?.pricePerSeatRappen
+            if (!unit || !Number.isInteger(seatsNum) || seatsNum < 1) return null
+            const billed = editing ? Math.max(0, seatsNum - (order?.seats ?? 0)) : seatsNum
+            if (billed === 0) {
+              return (
+                <p className="rounded-md border border-mist bg-cream px-3 py-2 text-xs text-slate-600">
+                  {t.noAdditionalCharge}
+                </p>
+              )
+            }
+            const a = computeAmounts(billed, unit)
+            return (
+              <div className="rounded-md border border-mist bg-cream px-3 py-2 text-sm">
+                <div className="flex justify-between text-slate-600">
+                  <span>
+                    {editing ? t.additionalSeats(billed) : t.seatsBilled(billed)} à CHF {formatChf(unit)}
+                  </span>
+                  <span>CHF {formatChf(a.netRappen)}</span>
+                </div>
+                <div className="flex justify-between text-xs text-slate-500">
+                  <span>MWST {VAT_RATE_PERCENT} %</span>
+                  <span>CHF {formatChf(a.vatRappen)}</span>
+                </div>
+                <div className="mt-1 flex justify-between border-t border-mist pt-1 font-semibold text-navy" style={{ borderTopStyle: 'solid' }}>
+                  <span>{t.invoiceTotal}</span>
+                  <span>CHF {formatChf(a.grossRappen)}</span>
+                </div>
+              </div>
+            )
+          })()}
 
           {/* Namentlich gebundene Plätze */}
           <div>

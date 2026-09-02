@@ -267,7 +267,17 @@ export interface Order {
   namedUsers?: string[]
   /** Freie Plätze für alle übrigen Nutzer des Kunden. */
   freeUnnamed?: number
+  /** Anzahl Rechnungen; eine Erhöhung der Plätze erzeugt eine weitere. */
+  invoices?: number
   createdAt: string
+}
+
+/** Was der Server nach einer Bestellung über die Rechnung meldet. */
+export interface InvoiceReceipt {
+  number: string
+  grossRappen: number
+  sent: boolean
+  seats?: number
 }
 
 export interface CreateOrderInput {
@@ -287,14 +297,18 @@ export interface UpdateOrderInput {
   namedUsers: string[]
 }
 
-export async function updateOrder(id: string, input: UpdateOrderInput): Promise<{ id: string }> {
+export async function updateOrder(
+  id: string,
+  input: UpdateOrderInput,
+): Promise<{ id: string; invoice: InvoiceReceipt | null }> {
   const res = await fetch(`${apiBaseUrl}/admin/orders/${id}`, {
     method: 'PUT',
     headers: authHeaders(),
     body: JSON.stringify(input),
   })
   if (!res.ok) throw await parseError(res)
-  return (await res.json()).order as { id: string }
+  const body = await res.json()
+  return { id: body.order.id, invoice: body.invoice ?? null }
 }
 
 export async function listOrders(): Promise<Order[]> {
@@ -304,7 +318,9 @@ export async function listOrders(): Promise<Order[]> {
   return body.orders as Order[]
 }
 
-export async function createOrder(input: CreateOrderInput): Promise<{ id: string }> {
+export async function createOrder(
+  input: CreateOrderInput,
+): Promise<{ id: string; invoice: InvoiceReceipt | null }> {
   const res = await fetch(`${apiBaseUrl}/admin/orders`, {
     method: 'POST',
     headers: authHeaders(),
@@ -312,7 +328,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ id: string
   })
   if (!res.ok) throw await parseError(res)
   const body = await res.json()
-  return body.order
+  return { id: body.order.id, invoice: body.invoice ?? null }
 }
 
 // ── Course instances (Durchführungen) ──────────────────────────────────────

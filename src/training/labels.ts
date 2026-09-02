@@ -52,6 +52,10 @@ export const labels = {
     addCourse: 'Kurs hinzufügen',
     published: 'Veröffentlicht',
     publishedHint: 'Nur die aktive, veröffentlichte Version erscheint für Teilnehmende.',
+    perSeat: 'pro Platz',
+    pricePlaceholder: 'kein Preis',
+    priceHint:
+      'Standardpreis je Platz in Franken. Wird ein Kurs mit Plätzen bestellt, geht eine Rechnung mit 8.1 % MWST an den Besteller. Leer lassen heisst: dieser Kurs wird nicht fakturiert.',
     requiresInstance: 'Braucht Durchführung',
     requiresInstanceHint:
       'Der Kurs wird begleitet gehalten, nicht im Selbststudium. Nur für gekennzeichnete Kurse lässt sich eine Durchführung anlegen.',
@@ -564,6 +568,16 @@ export const labels = {
     datesHint:
       'Der Zeitraum gilt für die nicht gebundenen Plätze. Namentlich gebundene Personen können unabhängig davon teilnehmen.',
     colNamed: 'Gebunden',
+    // Rechnungsstellung
+    colInvoices: 'Rechnungen',
+    seatsBilled: (n: number) => `${n} ${n === 1 ? 'Platz' : 'Plätze'}`,
+    additionalSeats: (n: number) => `${n} zusätzliche ${n === 1 ? 'Platz' : 'Plätze'}`,
+    invoiceTotal: 'Rechnungsbetrag',
+    noAdditionalCharge: 'Keine zusätzlichen Plätze — es wird nichts berechnet.',
+    invoiceSent: (nr: string, betrag: string) =>
+      `Rechnung ${nr} über CHF ${betrag} wurde versendet.`,
+    invoiceNotSent: (nr: string) =>
+      `Rechnung ${nr} wurde erstellt, liess sich aber nicht zustellen.`,
   },
 
   // Admin: Kursdurchführung tab
