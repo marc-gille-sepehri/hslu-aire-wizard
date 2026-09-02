@@ -187,6 +187,23 @@
   font-size: 0.85rem;
   white-space: nowrap;
 }
+/* Der eigene Name öffnet das Profil. Als Knopf gebaut, damit er per Tastatur
+   erreichbar ist; die Unterstreichung erst beim Überfahren, weil der Name
+   sonst wie ein Menüpunkt neben den Menüpunkten stünde. */
+.site-nav .nav-user-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.site-nav .nav-user-btn:hover {
+  color: var(--aire-gold);
+  text-decoration: underline;
+}
 .site-nav .nav-auth-btn {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.35);

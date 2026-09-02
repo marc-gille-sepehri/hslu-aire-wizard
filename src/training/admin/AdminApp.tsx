@@ -36,6 +36,9 @@ const ROLES = [
   'enforcement-signal-admin',
 ] as const
 
+/** Was ein Kundenadministrator vergeben darf. Der Server prüft dasselbe. */
+const LIMITED_ROLES = ['Kundenadministrator', 'Member'] as const
+
 const ROLE_LABELS: Record<string, string> = {
   Administrator: t.roleAdministrator,
   Kundenadministrator: t.roleCustomerAdmin,
@@ -311,10 +314,6 @@ function UsersTab({ limited = false }: { limited?: boolean }) {
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-2">
-                  {limited ? (
-                    <span className="text-xs text-slate-400">—</span>
-                  ) : (
-                  <>
                   <button
                     type="button"
                     onClick={() => setDialog({ user: u })}
@@ -327,19 +326,22 @@ function UsersTab({ limited = false }: { limited?: boolean }) {
                       <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
                     </svg>
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => toggleDeactivated(u)}
-                    disabled={busyEmail === u.email}
-                    className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
-                      u.deactivated
-                        ? 'border-navy text-navy hover:bg-navy hover:text-white'
-                        : 'border-mist text-red-700 hover:bg-red-700 hover:text-white'
-                    }`}
-                  >
-                    {u.deactivated ? t.reactivate : t.deactivate}
-                  </button>
-                  </>
+                  {/* Deaktivieren bleibt der Plattformadministration: es sperrt
+                      einen Zugang und ist nichts, was innerhalb einer
+                      Organisation nebenbei passieren sollte. */}
+                  {!limited && (
+                    <button
+                      type="button"
+                      onClick={() => toggleDeactivated(u)}
+                      disabled={busyEmail === u.email}
+                      className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
+                        u.deactivated
+                          ? 'border-navy text-navy hover:bg-navy hover:text-white'
+                          : 'border-mist text-red-700 hover:bg-red-700 hover:text-white'
+                      }`}
+                    >
+                      {u.deactivated ? t.reactivate : t.deactivate}
+                    </button>
                   )}
                   </div>
                 </td>
@@ -360,6 +362,7 @@ function UsersTab({ limited = false }: { limited?: boolean }) {
 
       {dialog && (
         <UserDialog
+          limited={limited}
           user={dialog.user}
           onClose={() => setDialog(null)}
           onSaved={(msg) => {
@@ -392,10 +395,19 @@ const NEW_CUSTOMER = '__new__'
  */
 function UserDialog({
   user,
+  limited = false,
   onClose,
   onSaved,
 }: {
   user: AdminUser | null
+  /**
+   * Kundenadministrator: ändert Name und Rolle innerhalb der eigenen
+   * Organisation. Kunde und E-Mail-Adresse bleiben gesperrt, und von den Rollen
+   * stehen nur Member und Kundenadministrator zur Wahl — die plattformweite
+   * Rolle weiterzugeben würde die Trennung aufheben, auf der die
+   * Selbstregistrierung beruht. Der Server prüft dasselbe noch einmal.
+   */
+  limited?: boolean
   onClose: () => void
   /** `notice` carries a half-success worth showing after the dialog closes. */
   onSaved: (notice?: string) => void
@@ -556,6 +568,7 @@ function UserDialog({
               className={inputCls}
               type="email"
               value={email}
+              disabled={limited}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="vorname.nachname@hslu.ch"
             />
@@ -567,11 +580,16 @@ function UserDialog({
           {/* Customer: existing or new */}
           <label className="block">
             <span className={labelCls}>{t.fCustomer}</span>
-            <select className={inputCls} value={customerChoice} onChange={(e) => setCustomerChoice(e.target.value)}>
+            <select
+              className={inputCls}
+              value={customerChoice}
+              disabled={limited}
+              onChange={(e) => setCustomerChoice(e.target.value)}
+            >
               {customers.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
-              {!isEdit && <option value={NEW_CUSTOMER}>{t.newCustomerOption}</option>}
+              {!isEdit && !limited && <option value={NEW_CUSTOMER}>{t.newCustomerOption}</option>}
             </select>
           </label>
 
@@ -619,7 +637,7 @@ function UserDialog({
           <div>
             <span className={labelCls}>{t.fRoles}</span>
             <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-              {ROLES.map((role) => (
+              {(limited ? LIMITED_ROLES : ROLES).map((role) => (
                 <label key={role} className="flex items-start gap-2 text-sm text-slate-700">
                   <input type="checkbox" checked={roles.includes(role)} onChange={() => toggleRole(role)} />
                   {roleLabel(role)}

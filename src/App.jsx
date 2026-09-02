@@ -14,6 +14,7 @@ import CourseRouter, { NotFound as CourseNotFound } from './training/routing/Cou
 import { hasCoderAccess } from './training/enforcement/enforcementApi'
 import { useAuth } from './training/auth/AuthContext'
 import RegisterDialog from './training/auth/RegisterDialog'
+import ProfileDialog from './training/auth/ProfileDialog'
 import { apiBaseUrl, contactEmail } from './config/configuration'
 import './App.css'
 
@@ -24,6 +25,7 @@ function App() {
   const navigate = useNavigate()
   const { status, user, logout } = useAuth()
   const [registerOpen, setRegisterOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
   // Der Kundenadministrator kommt ebenfalls in den Administrationsbereich —
   // sieht dort aber nur die eigene Organisation (der Server schneidet zu).
   const isAdmin = !!user?.roles?.some((r) => r === 'Administrator' || r === 'Kundenadministrator')
@@ -118,7 +120,14 @@ function App() {
               )}
               {status === 'authenticated' && user ? (
                 <span className="nav-auth">
-                  <span className="nav-user">{`${user.firstName} ${user.lastName}`.trim()}</span>
+                  <button
+                    type="button"
+                    className="nav-user nav-user-btn"
+                    onClick={() => setProfileOpen(true)}
+                    title="Mein Profil"
+                  >
+                    {`${user.firstName} ${user.lastName}`.trim()}
+                  </button>
                   <button type="button" className="nav-auth-btn" onClick={logout}>Abmelden</button>
                 </span>
               ) : status === 'anonymous' ? (
@@ -164,6 +173,8 @@ function App() {
           <Route path="*" element={<CourseNotFound />} />
         </Routes>
       </main>
+
+      {profileOpen && <ProfileDialog onClose={() => setProfileOpen(false)} />}
 
       {registerOpen && (
         <RegisterDialog
