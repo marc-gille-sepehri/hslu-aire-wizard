@@ -31,6 +31,7 @@ export const labels = {
     backToCatalog: '← Alle Kurse',
     onlyPublished: 'Nur Veröffentlichte',
     unpublishedTag: 'Unveröffentlicht',
+    priceTitle: 'Listenpreis. Bei einer Bestellung kommen 8.1 % MWST dazu.',
   },
 
   // Teilnehmeransicht (admin views a learner's progress/work)

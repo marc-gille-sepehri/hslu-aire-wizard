@@ -7,6 +7,8 @@ import ProgressDashboard from './ProgressDashboard'
 import ParticipantsDialog from './ParticipantsDialog'
 import CatalogEditor from './CatalogEditor'
 import { labels } from '../labels'
+import { useAuth } from '../auth/AuthContext'
+import { priceLabel } from '../admin/money'
 
 type State =
   | { kind: 'loading' }
@@ -21,6 +23,7 @@ type State =
  */
 export default function Catalog() {
   const { editing, isAdmin } = useEditMode()
+  const { user } = useAuth()
   const { viewAs } = useViewAs()
   const [state, setState] = useState<State>({ kind: 'loading' })
   const [participantsFor, setParticipantsFor] = useState<{ id: string; title: string } | null>(null)
@@ -48,6 +51,10 @@ export default function Catalog() {
   // What the catalog shows: the active version of each family. Learners (and the
   // default admin view) only see published ones; an admin can reveal unpublished
   // active versions with the "Nur Veröffentlichte" switch.
+  // Wer bestellen darf, sieht den Preis: die Plattformadministration und der
+  // Kundenadministrator.
+  const canOrder =
+    isAdmin || !!user?.roles?.includes('Kundenadministrator')
   const showUnpublished = isAdmin && !onlyPublished
   const visibleCourses = useMemo(
     () =>
@@ -116,6 +123,17 @@ export default function Catalog() {
                   {!course.published && (
                     <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
                       {labels.catalog.unpublishedTag}
+                    </span>
+                  )}
+                  {/* Preis nur für die, die bestellen können. Eine teilnehmende
+                      Person hat ihren Platz bereits; ihr zu zeigen, was er
+                      gekostet hat, beantwortet keine Frage, die sie hat. */}
+                  {canOrder && priceLabel(course) && (
+                    <span
+                      className="rounded-full bg-cream px-2 py-0.5 text-xs font-medium text-navy"
+                      title={labels.catalog.priceTitle}
+                    >
+                      {priceLabel(course)}
                     </span>
                   )}
                 </div>

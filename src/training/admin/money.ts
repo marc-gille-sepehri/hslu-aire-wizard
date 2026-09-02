@@ -23,3 +23,24 @@ export function computeAmounts(seats: number, unitRappen: number) {
   const vat = Math.round((net * VAT_RATE_PERCENT) / 100)
   return { netRappen: net, vatRappen: vat, grossRappen: net + vat }
 }
+
+/**
+ * Kurzform des Preises für eine Übersicht: „CHF 199.00 pro Platz" bzw.
+ * „CHF 2'500.00 pauschal, bis 15 Plätze". Gibt null, wenn kein Preis
+ * hinterlegt ist — dann steht dort nichts statt „CHF 0.00".
+ */
+export function priceLabel(course: {
+  pricingModel?: 'per_seat' | 'flat'
+  pricePerSeatRappen?: number
+  flatPriceRappen?: number
+  maxSeats?: number
+}): string | null {
+  const flat = (course.pricingModel ?? 'per_seat') === 'flat'
+  if (flat) {
+    if (!course.flatPriceRappen) return null
+    const cap = course.maxSeats ? `, bis ${course.maxSeats} Plätze` : ''
+    return `CHF ${formatChf(course.flatPriceRappen)} pauschal${cap}`
+  }
+  if (!course.pricePerSeatRappen) return null
+  return `CHF ${formatChf(course.pricePerSeatRappen)} pro Platz`
+}

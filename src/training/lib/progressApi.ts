@@ -37,6 +37,11 @@ export interface CatalogCourse {
   version: number
   active: boolean
   modules: ModuleSummary[]
+  /** Bepreisung; fehlt bei Kursen ohne hinterlegten Preis. */
+  pricingModel?: 'per_seat' | 'flat'
+  pricePerSeatRappen?: number
+  flatPriceRappen?: number
+  maxSeats?: number
 }
 
 /** All courses with their modules — the `<Course> - <Module>` offering. */
