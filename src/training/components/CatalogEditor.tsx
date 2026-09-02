@@ -104,10 +104,18 @@ export default function CatalogEditor() {
     updateCourse(id, { requiresInstance }).catch(fail)
   }
 
-  /** Preis je Platz. Eingabe in Franken, gespeichert wird in Rappen. */
-  const setPrice = (id: string, francs: string) => {
-    const trimmed = francs.trim()
-    updateCourse(id, { pricePerSeat: trimmed === '' ? null : trimmed })
+  /** Preisangaben. Eingabe in Franken, gespeichert wird in Rappen. */
+  const setPricing = (
+    id: string,
+    p: { pricingModel?: 'per_seat' | 'flat'; pricePerSeat?: string; flatPrice?: string; maxSeats?: string },
+  ) => {
+    const blank = (v?: string) => (v === undefined ? undefined : v.trim() === '' ? null : v.trim())
+    updateCourse(id, {
+      pricingModel: p.pricingModel,
+      pricePerSeat: blank(p.pricePerSeat),
+      flatPrice: blank(p.flatPrice),
+      maxSeats: blank(p.maxSeats),
+    })
       .then((c) => patch(id, () => c))
       .catch(fail)
   }
@@ -202,7 +210,7 @@ export default function CatalogEditor() {
             onDescribeCourse={(desc) => describeCourse(course.id, desc)}
             onTogglePublished={(p) => togglePublished(course.id, p)}
             onToggleRequiresInstance={(r) => toggleRequiresInstance(course.id, r)}
-            onSetPrice={(p) => setPrice(course.id, p)}
+            onSetPricing={(p) => setPricing(course.id, p)}
             onDeleteCourse={() => removeCourse(course)}
             onAddModule={() => addModule(course.id)}
             onRemoveModule={(mid) => removeModule(course.id, mid)}
@@ -234,7 +242,7 @@ function FamilyCard({
   onDescribeCourse,
   onTogglePublished,
   onToggleRequiresInstance,
-  onSetPrice,
+  onSetPricing,
   onDeleteCourse,
   onAddModule,
   onRemoveModule,
@@ -251,8 +259,13 @@ function FamilyCard({
   onDescribeCourse: (description: string) => void
   onTogglePublished: (published: boolean) => void
   onToggleRequiresInstance: (requiresInstance: boolean) => void
-  /** Preis je Platz in Franken; leer löscht ihn. */
-  onSetPrice: (francs: string) => void
+  /** Preisangaben in Franken; leer löscht den jeweiligen Wert. */
+  onSetPricing: (p: {
+    pricingModel?: 'per_seat' | 'flat'
+    pricePerSeat?: string
+    flatPrice?: string
+    maxSeats?: string
+  }) => void
   onDeleteCourse: () => void
   onAddModule: () => void
   onRemoveModule: (moduleId: string) => void
@@ -323,27 +336,66 @@ function FamilyCard({
             />
             {t.requiresInstance}
           </label>
-          {/* Preis je Platz. Leer heisst: dieser Kurs wird nicht fakturiert —
-              eine Bestellung entsteht dann ohne Rechnung. */}
-          <label
+          {/* Bepreisung. Leer heisst: dieser Kurs wird nicht fakturiert — eine
+              Bestellung entsteht dann ohne Rechnung. */}
+          <span
             className="flex items-center gap-1.5 rounded-md border border-mist px-2 py-1 text-xs font-medium text-navy"
             title={t.priceHint}
           >
-            <span className="text-slate-500">CHF</span>
-            <input
-              type="number"
-              min={0}
-              step="0.05"
-              defaultValue={
-                course.pricePerSeatRappen != null ? (course.pricePerSeatRappen / 100).toFixed(2) : ''
-              }
-              onBlur={(e) => onSetPrice(e.target.value)}
-              placeholder={t.pricePlaceholder}
-              className="w-24 rounded border border-mist bg-white px-1.5 py-0.5 text-right text-xs text-navy outline-none focus:border-navy"
+            <select
+              value={course.pricingModel ?? 'per_seat'}
+              onChange={(e) => onSetPricing({ pricingModel: e.target.value as 'per_seat' | 'flat' })}
+              className="rounded border border-mist bg-white px-1 py-0.5 text-xs text-navy outline-none focus:border-navy"
               style={{ borderStyle: 'solid' }}
-            />
-            <span className="text-slate-500">{t.perSeat}</span>
-          </label>
+            >
+              <option value="per_seat">{t.pricePerSeatModel}</option>
+              <option value="flat">{t.priceFlatModel}</option>
+            </select>
+            <span className="text-slate-500">CHF</span>
+            {(course.pricingModel ?? 'per_seat') === 'per_seat' ? (
+              <input
+                type="number"
+                min={0}
+                step="0.05"
+                defaultValue={
+                  course.pricePerSeatRappen != null ? (course.pricePerSeatRappen / 100).toFixed(2) : ''
+                }
+                onBlur={(e) => onSetPricing({ pricePerSeat: e.target.value })}
+                placeholder={t.pricePlaceholder}
+                className="w-24 rounded border border-mist bg-white px-1.5 py-0.5 text-right text-xs text-navy outline-none focus:border-navy"
+                style={{ borderStyle: 'solid' }}
+              />
+            ) : (
+              <>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.05"
+                  defaultValue={
+                    course.flatPriceRappen != null ? (course.flatPriceRappen / 100).toFixed(2) : ''
+                  }
+                  onBlur={(e) => onSetPricing({ flatPrice: e.target.value })}
+                  placeholder={t.pricePlaceholder}
+                  className="w-24 rounded border border-mist bg-white px-1.5 py-0.5 text-right text-xs text-navy outline-none focus:border-navy"
+                  style={{ borderStyle: 'solid' }}
+                />
+                <span className="text-slate-500">{t.upToSeats}</span>
+                <input
+                  type="number"
+                  min={1}
+                  step="1"
+                  defaultValue={course.maxSeats ?? ''}
+                  onBlur={(e) => onSetPricing({ maxSeats: e.target.value })}
+                  placeholder="—"
+                  className="w-16 rounded border border-mist bg-white px-1.5 py-0.5 text-right text-xs text-navy outline-none focus:border-navy"
+                  style={{ borderStyle: 'solid' }}
+                />
+              </>
+            )}
+            <span className="text-slate-500">
+              {(course.pricingModel ?? 'per_seat') === 'per_seat' ? t.perSeat : t.seatsLabel}
+            </span>
+          </span>
           <button
             type="button"
             onClick={onClone}

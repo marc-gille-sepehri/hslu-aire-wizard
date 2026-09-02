@@ -117,6 +117,14 @@ export default function OrderDialog({
   const toggle = (email: string) =>
     setNamed((prev) => (prev.includes(email) ? prev.filter((e) => e !== email) : [...prev, email]))
 
+  const selectedCourse = (courses ?? []).find((c) => c.id === courseId)
+  // Bei einer Pauschale gibt es eine Obergrenze. Der Server weist darüber
+  // liegende Bestellungen ab; hier wird gar nicht erst abgeschickt.
+  const seatCap =
+    selectedCourse && (selectedCourse.pricingModel ?? 'per_seat') === 'flat'
+      ? selectedCourse.maxSeats
+      : undefined
+  const aboveCap = !!seatCap && Number.isInteger(seatsNum) && seatsNum > seatCap
   const overBooked = Number.isInteger(seatsNum) && named.length > seatsNum
   const canSubmit = !!(
     courseId &&
@@ -126,7 +134,8 @@ export default function OrderDialog({
     startDate &&
     endDate &&
     endDate >= startDate &&
-    !overBooked
+    !overBooked &&
+    !aboveCap
   )
 
   const submit = async () => {
@@ -239,39 +248,52 @@ export default function OrderDialog({
                 setSeatShortfall(null)
               }}
             />
+            {seatCap && (
+              <span className={`mt-1 block text-xs ${aboveCap ? 'font-semibold text-red-700' : 'text-slate-500'}`}>
+                {t.seatCapHint(seatCap)}
+              </span>
+            )}
           </label>
 
           {/* Was das kostet — vor dem Bestellen, nicht erst auf der Rechnung.
-              Bei einer Erhöhung wird nur die Differenz berechnet, und genau das
-              steht dann hier. */}
+              Die beiden Modelle unterscheiden sich genau hier: pro Platz wird
+              eine Erhöhung nachberechnet, bei einer Pauschale nicht. */}
           {(() => {
             const course = (courses ?? []).find((c) => c.id === courseId)
-            const unit = course?.pricePerSeatRappen
-            if (!unit || !Number.isInteger(seatsNum) || seatsNum < 1) return null
-            const billed = editing ? Math.max(0, seatsNum - (order?.seats ?? 0)) : seatsNum
-            if (billed === 0) {
+            if (!course || !Number.isInteger(seatsNum) || seatsNum < 1) return null
+            const flat = (course.pricingModel ?? 'per_seat') === 'flat'
+            const unit = flat ? course.flatPriceRappen : course.pricePerSeatRappen
+            if (!unit) return null
+
+            const previous = editing ? (order?.seats ?? 0) : 0
+            // Pauschale: nur beim Anlegen faellig. Pro Platz: die Differenz.
+            const quantity = flat ? (previous > 0 ? 0 : 1) : Math.max(0, seatsNum - previous)
+            if (quantity === 0) {
               return (
                 <p className="rounded-md border border-mist bg-cream px-3 py-2 text-xs text-slate-600">
-                  {t.noAdditionalCharge}
+                  {flat ? t.flatAlreadyPaid : t.noAdditionalCharge}
                 </p>
               )
             }
-            const a = computeAmounts(billed, unit)
+            const a = computeAmounts(quantity, unit)
+            const line = flat
+              ? t.flatLine(course.maxSeats)
+              : editing
+                ? `${t.additionalSeats(quantity)} à CHF ${formatChf(unit)}`
+                : `${t.seatsBilled(quantity)} à CHF ${formatChf(unit)}`
             return (
               <div className="rounded-md border border-mist bg-cream px-3 py-2 text-sm">
-                <div className="flex justify-between text-slate-600">
-                  <span>
-                    {editing ? t.additionalSeats(billed) : t.seatsBilled(billed)} à CHF {formatChf(unit)}
-                  </span>
-                  <span>CHF {formatChf(a.netRappen)}</span>
+                <div className="flex justify-between gap-3 text-slate-600">
+                  <span>{line}</span>
+                  <span className="whitespace-nowrap">CHF {formatChf(a.netRappen)}</span>
                 </div>
                 <div className="flex justify-between text-xs text-slate-500">
                   <span>MWST {VAT_RATE_PERCENT} %</span>
-                  <span>CHF {formatChf(a.vatRappen)}</span>
+                  <span className="whitespace-nowrap">CHF {formatChf(a.vatRappen)}</span>
                 </div>
                 <div className="mt-1 flex justify-between border-t border-mist pt-1 font-semibold text-navy" style={{ borderTopStyle: 'solid' }}>
                   <span>{t.invoiceTotal}</span>
-                  <span>CHF {formatChf(a.grossRappen)}</span>
+                  <span className="whitespace-nowrap">CHF {formatChf(a.grossRappen)}</span>
                 </div>
               </div>
             )

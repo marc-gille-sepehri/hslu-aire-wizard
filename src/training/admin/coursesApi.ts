@@ -3,6 +3,13 @@ import { apiBaseUrl } from '../../config/configuration'
 import { getStoredToken } from '../auth/AuthContext'
 import type { ModuleSummary } from '../lib/moduleApi'
 
+/**
+ * `per_seat` — jeder Platz kostet; eine Erhöhung kostet die Differenz.
+ * `flat` — eine Pauschale deckt bis zu `maxSeats` Plätze ab; eine Erhöhung
+ * innerhalb dieser Grenze kostet nichts mehr.
+ */
+export type PricingModel = 'per_seat' | 'flat'
+
 /** A course with its ordered list of modules. */
 export interface CourseWithModules {
   id: string
@@ -11,8 +18,14 @@ export interface CourseWithModules {
   published: boolean
   /** „Braucht Durchführung": nur solche Kurse dürfen eine Durchführung haben. */
   requiresInstance: boolean
+  /** Preismodell; fehlt bei Kursen von vor der Pauschale (= per_seat). */
+  pricingModel?: PricingModel
   /** Standardpreis je Platz in Rappen; fehlt, wenn nicht fakturiert wird. */
   pricePerSeatRappen?: number
+  /** Pauschale in Rappen (Modell `flat`). */
+  flatPriceRappen?: number
+  /** Obergrenze der abgedeckten Plätze (Modell `flat`). */
+  maxSeats?: number
   familyId: string
   version: number
   active: boolean
@@ -65,8 +78,11 @@ export interface OrderableCourse {
   version: number
   active: boolean
   published: boolean
+  pricingModel?: PricingModel
   /** Standardpreis je Platz in Rappen; fehlt, wenn nicht fakturiert wird. */
   pricePerSeatRappen?: number
+  flatPriceRappen?: number
+  maxSeats?: number
 }
 
 /**
@@ -111,8 +127,11 @@ export async function updateCourse(
     description?: string
     published?: boolean
     requiresInstance?: boolean
-    /** In Franken, wie eingegeben. Leerstring oder null löscht den Preis. */
+    pricingModel?: PricingModel
+    /** In Franken, wie eingegeben. Leerstring oder null löscht den Wert. */
     pricePerSeat?: number | string | null
+    flatPrice?: number | string | null
+    maxSeats?: number | string | null
   },
 ): Promise<CourseWithModules> {
   const res = await fetch(`${apiBaseUrl}/admin/courses/${encodeURIComponent(id)}`, {

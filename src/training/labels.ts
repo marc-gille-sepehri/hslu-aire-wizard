@@ -53,9 +53,13 @@ export const labels = {
     published: 'Veröffentlicht',
     publishedHint: 'Nur die aktive, veröffentlichte Version erscheint für Teilnehmende.',
     perSeat: 'pro Platz',
+    seatsLabel: 'Plätze',
+    upToSeats: 'für bis zu',
+    pricePerSeatModel: 'pro Platz',
+    priceFlatModel: 'Pauschale',
     pricePlaceholder: 'kein Preis',
     priceHint:
-      'Standardpreis je Platz in Franken. Wird ein Kurs mit Plätzen bestellt, geht eine Rechnung mit 8.1 % MWST an den Besteller. Leer lassen heisst: dieser Kurs wird nicht fakturiert.',
+      'Bepreisung in Franken. „Pro Platz": jeder Platz kostet, eine spätere Erhöhung kostet die Differenz. „Pauschale": ein Betrag deckt bis zu der angegebenen Zahl Plätze ab, eine Erhöhung darunter kostet nichts mehr, darüber ist sie nicht möglich. Leer lassen heisst: dieser Kurs wird nicht fakturiert.',
     requiresInstance: 'Braucht Durchführung',
     requiresInstanceHint:
       'Der Kurs wird begleitet gehalten, nicht im Selbststudium. Nur für gekennzeichnete Kurse lässt sich eine Durchführung anlegen.',
@@ -574,6 +578,9 @@ export const labels = {
     additionalSeats: (n: number) => `${n} zusätzliche ${n === 1 ? 'Platz' : 'Plätze'}`,
     invoiceTotal: 'Rechnungsbetrag',
     noAdditionalCharge: 'Keine zusätzlichen Plätze — es wird nichts berechnet.',
+    flatLine: (max?: number) => (max ? `Pauschale für bis zu ${max} Plätze` : 'Pauschale'),
+    flatAlreadyPaid: 'Pauschale bereits berechnet — zusätzliche Plätze kosten nichts.',
+    seatCapHint: (max: number) => `Die Pauschale deckt höchstens ${max} Plätze ab.`,
     invoiceSent: (nr: string, betrag: string) =>
       `Rechnung ${nr} über CHF ${betrag} wurde versendet.`,
     invoiceNotSent: (nr: string) =>
