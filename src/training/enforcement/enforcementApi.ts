@@ -57,10 +57,11 @@ export interface AttributeDef {
 }
 
 /**
- * Everything needed to render an item. Split out from StudyItem because the
- * public preview has no assignment and therefore no position in any order.
+ * Everything needed to render a coding item. Split out from StudyItem because
+ * the public preview has no assignment and therefore no position in any order.
  */
-export interface ItemContent {
+export interface CodingItemContent {
+  mode: 'coding'
   itemId: string
   instrumentShortName: string
   instrumentTitle: string
@@ -72,29 +73,74 @@ export interface ItemContent {
   attributes: AttributeDef[]
 }
 
-export interface StudyItem extends ItemContent {
+/**
+ * Eine Stufe der GEFMA-192-Skala, wie sie ausgeliefert wird.
+ *
+ * Ohne Si-Wert, und das ist Studiendesign: eine Zahl neben dem Text lädt dazu
+ * ein, Zahlen zu vergleichen statt Beschreibungen zu lesen. Der Server holt den
+ * Wert über `value` (die Klasse) zurück.
+ */
+export interface SeverityOption {
+  value: string
+  label: string
+  hint?: string
+}
+
+/**
+ * Ein Item des Schweregrad-Modus. Kein Normtext und keine Attribute: wer die
+ * Vorschrift daneben sieht, beurteilt das Prüfregime mit, und der Vergleich
+ * gegen die Ableitung misst dann Zirkularität.
+ */
+export interface SeverityItemContent {
+  mode: 'severity'
+  itemId: string
+  vignette: string
+  regulatedTypeLabel?: string
+  hazardLabel?: string
+  hazardDescription?: string
+  usageClassLabel?: string
+  personExposureLabel?: string
+  scale: { axis: 'person' | 'environment' | 'property'; options: SeverityOption[] }
+}
+
+export type ItemContent = CodingItemContent | SeverityItemContent
+
+interface Positioned {
   /** 1-based position in this coder's frozen order. */
   position: number
   total: number
 }
+
+export type StudyItem = (CodingItemContent | SeverityItemContent) & Positioned
 
 export interface OwnRating {
   ratingId: string
   values: Record<string, unknown>
   lookedUpBeyondExcerpt: boolean
   comment: string
+  /** Nur im Schweregrad-Modus gefüllt: „Was hat den Ausschlag gegeben?" */
+  rationale?: string
   serverReceivedAt: string
 }
 
-export interface ItemWithRating extends StudyItem {
+export type ItemWithRating = StudyItem & {
   rating: OwnRating
   canRevise: boolean
 }
+
+/**
+ * Erhebungsmodus. `coding` liest ab, was in einer Vorschrift steht; `severity`
+ * fragt nach einem Fachurteil über die Schwere. Der Modus entscheidet, welches
+ * Protokoll gezeigt wird — und die beiden Protokolle widersprechen einander.
+ */
+export type StudyMode = 'coding' | 'severity'
 
 export interface StudySession {
   /** True when the caller may read but not code. */
   readOnly?: boolean
   studyVersionId: string
+  /** Fehlt bei Erhebungen von vor Modus 2 — die waren alle `coding`. */
+  mode?: StudyMode
   itemsHash: string
   totalItems: number
   completedItems: number
@@ -109,6 +155,11 @@ export interface RatingPayload {
   values: Record<string, unknown>
   lookedUpBeyondExcerpt: boolean
   comment?: string
+  /**
+   * Nur Schweregrad-Modus. Kein Beiwerk: die Begründungen der Fachleute sind
+   * die Vergleichsbasis für die Begründungen der Ableitung.
+   */
+  rationale?: string
   /** Advisory only — the server measures dwell time itself. */
   clientStartedAt: string
   clientSubmittedAt: string

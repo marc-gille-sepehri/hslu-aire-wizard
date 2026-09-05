@@ -5,7 +5,8 @@ import { labels } from '../labels'
 import { useAuth } from '../auth/AuthContext'
 import { Markdown } from '../lib/markdown'
 import ItemForm, { type ItemSubmission } from './ItemForm'
-import { PROTOCOL_DRAFT, PROTOCOL_MARKDOWN } from './protocol'
+import SeverityForm from './SeverityForm'
+import { PROTOCOL_DRAFT, protocolFor } from './protocol'
 import {
   EnforcementError,
   fetchItemForCorrection,
@@ -15,7 +16,10 @@ import {
   hasCoderAccess,
   postRating,
   postSubmit,
+  type ItemContent,
   type ItemWithRating,
+  type StudyMode,
+  type OwnRating,
   type SampleItem,
   type StudyItem,
   type StudySession,
@@ -73,7 +77,28 @@ function Shell({ children }: { children: ReactNode }) {
  */
 function ReadOnlyView() {
   const [example, setExample] = useState(false)
-  return example ? <ExamplePage onBack={() => setExample(false)} /> : <ProtocolPage onExample={() => setExample(true)} />
+  // Auch ohne Rolle wird die Sitzung geladen — nicht wegen des Fortschritts (den
+  // gibt es hier nicht), sondern wegen des Modus. Ihn zu raten hiesse, im
+  // Zweifel das falsche Protokoll zu zeigen, und das faellt niemandem auf.
+  const [session, setSession] = useState<StudySession | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  const load = useCallback(() => {
+    setError(null)
+    fetchSession()
+      .then(setSession)
+      .catch((e) => setError(e instanceof EnforcementError && e.code === 'NO_OPEN_STUDY' ? t.noOpenStudy : t.loadError))
+  }, [])
+
+  useEffect(load, [load])
+
+  if (error) return <ErrorBox message={error} onRetry={load} />
+  if (!session) return <p className="text-slate-500">{t.loading}</p>
+  return example ? (
+    <ExamplePage onBack={() => setExample(false)} />
+  ) : (
+    <ProtocolPage mode={session.mode} onExample={() => setExample(true)} />
+  )
 }
 
 /** The notice the read-only branch leads with. Set off, not buried in prose. */
@@ -94,17 +119,17 @@ function ReadOnlyNotice({ compact = false }: { compact?: boolean }) {
 }
 
 /** Read-only counterpart of IntroPage: same protocol, no acknowledgement. */
-function ProtocolPage({ onExample }: { onExample: () => void }) {
+function ProtocolPage({ mode, onExample }: { mode?: StudyMode; onExample: () => void }) {
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-2xl font-bold text-navy">{t.introHeading}</h1>
+      <h1 className="font-display text-2xl font-bold text-navy">{t.introHeading(mode)}</h1>
 
       <ReadOnlyNotice />
 
       {PROTOCOL_DRAFT && <DraftNotice />}
 
       <div className="max-w-prose">
-        <Markdown text={PROTOCOL_MARKDOWN} />
+        <Markdown text={protocolFor(mode)} />
       </div>
 
       <div className="border-t border-mist pt-5">
@@ -145,8 +170,8 @@ function ExamplePage({ onBack }: { onBack: () => void }) {
         <p className="text-slate-500">{t.loading}</p>
       ) : (
         <>
-          <p className="max-w-prose text-sm text-slate-500">{t.readOnly.exampleLead(sample.totalItems)}</p>
-          <ItemForm
+          <p className="max-w-prose text-sm text-slate-500">{t.readOnly.exampleLead(sample.totalItems, sample.item.mode)}</p>
+          <ItemView
             key={sample.item.itemId}
             item={sample.item}
             heading={t.readOnly.exampleHeading}
@@ -195,7 +220,7 @@ function CodingSession({ email }: { email: string }) {
   if (!acknowledged) {
     return (
       <Shell>
-        <IntroPage onAcknowledged={() => setAcknowledged(acknowledgeProtocol(run))} />
+        <IntroPage mode={session.mode} onAcknowledged={() => setAcknowledged(acknowledgeProtocol(run))} />
       </Shell>
     )
   }
@@ -204,18 +229,18 @@ function CodingSession({ email }: { email: string }) {
 }
 
 /** Startseite: the coding protocol in full, then an explicit acknowledgement. */
-function IntroPage({ onAcknowledged }: { onAcknowledged: () => void }) {
+function IntroPage({ mode, onAcknowledged }: { mode?: StudyMode; onAcknowledged: () => void }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-bold text-navy">{t.introHeading}</h1>
-        <p className="mt-2 max-w-prose text-sm text-slate-500">{t.introLead}</p>
+        <h1 className="font-display text-2xl font-bold text-navy">{t.introHeading(mode)}</h1>
+        <p className="mt-2 max-w-prose text-sm text-slate-500">{t.introLead(mode)}</p>
       </div>
 
       {PROTOCOL_DRAFT && <DraftNotice />}
 
       <div className="max-w-prose">
-        <Markdown text={PROTOCOL_MARKDOWN} />
+        <Markdown text={protocolFor(mode)} />
       </div>
 
       <div className="border-t border-mist pt-5">
@@ -295,8 +320,12 @@ function Coding({ session, run }: { session: StudySession; run: string }) {
       recordCodedItem(run, {
         itemId: source.itemId,
         position: source.position,
-        instrumentShortName: source.instrumentShortName,
-        provision: source.provision,
+        // Im Schweregrad-Modus gibt es keine Vorschrift, auf die verwiesen
+        // werden koennte. Die Korrekturliste zeigt dann Anlage und Gefaehrdung
+        // — genug, um ein Item wiederzuerkennen, ohne die Vignette zu wiederholen.
+        instrumentShortName:
+          source.mode === 'severity' ? source.regulatedTypeLabel || t.severity.heading : source.instrumentShortName,
+        provision: source.mode === 'severity' ? source.hazardLabel || '' : source.provision,
       })
       if (isCorrection) {
         setView({ kind: 'corrections' })
@@ -324,7 +353,7 @@ function Coding({ session, run }: { session: StudySession; run: string }) {
     )
   }
 
-  const panel = <ProtocolPanel />
+  const panel = <ProtocolPanel mode={session.mode} />
 
   if (loading) {
     return (
@@ -349,7 +378,7 @@ function Coding({ session, run }: { session: StudySession; run: string }) {
     return (
       <>
         {panel}
-        <ItemForm
+        <ItemView
           // Remounts per item so the clock and the field state start clean.
           key={`correct-${correction.itemId}-${correction.rating.ratingId}`}
           item={correction}
@@ -383,7 +412,7 @@ function Coding({ session, run }: { session: StudySession; run: string }) {
   return (
     <>
       {panel}
-      <ItemForm
+      <ItemView
         key={item.itemId}
         item={item}
         heading={t.position(item.position, item.total)}
@@ -400,18 +429,53 @@ function Coding({ session, run }: { session: StudySession; run: string }) {
 }
 
 /**
+ * Weiche zwischen den beiden Erhebungsmodi.
+ *
+ * Der Modus steckt am Item und nicht an der Sitzung, obwohl eine Version immer
+ * nur einen kennt: so entscheidet das, was tatsächlich vorliegt, und nicht das,
+ * was ein zweiter Zustand darüber behauptet. Läuft beides einmal auseinander,
+ * bekommt der Bewerter das Formular zu dem, was er sieht.
+ */
+function ItemView({
+  item,
+  initial,
+  heading,
+  submitLabel,
+  busy,
+  error,
+  readOnly = false,
+  onSubmit,
+}: {
+  item: ItemContent
+  initial?: OwnRating
+  heading: string
+  submitLabel: string
+  busy: boolean
+  error: string | null
+  readOnly?: boolean
+  onSubmit: (submission: ItemSubmission) => void
+}) {
+  const props = { initial, heading, submitLabel, busy, error, readOnly, onSubmit }
+  return item.mode === 'severity' ? (
+    <SeverityForm item={item} {...props} />
+  ) : (
+    <ItemForm item={item} {...props} />
+  )
+}
+
+/**
  * The protocol stays reachable during coding. Without it, coders guess instead
  * of looking up the decision rules — in particular the Verweisungsregel.
  */
-function ProtocolPanel() {
+function ProtocolPanel({ mode }: { mode?: StudyMode }) {
   return (
     <details className="mb-6 rounded-md border border-mist bg-white">
       <summary className="cursor-pointer list-none px-4 py-2.5 text-sm font-semibold text-navy [&::-webkit-details-marker]:hidden">
-        {t.protocolPanel}
+        {t.protocolPanel(mode)}
       </summary>
       <div className="max-h-[50vh] overflow-y-auto border-t border-mist px-4 py-3">
         <div className="max-w-prose">
-          <Markdown text={PROTOCOL_MARKDOWN} />
+          <Markdown text={protocolFor(mode)} />
         </div>
       </div>
     </details>

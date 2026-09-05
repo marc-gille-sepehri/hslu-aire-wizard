@@ -11,6 +11,83 @@
 
 export const PROTOCOL_DRAFT = true
 
+/**
+ * Das Protokoll richtet sich nach dem Modus der laufenden Erhebung.
+ *
+ * Nicht kosmetisch: das Kodierprotokoll unten erklärt die Verweisungsregel,
+ * Intervalle in Monaten und Sanktionen — lauter Regeln, die es im
+ * Schweregrad-Modus nicht gibt. Wer sie dort zu lesen bekommt, sucht im Text
+ * nach etwas, das gar nicht gefragt ist, und die Bewertung misst am Ende die
+ * Verwirrung mit.
+ */
+export function protocolFor(mode: 'coding' | 'severity' | undefined): string {
+  return mode === 'severity' ? SEVERITY_PROTOCOL_MARKDOWN : PROTOCOL_MARKDOWN
+}
+
+export const SEVERITY_PROTOCOL_MARKDOWN = `
+## Worum es geht
+
+Sie bewerten Situationen aus dem Gebäudebetrieb danach, **welcher Schaden im
+ungünstigen Fall zu erwarten ist**. Die Stufen folgen GEFMA 192, Tabelle 1.
+
+Anders als bei einer Kodierung gibt es hier **keine richtige Antwort**. Gefragt
+ist Ihr fachliches Urteil. Ausgewertet wird, worin Sachverständige
+übereinstimmen — und wie weit ein maschinelles Ableitungsverfahren davon
+abweicht. Ihre Urteile sind dabei der Massstab, nicht der Prüfling.
+
+## Was Sie sehen und was nicht
+
+Sie bekommen die Situation als Fliesstext: Anlage, Gefährdung, Nutzung und wer
+sich dort aufhält. **Die einschlägige Vorschrift wird bewusst nicht gezeigt.**
+Wer das Prüfregime daneben liest, bewertet mit, wie streng reguliert wird, statt
+wie schwer der Schaden wäre — und genau diese beiden Dinge sollen sich hier
+nicht vermischen.
+
+Aus demselben Grund tragen die Antwortstufen **keine Zahlen**. Es soll die
+Beschreibung verglichen werden, nicht der Zahlenwert.
+
+## Die Schadensart steht fest
+
+Je Situation wird **nur eine Schadensachse** gefragt — Personen-, Umwelt- oder
+Sach-/Vermögensschaden. Welche es ist, ergibt sich aus der Gefährdung und ist
+vorgegeben. Sie entscheiden die Schwere innerhalb dieser Achse, nicht die Achse
+selbst.
+
+## Der ungünstige Fall
+
+Gemeint ist der Schaden, der bei Versagen der Anlage **realistischerweise** zu
+erwarten ist — nicht der denkbar schlimmste und nicht der wahrscheinlichste.
+Die Eintrittswahrscheinlichkeit spielt hier keine Rolle; sie wird an anderer
+Stelle des Verfahrens berücksichtigt.
+
+## Ähnliche Situationen
+
+Einige Situationen ähneln einander und unterscheiden sich nur im Kontext, etwa
+in der Nutzungsart des Gebäudes. Das ist beabsichtigt: gerade der Unterschied
+zwischen ihnen ist die Messgrösse. Bewerten Sie jede Situation für sich, ohne
+zu versuchen, sich an eine frühere zu erinnern.
+
+## „Nicht entscheidbar" ist eine Antwort
+
+Wenn die Situation die Frage nicht beantwortet, wählen Sie **nicht
+entscheidbar**. Eine geratene Einstufung ist schlechter als keine: wir wollen
+gerade wissen, wo die Beschreibung nicht ausreicht.
+
+## Die Begründung
+
+Zu jeder Einstufung gehört ein bis zwei Sätze dazu, **was den Ausschlag gegeben
+hat**. Das ist kein Beiwerk. Das Ableitungsverfahren erzeugt eigene
+Begründungen, und ohne Ihre gibt es nichts, woran sich deren
+Nachvollziehbarkeit prüfen liesse.
+
+## Ablauf
+
+Sie erhalten die Situationen einzeln und in einer für Sie festgelegten
+Reihenfolge. Es gibt kein Zeitlimit und keinen Timer. Eine frühere Antwort
+können Sie über „Frühere Antwort korrigieren" ändern; die ursprüngliche bleibt
+erhalten, die Korrektur wird als neue Fassung gespeichert.
+`.trim()
+
 export const PROTOCOL_MARKDOWN = `
 ## Worum es geht
 

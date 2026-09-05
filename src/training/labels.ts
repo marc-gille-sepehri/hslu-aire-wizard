@@ -913,20 +913,27 @@ export const labels = {
       login: 'Anmelden',
       showExample: 'Beispiel-Item ansehen',
       exampleHeading: 'Beispiel-Item',
-      exampleLead: (total: number) =>
-        `Eines von ${total} Items der Erhebung. Kodierende erhalten die Items einzeln und in einer für sie zufälligen Reihenfolge; welche Vorschriften die Stichprobe enthält, wird hier nicht gezeigt.`,
+      exampleLead: (total: number, mode?: 'coding' | 'severity') =>
+        mode === 'severity'
+          ? `Eine von ${total} Situationen der Erhebung. Bewertende erhalten sie einzeln und in einer für sie zufälligen Reihenfolge; welche Situationen die Stichprobe enthält, wird hier nicht gezeigt.`
+          : `Eines von ${total} Items der Erhebung. Kodierende erhalten die Items einzeln und in einer für sie zufälligen Reihenfolge; welche Vorschriften die Stichprobe enthält, wird hier nicht gezeigt.`,
       backToProtocol: 'Zurück zum Protokoll',
       exampleError: 'Das Beispiel-Item konnte nicht geladen werden.',
     },
 
-    // Startseite
-    introHeading: 'Kodierprotokoll',
-    introLead:
-      'Bitte lesen Sie das Protokoll vollständig, bevor Sie beginnen. Es bleibt während der Kodierung jederzeit aufklappbar.',
+    // Startseite. Die Überschriften folgen dem Erhebungsmodus: „Kodierprotokoll“
+    // über einer Schwerebewertung benennt eine Tätigkeit, die dort niemand ausübt.
+    introHeading: (mode?: 'coding' | 'severity') =>
+      mode === 'severity' ? 'Bewertungsprotokoll' : 'Kodierprotokoll',
+    introLead: (mode?: 'coding' | 'severity') =>
+      mode === 'severity'
+        ? 'Bitte lesen Sie das Protokoll vollständig, bevor Sie beginnen. Es bleibt während der Bewertung jederzeit aufklappbar.'
+        : 'Bitte lesen Sie das Protokoll vollständig, bevor Sie beginnen. Es bleibt während der Kodierung jederzeit aufklappbar.',
     acknowledge: 'Ich habe das Protokoll gelesen',
 
-    // Protokoll-Panel während der Kodierung
-    protocolPanel: 'Kodierprotokoll',
+    // Protokoll-Panel während der Erhebung
+    protocolPanel: (mode?: 'coding' | 'severity') =>
+      mode === 'severity' ? 'Bewertungsprotokoll' : 'Kodierprotokoll',
 
     // Item-Ansicht
     position: (n: number, total: number) => `Item ${n} von ${total}`,
@@ -949,6 +956,32 @@ export const labels = {
     numberInvalid: 'Bitte eine ganze Zahl eingeben.',
     numberMin: (min: number) => `Der Wert muss mindestens ${min} betragen.`,
     numberMax: (max: number) => `Der Wert darf höchstens ${max} betragen.`,
+
+    // Erhebungsmodus 2: Schwerebewertung nach GEFMA 192, Tabelle 1.
+    severity: {
+      heading: 'Schwerebewertung',
+      subheading:
+        'Bitte lesen Sie die Situation und stufen Sie ein, welcher Schaden im ungünstigen Fall zu erwarten ist. Es gibt hier keine richtige Antwort — gefragt ist Ihr fachliches Urteil.',
+      // Die Frage nennt die Achse, weil sie mit der Gefährdung feststeht. Wer
+      // zugleich die Schadensart wählen müsste, beantwortete zwei Fragen, und
+      // die Auswertung könnte beide nicht mehr trennen.
+      question: (axis: 'person' | 'environment' | 'property') =>
+        axis === 'person'
+          ? 'Welcher Personenschaden ist im ungünstigen Fall zu erwarten?'
+          : axis === 'environment'
+            ? 'Welcher Umweltschaden ist im ungünstigen Fall zu erwarten?'
+            : 'Welcher Sach- oder Vermögensschaden ist im ungünstigen Fall zu erwarten?',
+      questionHint:
+        'Die Stufen folgen GEFMA 192, Tabelle 1. Wenn die Situation die Frage nicht beantwortet, wählen Sie „Nicht entscheidbar“ — eine geratene Einstufung ist schlechter als keine.',
+      regulatedType: 'Anlage',
+      hazard: 'Gefährdung',
+      usageClass: 'Nutzungsklasse',
+      personExposure: 'Personenexposition',
+      rationaleLabel: 'Was hat den Ausschlag gegeben?',
+      rationaleHint:
+        'Ein bis zwei Sätze genügen. Diese Begründungen sind die Vergleichsbasis für die maschinell erzeugten Begründungen — ohne sie lässt sich das Modell nicht auf Nachvollziehbarkeit prüfen.',
+      rationalePlaceholder: 'z. B. weil sich im Gefahrenbereich regelmässig mehrere Personen aufhalten',
+    },
 
     // Korrekturfunktion
     correctionsOpen: 'Frühere Antwort korrigieren',

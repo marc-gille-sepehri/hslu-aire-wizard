@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { labels } from '../labels'
-import { UNDECIDABLE, type AttributeDef, type ItemContent, type OwnRating } from './enforcementApi'
+import { UNDECIDABLE, type AttributeDef, type CodingItemContent, type OwnRating } from './enforcementApi'
 
 const t = labels.enforcement
 
@@ -22,6 +22,8 @@ export interface ItemSubmission {
   values: Record<string, unknown>
   lookedUpBeyondExcerpt: boolean
   comment?: string
+  /** Nur Schweregrad-Modus — siehe SeverityForm. */
+  rationale?: string
   clientStartedAt: string
   clientSubmittedAt: string
 }
@@ -36,7 +38,7 @@ export default function ItemForm({
   readOnly = false,
   onSubmit,
 }: {
-  item: ItemContent
+  item: CodingItemContent
   /** Present only in correction mode: the rating being revised. */
   initial?: OwnRating
   /** Position line, e.g. "Item 14 von 92". */
@@ -423,7 +425,7 @@ function fieldProblem(def: AttributeDef, mode: Mode, draft: string, answer: unkn
 /** Blocks "Weiter" but shows no message — see fieldProblem(). */
 const NOT_ANSWERED = ''
 
-function initialAnswers(item: ItemContent, initial?: OwnRating): Record<string, unknown> {
+function initialAnswers(item: CodingItemContent, initial?: OwnRating): Record<string, unknown> {
   const out: Record<string, unknown> = {}
   if (!initial) return out
   for (const def of item.attributes) {
@@ -438,7 +440,7 @@ function initialAnswers(item: ItemContent, initial?: OwnRating): Record<string, 
   return out
 }
 
-function initialDrafts(item: ItemContent, initial?: OwnRating): Record<string, string> {
+function initialDrafts(item: CodingItemContent, initial?: OwnRating): Record<string, string> {
   const out: Record<string, string> = {}
   if (!initial) return out
   for (const def of item.attributes) {
@@ -451,7 +453,7 @@ function initialDrafts(item: ItemContent, initial?: OwnRating): Record<string, s
 }
 
 /** Nothing is pre-selected for a fresh item — a default becomes the answer. */
-function initialModes(item: ItemContent, initial?: OwnRating): Record<string, Mode> {
+function initialModes(item: CodingItemContent, initial?: OwnRating): Record<string, Mode> {
   const out: Record<string, Mode> = {}
   if (!initial) return out
   for (const def of item.attributes) {
