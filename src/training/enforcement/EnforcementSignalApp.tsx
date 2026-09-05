@@ -6,7 +6,7 @@ import { useAuth } from '../auth/AuthContext'
 import { Markdown } from '../lib/markdown'
 import ItemForm, { type ItemSubmission } from './ItemForm'
 import SeverityForm from './SeverityForm'
-import { PROTOCOL_DRAFT, protocolFor } from './protocol'
+import { isProtocolDraft, protocolFor } from './protocol'
 import {
   EnforcementError,
   fetchItemForCorrection,
@@ -128,7 +128,7 @@ function ProtocolPage({ mode, itemsPerRun, onExample }: { mode?: StudyMode; item
 
       {mode === 'severity' && <AfterStudyNotice />}
 
-      {PROTOCOL_DRAFT && <DraftNotice />}
+      {isProtocolDraft(mode) && <DraftNotice />}
 
       <div className="max-w-prose">
         <Markdown text={protocolFor(mode, itemsPerRun)} />
@@ -241,7 +241,7 @@ function IntroPage({ mode, itemsPerRun, onAcknowledged }: { mode?: StudyMode; it
 
       {mode === 'severity' && <AfterStudyNotice />}
 
-      {PROTOCOL_DRAFT && <DraftNotice />}
+      {isProtocolDraft(mode) && <DraftNotice />}
 
       <div className="max-w-prose">
         <Markdown text={protocolFor(mode, itemsPerRun)} />
@@ -260,7 +260,7 @@ function IntroPage({ mode, itemsPerRun, onAcknowledged }: { mode?: StudyMode; it
   )
 }
 
-/** Removed together with PROTOCOL_DRAFT once the approved wording is in. */
+/** Nur Modus 1 — siehe isProtocolDraft(). */
 function DraftNotice() {
   return (
     <div className="rounded-md border border-amber-400 bg-amber-50 px-4 py-3 text-sm text-slate-800">

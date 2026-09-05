@@ -2,14 +2,33 @@
 // panel throughout. The coder API does not carry it (no /protocol endpoint), so
 // it lives here.
 //
-// ⚠️ ENTWURF. The text below is scaffolded from the `helpDe` fields in
-// data/enforcement-signal/attributes.json plus the decision rules Spec 3 names
-// explicitly. It is NOT the study's authoritative protocol. Replace it with the
-// approved wording and set PROTOCOL_DRAFT to false — the UI shows a draft
-// notice until that happens, because coders must not mistake a scaffold for the
-// rules they are being measured against.
+// ⚠️ ENTWURF — nur PROTOCOL_MARKDOWN (Modus 1). Der Text ist aus den
+// `helpDe`-Feldern von data/enforcement-signal/attributes.json und den in
+// Spec 3 genannten Entscheidungsregeln zusammengesetzt, also eine
+// Rekonstruktion der Regeln und nicht die Regeln selbst. Bis die freigegebene
+// Fassung eingesetzt ist, zeigt die Oberfläche einen Hinweis: wer daran
+// gemessen wird, darf ein Gerüst nicht für die Regeln halten.
+//
+// SEVERITY_PROTOCOL_MARKDOWN (Modus 2) ist kein Gerüst — siehe isProtocolDraft().
 
-export const PROTOCOL_DRAFT = true
+/**
+ * Nur das Kodierprotokoll ist ein Entwurf.
+ *
+ * Der Hinweis gehört zu Modus 1 und dort zu einem echten Problem: der Text
+ * unten ist aus `helpDe`-Feldern zusammengesetzt, also eine Rekonstruktion der
+ * Regeln und nicht die Regeln selbst. Ein Kodierer, der daran gemessen wird,
+ * muss das wissen.
+ *
+ * Für die Schwerebewertung stimmt er nicht. Der Text ist für seinen Zweck
+ * geschrieben und durchgesehen — und einem Sachverständigen, den man um eine
+ * Stunde bittet, „noch nicht verbindlich" über die Regeln zu schreiben, sagt
+ * ihm nichts Brauchbares und nimmt ihm das Zutrauen genau dort, wo er zusagen
+ * soll. Auf der öffentlichen Seite liest ihn ausserdem, wer noch gar nicht
+ * teilnimmt.
+ */
+export function isProtocolDraft(mode: 'coding' | 'severity' | undefined): boolean {
+  return mode !== 'severity'
+}
 
 /**
  * Das Protokoll richtet sich nach dem Modus der laufenden Erhebung.
