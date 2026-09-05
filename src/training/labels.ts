@@ -993,6 +993,10 @@ export const labels = {
         heading: 'Nach Abschluss der Erhebung',
         body:
           'Alle Teilnehmenden erhalten kostenlosen Zugang zu einem Werkzeug, das aus dieser Arbeit entsteht: Für eine Kombination aus Anlagentyp, Gefährdung und Gebäudekontext zeigt es, welchen Schadensindex das Prüfregime nahelegt und aus welchen Betreiberpflichten er sich rechnet — nachvollziehbar bis auf die einzelne Vorschrift.',
+        // „MCP-Server" allein sagt einer FM-Fachfrau nichts. Der Satz nennt
+        // deshalb zuerst, woran man es hängt, und erst dann, was es ist.
+        access:
+          'Bereitgestellt wird es als MCP-Server: anbindbar an KI-Assistenten wie Claude oder ChatGPT, an eigene Systeme und an automatisierte Auswertungen über ganze Bestände. Sie fragen in normaler Sprache und bekommen nicht nur den Wert, sondern die Herleitung.',
         more:
           'Was die Erhebung an weiteren Auswertungen hergibt, fliesst ebenfalls ein. Die vollständige Fragestellung und die Ergebnisse erhalten Sie ohnehin nach Abschluss.',
       },

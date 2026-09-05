@@ -450,6 +450,7 @@ function AfterStudyNotice() {
     <aside className="rounded-md border-0 border-l-4 border-solid border-l-gold bg-gold-soft px-5 py-4">
       <p className="font-display text-sm font-bold uppercase tracking-kicker text-navy">{a.heading}</p>
       <p className="mt-2 max-w-prose text-sm leading-relaxed text-slate-800">{a.body}</p>
+      <p className="mt-2 max-w-prose text-sm leading-relaxed text-slate-800">{a.access}</p>
       <p className="mt-2 max-w-prose text-sm leading-relaxed text-slate-600">{a.more}</p>
     </aside>
   )
