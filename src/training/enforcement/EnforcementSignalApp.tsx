@@ -126,6 +126,8 @@ function ProtocolPage({ mode, itemsPerRun, onExample }: { mode?: StudyMode; item
 
       <ReadOnlyNotice />
 
+      {mode === 'severity' && <AfterStudyNotice />}
+
       {PROTOCOL_DRAFT && <DraftNotice />}
 
       <div className="max-w-prose">
@@ -236,6 +238,8 @@ function IntroPage({ mode, itemsPerRun, onAcknowledged }: { mode?: StudyMode; it
         <h1 className="font-display text-2xl font-bold text-navy">{t.introHeading(mode)}</h1>
         <p className="mt-2 max-w-prose text-sm text-slate-500">{t.introLead(mode)}</p>
       </div>
+
+      {mode === 'severity' && <AfterStudyNotice />}
 
       {PROTOCOL_DRAFT && <DraftNotice />}
 
@@ -425,6 +429,29 @@ function Coding({ session, run }: { session: StudySession; run: string }) {
         <LinkButton label={t.correctionsOpen} onClick={() => setView({ kind: 'corrections' })} />
       </div>
     </>
+  )
+}
+
+/**
+ * Was Teilnehmende von der Erhebung haben — prominent und ausserhalb des
+ * Protokolls.
+ *
+ * Ausserhalb, weil es eine andere Art Aussage ist: das Protokoll sagt, wie
+ * bewertet wird, dieser Kasten sagt, warum jemand mitmacht. Zwischen den
+ * Bewertungsregeln stünde er an der Stelle, an der ohnehin niemand mehr eine
+ * Entscheidung trifft.
+ *
+ * `border-solid` ist nicht schmückend: Preflight ist projektweit abgeschaltet,
+ * eine Klasse wie `border-l-4` setzt nur die Breite und zeichnet allein nichts.
+ */
+function AfterStudyNotice() {
+  const a = t.severity.afterStudy
+  return (
+    <aside className="rounded-md border-0 border-l-4 border-solid border-l-gold bg-gold-soft px-5 py-4">
+      <p className="font-display text-sm font-bold uppercase tracking-kicker text-navy">{a.heading}</p>
+      <p className="mt-2 max-w-prose text-sm leading-relaxed text-slate-800">{a.body}</p>
+      <p className="mt-2 max-w-prose text-sm leading-relaxed text-slate-600">{a.more}</p>
+    </aside>
   )
 }
 

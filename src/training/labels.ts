@@ -985,6 +985,17 @@ export const labels = {
       rationaleHint:
         'Ein bis zwei Sätze genügen. Diese Begründungen sind die Vergleichsbasis für die maschinell erzeugten Begründungen — ohne sie lässt sich das Modell nicht auf Nachvollziehbarkeit prüfen.',
       rationalePlaceholder: 'z. B. weil sich im Gefahrenbereich regelmässig mehrere Personen aufhalten',
+
+      // Prominent auf der Einstiegsseite, nicht im Protokolltext: Was jemand
+      // von der Teilnahme hat, entscheidet über die Zusage und darf nicht
+      // zwischen Bewertungsregeln stehen.
+      afterStudy: {
+        heading: 'Nach Abschluss der Erhebung',
+        body:
+          'Alle Teilnehmenden erhalten kostenlosen Zugang zu einem Werkzeug, das aus dieser Arbeit entsteht: Für eine Kombination aus Anlagentyp, Gefährdung und Gebäudekontext zeigt es, welchen Schadensindex das Prüfregime nahelegt und aus welchen Betreiberpflichten er sich rechnet — nachvollziehbar bis auf die einzelne Vorschrift.',
+        more:
+          'Was die Erhebung an weiteren Auswertungen hergibt, fliesst ebenfalls ein. Die vollständige Fragestellung und die Ergebnisse erhalten Sie ohnehin nach Abschluss.',
+      },
     },
 
     // Korrekturfunktion
