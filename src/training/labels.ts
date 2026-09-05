@@ -914,10 +914,12 @@ export const labels = {
       showExample: 'Beispiel-Item ansehen',
       showExampleSeverity: 'Beispielsituation ansehen',
       exampleHeading: 'Beispiel-Item',
+      // `total` ist der Umfang EINES Laufs, nicht der der Erhebung — siehe
+      // StudySession.itemsPerRater. Die beiden zu verwechseln schreckt ab.
       exampleLead: (total: number, mode?: 'coding' | 'severity') =>
         mode === 'severity'
-          ? `Eine von ${total} Situationen der Erhebung. Bewertende erhalten sie einzeln und in einer für sie zufälligen Reihenfolge; welche Situationen die Stichprobe enthält, wird hier nicht gezeigt.`
-          : `Eines von ${total} Items der Erhebung. Kodierende erhalten die Items einzeln und in einer für sie zufälligen Reihenfolge; welche Vorschriften die Stichprobe enthält, wird hier nicht gezeigt.`,
+          ? `Eine von ${total} Situationen, die Ihnen vorgelegt würden. Bewertende erhalten sie einzeln und in einer für sie zufälligen Reihenfolge; welche Situationen sie enthalten, wird hier nicht gezeigt.`
+          : `Eines von ${total} Items, die Ihnen vorgelegt würden. Kodierende erhalten die Items einzeln und in einer für sie zufälligen Reihenfolge; welche Vorschriften die Stichprobe enthält, wird hier nicht gezeigt.`,
       backToProtocol: 'Zurück zum Protokoll',
       exampleError: 'Das Beispiel-Item konnte nicht geladen werden.',
     },

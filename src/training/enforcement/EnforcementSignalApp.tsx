@@ -97,7 +97,7 @@ function ReadOnlyView() {
   return example ? (
     <ExamplePage onBack={() => setExample(false)} />
   ) : (
-    <ProtocolPage mode={session.mode} onExample={() => setExample(true)} />
+    <ProtocolPage mode={session.mode} itemsPerRun={session.itemsPerRater ?? session.totalItems} onExample={() => setExample(true)} />
   )
 }
 
@@ -119,7 +119,7 @@ function ReadOnlyNotice({ compact = false }: { compact?: boolean }) {
 }
 
 /** Read-only counterpart of IntroPage: same protocol, no acknowledgement. */
-function ProtocolPage({ mode, onExample }: { mode?: StudyMode; onExample: () => void }) {
+function ProtocolPage({ mode, itemsPerRun, onExample }: { mode?: StudyMode; itemsPerRun?: number | null; onExample: () => void }) {
   return (
     <div className="space-y-6">
       <h1 className="font-display text-2xl font-bold text-navy">{t.introHeading(mode)}</h1>
@@ -129,7 +129,7 @@ function ProtocolPage({ mode, onExample }: { mode?: StudyMode; onExample: () => 
       {PROTOCOL_DRAFT && <DraftNotice />}
 
       <div className="max-w-prose">
-        <Markdown text={protocolFor(mode)} />
+        <Markdown text={protocolFor(mode, itemsPerRun)} />
       </div>
 
       <div className="border-t border-mist pt-5">
@@ -170,7 +170,7 @@ function ExamplePage({ onBack }: { onBack: () => void }) {
         <p className="text-slate-500">{t.loading}</p>
       ) : (
         <>
-          <p className="max-w-prose text-sm text-slate-500">{t.readOnly.exampleLead(sample.totalItems, sample.item.mode)}</p>
+          <p className="max-w-prose text-sm text-slate-500">{t.readOnly.exampleLead(sample.itemsPerRater ?? sample.totalItems, sample.item.mode)}</p>
           <ItemView
             key={sample.item.itemId}
             item={sample.item}
@@ -220,7 +220,7 @@ function CodingSession({ email }: { email: string }) {
   if (!acknowledged) {
     return (
       <Shell>
-        <IntroPage mode={session.mode} onAcknowledged={() => setAcknowledged(acknowledgeProtocol(run))} />
+        <IntroPage mode={session.mode} itemsPerRun={session.itemsPerRater ?? session.totalItems} onAcknowledged={() => setAcknowledged(acknowledgeProtocol(run))} />
       </Shell>
     )
   }
@@ -229,7 +229,7 @@ function CodingSession({ email }: { email: string }) {
 }
 
 /** Startseite: the coding protocol in full, then an explicit acknowledgement. */
-function IntroPage({ mode, onAcknowledged }: { mode?: StudyMode; onAcknowledged: () => void }) {
+function IntroPage({ mode, itemsPerRun, onAcknowledged }: { mode?: StudyMode; itemsPerRun?: number | null; onAcknowledged: () => void }) {
   return (
     <div className="space-y-6">
       <div>
@@ -240,7 +240,7 @@ function IntroPage({ mode, onAcknowledged }: { mode?: StudyMode; onAcknowledged:
       {PROTOCOL_DRAFT && <DraftNotice />}
 
       <div className="max-w-prose">
-        <Markdown text={protocolFor(mode)} />
+        <Markdown text={protocolFor(mode, itemsPerRun)} />
       </div>
 
       <div className="border-t border-mist pt-5">
@@ -353,7 +353,7 @@ function Coding({ session, run }: { session: StudySession; run: string }) {
     )
   }
 
-  const panel = <ProtocolPanel mode={session.mode} />
+  const panel = <ProtocolPanel mode={session.mode} itemsPerRun={session.itemsPerRater ?? session.totalItems} />
 
   if (loading) {
     return (
@@ -467,7 +467,7 @@ function ItemView({
  * The protocol stays reachable during coding. Without it, coders guess instead
  * of looking up the decision rules — in particular the Verweisungsregel.
  */
-function ProtocolPanel({ mode }: { mode?: StudyMode }) {
+function ProtocolPanel({ mode, itemsPerRun }: { mode?: StudyMode; itemsPerRun?: number | null }) {
   return (
     <details className="mb-6 rounded-md border border-mist bg-white">
       <summary className="cursor-pointer list-none px-4 py-2.5 text-sm font-semibold text-navy [&::-webkit-details-marker]:hidden">
@@ -475,7 +475,7 @@ function ProtocolPanel({ mode }: { mode?: StudyMode }) {
       </summary>
       <div className="max-h-[50vh] overflow-y-auto border-t border-mist px-4 py-3">
         <div className="max-w-prose">
-          <Markdown text={protocolFor(mode)} />
+          <Markdown text={protocolFor(mode, itemsPerRun)} />
         </div>
       </div>
     </details>

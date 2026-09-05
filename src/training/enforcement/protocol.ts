@@ -20,8 +20,35 @@ export const PROTOCOL_DRAFT = true
  * nach etwas, das gar nicht gefragt ist, und die Bewertung misst am Ende die
  * Verwirrung mit.
  */
-export function protocolFor(mode: 'coding' | 'severity' | undefined): string {
-  return mode === 'severity' ? SEVERITY_PROTOCOL_MARKDOWN : PROTOCOL_MARKDOWN
+export function protocolFor(
+  mode: 'coding' | 'severity' | undefined,
+  itemsPerRun?: number | null,
+): string {
+  if (mode !== 'severity') return PROTOCOL_MARKDOWN
+  return SEVERITY_PROTOCOL_MARKDOWN.replace('{{aufwand}}', aufwandsatz(itemsPerRun))
+}
+
+/**
+ * Umfang und Dauer eines Laufs, aus der Zahl vom Server.
+ *
+ * Nicht im Text hartkodiert: die Zahl entscheidet der Studienleiter beim
+ * Ingest, und ein Protokoll, das „rund 45 Situationen" behauptet, während 30
+ * ausgeliefert werden, ist eine falsche Angabe genau dort, wo jemand seine
+ * Zusage davon abhängig macht.
+ *
+ * Die Spanne statt eines Punktwerts, weil eine Vignette mit Begründung
+ * erfahrungsgemäss zwischen einer und eineinhalb Minuten braucht — und wer
+ * „50 Minuten" liest und 75 braucht, fühlt sich getäuscht.
+ */
+function aufwandsatz(itemsPerRun?: number | null): string {
+  if (!itemsPerRun || itemsPerRun < 1) {
+    return '- **Umfang:** Sie erhalten die Situationen einzeln, bis Sie alle bewertet haben.'
+  }
+  const runde = (m: number): number => Math.max(5, Math.round(m / 5) * 5)
+  return (
+    `- **${itemsPerRun} Situationen**, erfahrungsgemäss ` +
+    `${runde(itemsPerRun)} bis ${runde(itemsPerRun * 1.5)} Minuten.`
+  )
 }
 
 export const SEVERITY_PROTOCOL_MARKDOWN = `
@@ -43,7 +70,7 @@ fachliches Urteil — gerade auch dort, wo es von dem anderer abweicht.
 
 ## Aufwand
 
-- **Etwa eine Stunde**, verteilt auf rund 45 Situationen.
+{{aufwand}}
 - **In Etappen möglich.** Jede Antwort wird sofort gespeichert. Wer nach zwanzig
   Situationen aufhört, macht Tage später an derselben Stelle weiter — die
   Reihenfolge bleibt dieselbe.

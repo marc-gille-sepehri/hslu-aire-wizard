@@ -141,6 +141,14 @@ export interface StudySession {
   studyVersionId: string
   /** Fehlt bei Erhebungen von vor Modus 2 — die waren alle `coding`. */
   mode?: StudyMode
+  /**
+   * Items, die EINE Person bewertet — nicht der Umfang der Erhebung.
+   * `null`, wenn jede Person alle Items bekommt.
+   *
+   * Der Unterschied gehört auf die Einstiegsseite: wer den Umfang der Erhebung
+   * für seinen eigenen hält, sagt bei einer Zahl ab, die ihn nie betroffen hätte.
+   */
+  itemsPerRater?: number | null
   itemsHash: string
   totalItems: number
   completedItems: number
@@ -224,6 +232,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export interface SampleItem {
   /** Size of the item set, for the explanatory text. */
   totalItems: number
+  /** Items je Person; null heisst „alle". Siehe StudySession.itemsPerRater. */
+  itemsPerRater: number | null
   /** One fixed, non-anchor item — the same one for every onlooker. */
   item: ItemContent
 }
@@ -236,8 +246,12 @@ export interface SampleItem {
  */
 export async function fetchSampleItem(): Promise<SampleItem> {
   const body = await request<Record<string, unknown>>('/next')
-  const { done: _done, readOnly: _readOnly, totalItems, ...item } = body
-  return { totalItems: Number(totalItems) || 0, item: item as unknown as ItemContent }
+  const { done: _done, readOnly: _readOnly, totalItems, itemsPerRater, ...item } = body
+  return {
+    totalItems: Number(totalItems) || 0,
+    itemsPerRater: typeof itemsPerRater === 'number' ? itemsPerRater : null,
+    item: item as unknown as ItemContent,
+  }
 }
 
 /** Own session state: how far this coder is, and whether the run is closed. */
