@@ -29,12 +29,11 @@ export const SEVERITY_PROTOCOL_MARKDOWN = `
 
 Sie bewerten Situationen aus dem Gebäudebetrieb danach, **welcher Schaden im
 ungünstigen Fall zu erwarten ist**. Die Antwortstufen sind die Schadensklassen
-aus **GEFMA 192, Tabelle 1** — die Skala, mit der Sie vermutlich ohnehin
-arbeiten.
+aus **GEFMA 192, Tabelle 1**.
 
 Die Erhebung gehört zu einem Forschungsprojekt der **Hochschule Luzern** zur
 Frage, wie einheitlich Schadensschwere im Facility Management eingeschätzt wird.
-Die Nutzung der GEFMA-Richtlinie ist mit der GEFMA abgestimmt.
+Die Klassenbeschreibungen sind GEFMA 192 : 2013-03, Tabelle 1 entnommen.
 
 ## Was das für Sie heisst
 
@@ -48,8 +47,8 @@ fachliches Urteil — gerade auch dort, wo es von dem anderer abweicht.
 - **In Etappen möglich.** Jede Antwort wird sofort gespeichert. Wer nach zwanzig
   Situationen aufhört, macht Tage später an derselben Stelle weiter — die
   Reihenfolge bleibt dieselbe.
-- **Kein Zeitlimit, kein Timer.** Nehmen Sie sich die Zeit, die eine Situation
-  braucht.
+- **Kein Zeitlimit.** Nehmen Sie sich die Zeit, die eine Situation braucht; es
+  wird Ihnen kein Timer angezeigt.
 
 ## Was Sie sehen und was nicht
 
@@ -74,10 +73,8 @@ Schaden, der bei Versagen der Anlage **realistischerweise** eintritt. Die
 Eintrittswahrscheinlichkeit spielt keine Rolle; sie wird an anderer Stelle
 berücksichtigt.
 
-**3 — Ähnliche Situationen sind Absicht.** Einige Situationen unterscheiden sich
-nur im Kontext, etwa in der Gebäudenutzung. Bewerten Sie jede für sich. Es ist
-weder nötig noch erwünscht, sich an eine frühere zu erinnern und daraus
-abzuleiten — wir ziehen solche Paare bewusst weit auseinander.
+**3 — Einige Situationen ähneln einander.** Bewerten Sie jede für sich, ohne
+sich an eine frühere zu erinnern und daraus abzuleiten.
 
 **4 — „Nicht entscheidbar" ist eine vollwertige Antwort.** Wenn die Beschreibung
 die Frage nicht hergibt, wählen Sie sie. Eine geratene Einstufung ist schlechter
@@ -96,6 +93,9 @@ nicht nur, *wie* Fachleute einstufen, sondern *woran* sie es festmachen. Bei
 
 - Ihre Bewertungen werden unter einem **Pseudonym** gespeichert. Der
   Auswertungsdatensatz enthält weder Namen noch E-Mail-Adressen.
+- Neben Ihren Antworten wird erfasst, **wie lange Sie je Situation brauchen**.
+  Das dient der Qualitätssicherung der Erhebung, nicht der Bewertung Ihrer
+  Person.
 - Ausgewertet wird **aggregiert**, nie einzeln. Es gibt keine Rückmeldung an
   Ihren Arbeitgeber und keine Bewertung Ihrer Person.
 - Sie können jederzeit aufhören. Was bis dahin gespeichert ist, bleibt im
@@ -130,8 +130,10 @@ Zurückblättern ist nicht vorgesehen; eine frühere Antwort können Sie über
 „Frühere Antwort korrigieren" ändern. Die ursprüngliche Antwort bleibt dabei
 erhalten, die Korrektur wird als neue Fassung gespeichert.
 
-Nehmen Sie sich die Zeit, die der Text braucht. Es gibt kein Zeitlimit und
-keinen sichtbaren Timer.
+Nehmen Sie sich die Zeit, die der Text braucht. Es gibt kein Zeitlimit, und es
+wird Ihnen kein Timer angezeigt. Neben Ihren Antworten wird erfasst, wie lange
+Sie je Item brauchen — das dient der Qualitätssicherung der Erhebung, nicht der
+Bewertung Ihrer Person.
 
 ## „nicht entscheidbar" ist eine Antwort
 
