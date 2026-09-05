@@ -28,64 +28,89 @@ export const SEVERITY_PROTOCOL_MARKDOWN = `
 ## Worum es geht
 
 Sie bewerten Situationen aus dem Gebäudebetrieb danach, **welcher Schaden im
-ungünstigen Fall zu erwarten ist**. Die Stufen folgen GEFMA 192, Tabelle 1.
+ungünstigen Fall zu erwarten ist**. Die Antwortstufen sind die Schadensklassen
+aus **GEFMA 192, Tabelle 1** — die Skala, mit der Sie vermutlich ohnehin
+arbeiten.
 
-Anders als bei einer Kodierung gibt es hier **keine richtige Antwort**. Gefragt
-ist Ihr fachliches Urteil. Ausgewertet wird, worin Sachverständige
-übereinstimmen — und wie weit ein maschinelles Ableitungsverfahren davon
-abweicht. Ihre Urteile sind dabei der Massstab, nicht der Prüfling.
+Die Erhebung gehört zu einem Forschungsprojekt der **Hochschule Luzern** zur
+Frage, wie einheitlich Schadensschwere im Facility Management eingeschätzt wird.
+Die Nutzung der GEFMA-Richtlinie ist mit der GEFMA abgestimmt.
+
+## Was das für Sie heisst
+
+**Es gibt keine richtige Antwort.** Sie werden hier nicht geprüft, und es wird
+nichts ausgewertet, was auf Sie als Person zurückführt. Gefragt ist Ihr
+fachliches Urteil — gerade auch dort, wo es von dem anderer abweicht.
+
+## Aufwand
+
+- **Etwa eine Stunde**, verteilt auf rund 45 Situationen.
+- **In Etappen möglich.** Jede Antwort wird sofort gespeichert. Wer nach zwanzig
+  Situationen aufhört, macht Tage später an derselben Stelle weiter — die
+  Reihenfolge bleibt dieselbe.
+- **Kein Zeitlimit, kein Timer.** Nehmen Sie sich die Zeit, die eine Situation
+  braucht.
 
 ## Was Sie sehen und was nicht
 
-Sie bekommen die Situation als Fliesstext: Anlage, Gefährdung, Nutzung und wer
-sich dort aufhält. **Die einschlägige Vorschrift wird bewusst nicht gezeigt.**
-Wer das Prüfregime daneben liest, bewertet mit, wie streng reguliert wird, statt
-wie schwer der Schaden wäre — und genau diese beiden Dinge sollen sich hier
-nicht vermischen.
+Sie bekommen die Situation als kurzen Fliesstext: um welche Anlage es geht, um
+welche Gefährdung, wie das Gebäude genutzt wird und wer sich dort aufhält.
 
-Aus demselben Grund tragen die Antwortstufen **keine Zahlen**. Es soll die
-Beschreibung verglichen werden, nicht der Zahlenwert.
+**Die einschlägige Vorschrift wird bewusst nicht gezeigt.** Wer das Prüfregime
+daneben liest, bewertet mit, wie streng etwas reguliert ist, statt wie schwer
+der Schaden wäre — und beides soll sich hier nicht vermischen. Aus demselben
+Grund tragen die Antwortstufen **keine Zahlen**: verglichen werden soll die
+Beschreibung, nicht der Zahlenwert.
 
-## Die Schadensart steht fest
+## Die vier Regeln
 
-Je Situation wird **nur eine Schadensachse** gefragt — Personen-, Umwelt- oder
-Sach-/Vermögensschaden. Welche es ist, ergibt sich aus der Gefährdung und ist
-vorgegeben. Sie entscheiden die Schwere innerhalb dieser Achse, nicht die Achse
-selbst.
+**1 — Die Schadensart steht fest.** Je Situation wird nur **eine** Achse gefragt:
+Personen-, Umwelt- oder Sach-/Vermögensschaden. Welche es ist, ergibt sich aus
+der Gefährdung und ist vorgegeben. Sie entscheiden die Schwere innerhalb dieser
+Achse, nicht die Achse selbst.
 
-## Der ungünstige Fall
+**2 — Gemeint ist der ungünstige, nicht der schlimmstmögliche Fall.** Also der
+Schaden, der bei Versagen der Anlage **realistischerweise** eintritt. Die
+Eintrittswahrscheinlichkeit spielt keine Rolle; sie wird an anderer Stelle
+berücksichtigt.
 
-Gemeint ist der Schaden, der bei Versagen der Anlage **realistischerweise** zu
-erwarten ist — nicht der denkbar schlimmste und nicht der wahrscheinlichste.
-Die Eintrittswahrscheinlichkeit spielt hier keine Rolle; sie wird an anderer
-Stelle des Verfahrens berücksichtigt.
+**3 — Ähnliche Situationen sind Absicht.** Einige Situationen unterscheiden sich
+nur im Kontext, etwa in der Gebäudenutzung. Bewerten Sie jede für sich. Es ist
+weder nötig noch erwünscht, sich an eine frühere zu erinnern und daraus
+abzuleiten — wir ziehen solche Paare bewusst weit auseinander.
 
-## Ähnliche Situationen
-
-Einige Situationen ähneln einander und unterscheiden sich nur im Kontext, etwa
-in der Nutzungsart des Gebäudes. Das ist beabsichtigt: gerade der Unterschied
-zwischen ihnen ist die Messgrösse. Bewerten Sie jede Situation für sich, ohne
-zu versuchen, sich an eine frühere zu erinnern.
-
-## „Nicht entscheidbar" ist eine Antwort
-
-Wenn die Situation die Frage nicht beantwortet, wählen Sie **nicht
-entscheidbar**. Eine geratene Einstufung ist schlechter als keine: wir wollen
-gerade wissen, wo die Beschreibung nicht ausreicht.
+**4 — „Nicht entscheidbar" ist eine vollwertige Antwort.** Wenn die Beschreibung
+die Frage nicht hergibt, wählen Sie sie. Eine geratene Einstufung ist schlechter
+als keine: wo die Beschreibung nicht ausreicht, ist selbst ein Ergebnis.
 
 ## Die Begründung
 
-Zu jeder Einstufung gehört ein bis zwei Sätze dazu, **was den Ausschlag gegeben
-hat**. Das ist kein Beiwerk. Das Ableitungsverfahren erzeugt eigene
-Begründungen, und ohne Ihre gibt es nichts, woran sich deren
-Nachvollziehbarkeit prüfen liesse.
+Zu jeder Einstufung gehören ein bis zwei Sätze, **was den Ausschlag gegeben
+hat**. Ein Halbsatz genügt oft — „weil sich dort regelmässig Publikum aufhält".
 
-## Ablauf
+Das ist kein Beiwerk, sondern der zweite Teil der Erhebung: uns interessiert
+nicht nur, *wie* Fachleute einstufen, sondern *woran* sie es festmachen. Bei
+„nicht entscheidbar" ist die Begründung freiwillig.
 
-Sie erhalten die Situationen einzeln und in einer für Sie festgelegten
-Reihenfolge. Es gibt kein Zeitlimit und keinen Timer. Eine frühere Antwort
-können Sie über „Frühere Antwort korrigieren" ändern; die ursprüngliche bleibt
-erhalten, die Korrektur wird als neue Fassung gespeichert.
+## Was mit Ihren Angaben geschieht
+
+- Ihre Bewertungen werden unter einem **Pseudonym** gespeichert. Der
+  Auswertungsdatensatz enthält weder Namen noch E-Mail-Adressen.
+- Ausgewertet wird **aggregiert**, nie einzeln. Es gibt keine Rückmeldung an
+  Ihren Arbeitgeber und keine Bewertung Ihrer Person.
+- Sie können jederzeit aufhören. Was bis dahin gespeichert ist, bleibt im
+  Datensatz, sofern Sie nichts anderes sagen.
+- Eine frühere Antwort können Sie über „Frühere Antwort korrigieren" ändern. Die
+  ursprüngliche bleibt erhalten, die Korrektur wird als neue Fassung gespeichert
+  — das ist Nachvollziehbarkeit, keine Kontrolle.
+
+## Zur genauen Fragestellung
+
+Welche Hypothese die Erhebung prüft, sagen wir **vorher bewusst nicht**. Wer
+weiss, worauf eine Studie hinauswill, bewertet unwillkürlich darauf hin. Sie
+erhalten die vollständige Fragestellung und die Ergebnisse nach Abschluss der
+Erhebung; fragen Sie gern jederzeit nach, dann bekommen Sie sie sofort — dann
+allerdings bewerten Sie danach nicht mehr weiter.
 `.trim()
 
 export const PROTOCOL_MARKDOWN = `

@@ -138,7 +138,7 @@ function ProtocolPage({ mode, onExample }: { mode?: StudyMode; onExample: () => 
           onClick={onExample}
           className="rounded-md bg-navy px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-light"
         >
-          {t.readOnly.showExample}
+          {mode === 'severity' ? t.readOnly.showExampleSeverity : t.readOnly.showExample}
         </button>
       </div>
     </div>
@@ -249,7 +249,7 @@ function IntroPage({ mode, onAcknowledged }: { mode?: StudyMode; onAcknowledged:
           onClick={onAcknowledged}
           className="rounded-md bg-navy px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-light"
         >
-          {t.acknowledge}
+          {mode === 'severity' ? t.acknowledgeSeverity : t.acknowledge}
         </button>
       </div>
     </div>

@@ -912,6 +912,7 @@ export const labels = {
       loginHint: 'Sie sind zur Studie eingeladen?',
       login: 'Anmelden',
       showExample: 'Beispiel-Item ansehen',
+      showExampleSeverity: 'Beispielsituation ansehen',
       exampleHeading: 'Beispiel-Item',
       exampleLead: (total: number, mode?: 'coding' | 'severity') =>
         mode === 'severity'
@@ -927,9 +928,10 @@ export const labels = {
       mode === 'severity' ? 'Bewertungsprotokoll' : 'Kodierprotokoll',
     introLead: (mode?: 'coding' | 'severity') =>
       mode === 'severity'
-        ? 'Bitte lesen Sie das Protokoll vollständig, bevor Sie beginnen. Es bleibt während der Bewertung jederzeit aufklappbar.'
+        ? 'Etwa eine Stunde, in Etappen möglich. Bitte lesen Sie diese Seite einmal ganz — sie bleibt während der Bewertung jederzeit aufklappbar.'
         : 'Bitte lesen Sie das Protokoll vollständig, bevor Sie beginnen. Es bleibt während der Kodierung jederzeit aufklappbar.',
     acknowledge: 'Ich habe das Protokoll gelesen',
+    acknowledgeSeverity: 'Gelesen — jetzt beginnen',
 
     // Protokoll-Panel während der Erhebung
     protocolPanel: (mode?: 'coding' | 'severity') =>
