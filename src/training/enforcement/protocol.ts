@@ -81,6 +81,19 @@ Die Erhebung gehört zu einem Forschungsprojekt der **Hochschule Luzern** zur
 Frage, wie einheitlich Schadensschwere im Facility Management eingeschätzt wird.
 Die Klassenbeschreibungen sind GEFMA 192 : 2013-03, Tabelle 1 entnommen.
 
+## Wer angesprochen ist
+
+Fachleute, die mit dem Betrieb technischer Gebäudeausrüstung zu tun haben — im
+Betrieb, in der Instandhaltung, in der Prüfung, in der Planung oder in der
+Beratung. Etwa: technisches Gebäudemanagement, Objekt- und Betriebsleitung,
+Prüfsachverständige und befähigte Personen, Fachplanung, Arbeits- und
+Brandschutz.
+
+Vorausgesetzt wird, dass Sie einschätzen können, was geschieht, wenn eine
+gebäudetechnische Anlage versagt. **Nicht** vorausgesetzt wird Vertrautheit mit
+GEFMA 192 — die Klassen stehen bei jeder Frage vollständig da — und ebenso wenig
+juristisches Wissen: die einschlägigen Vorschriften werden bewusst nicht gezeigt.
+
 ## Was das für Sie heisst
 
 **Es gibt keine richtige Antwort.** Sie werden hier nicht geprüft, und es wird
