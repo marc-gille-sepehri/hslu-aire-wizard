@@ -14,6 +14,7 @@ import type {
   EmbeddingCompareArtifact,
   AgentTraceArtifact,
   OrchestrationArtifact,
+  AgentLoopArtifact,
   ObjectGraphArtifact,
   OntologyArtifact,
   ProseArtifact,
@@ -332,6 +333,51 @@ function ReflectEditor({ draft, set }: { draft: ReflectArtifact; set: (d: Reflec
 }
 
 /** Title, intro and the texts the block starts with (one per line). */
+function AgentLoopEditor({
+  draft,
+  set,
+}: {
+  draft: AgentLoopArtifact
+  set: (d: AgentLoopArtifact) => void
+}) {
+  return (
+    <div className="space-y-4">
+      <Field label={t.fTitle}>
+        <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
+      </Field>
+      <Field label={t.fInstructions}>
+        <textarea
+          className={inputCls}
+          rows={4}
+          value={draft.instructions ?? ''}
+          onChange={(e) => set({ ...draft, instructions: e.target.value || undefined })}
+        />
+      </Field>
+      <Field label="Vorbelegte Frage">
+        <textarea
+          className={inputCls}
+          rows={2}
+          value={draft.defaultTask ?? ''}
+          onChange={(e) => set({ ...draft, defaultTask: e.target.value || undefined })}
+        />
+      </Field>
+      <Field label="Verkaufsdokumentation (Markdown)">
+        <textarea
+          className={`${inputCls} font-mono text-xs`}
+          rows={10}
+          value={draft.document ?? ''}
+          onChange={(e) => set({ ...draft, document: e.target.value || undefined })}
+        />
+        <p className="mt-1 text-xs text-slate-500">
+          Leer lassen heisst: die hinterlegte Beispiel-Offerte. Die Lagedaten kennen nur die
+          hinterlegten Adressen — eine eigene Dokumentation braucht eine davon, sonst antworten die
+          Werkzeuge wahrheitsgemäss „keine Daten“.
+        </p>
+      </Field>
+    </div>
+  )
+}
+
 function OrchestrationEditor({
   draft,
   set,
@@ -837,6 +883,8 @@ export default function BlockEditorDialog({
         return <AgentTraceEditor draft={draft} set={setDraft} />
       case 'orchestration':
         return <OrchestrationEditor draft={draft} set={setDraft} />
+      case 'agent_loop':
+        return <AgentLoopEditor draft={draft} set={setDraft} />
       default:
         return null
     }

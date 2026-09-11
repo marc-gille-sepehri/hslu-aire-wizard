@@ -86,6 +86,14 @@ const orchestrationArtifact = baseArtifact.extend({
   defaultRequest: z.string().optional(),
 })
 
+const agentLoopArtifact = baseArtifact.extend({
+  type: z.literal('agent_loop'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+  document: z.string().optional(),
+  defaultTask: z.string().optional(),
+})
+
 const reflectArtifact = baseArtifact.extend({
   type: z.literal('reflect'),
   prompt: z.string(),
@@ -174,6 +182,7 @@ const artifact = z.discriminatedUnion('type', [
   embeddingCompareArtifact,
   agentTraceArtifact,
   orchestrationArtifact,
+  agentLoopArtifact,
 ])
 
 const section = z.object({

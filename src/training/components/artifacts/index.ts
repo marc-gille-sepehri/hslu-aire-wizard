@@ -17,6 +17,7 @@ import DocConvert from './DocConvert'
 import EmbeddingCompare from './EmbeddingCompare'
 import AgentTrace from './AgentTrace'
 import Orchestration from './Orchestration'
+import AgentLoop from './AgentLoop'
 
 type ArtifactComponent<T extends Artifact = Artifact> = ComponentType<{ artifact: T }>
 
@@ -38,4 +39,5 @@ export const artifactComponents: Record<Artifact['type'], ArtifactComponent<any>
   embedding_compare: EmbeddingCompare,
   agent_trace: AgentTrace,
   orchestration: Orchestration,
+  agent_loop: AgentLoop,
 }

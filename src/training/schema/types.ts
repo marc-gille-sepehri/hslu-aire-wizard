@@ -41,6 +41,7 @@ export type Artifact =
   | EmbeddingCompareArtifact
   | AgentTraceArtifact
   | OrchestrationArtifact
+  | AgentLoopArtifact
 
 export type BaseArtifact = {
   id: string
@@ -158,6 +159,21 @@ export type DocConvertArtifact = BaseArtifact & {
   outputFormat?: 'markdown' | 'cells' | 'both'
   /** How formula cells render in the cells output. Ignored unless cells are shown. */
   formulaMode?: 'silent' | 'error' | 'formula'
+}
+
+export type AgentLoopArtifact = BaseArtifact & {
+  type: 'agent_loop'
+  title?: string
+  /** Explanatory text shown above the widget. */
+  instructions?: string
+  /**
+   * Die Verkaufsdokumentation, mit der der Lauf startet. Leer lassen heisst:
+   * die hinterlegte Beispiel-Offerte. Der Lernende kann sie in beiden Fällen
+   * ersetzen — das Mitbringen eigener Unterlagen ist der Zweck der Übung.
+   */
+  document?: string
+  /** Frage, mit der das Feld vorbelegt ist. */
+  defaultTask?: string
 }
 
 export type OrchestrationArtifact = BaseArtifact & {

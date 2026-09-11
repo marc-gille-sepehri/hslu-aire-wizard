@@ -31,6 +31,7 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: 'embedding_compare', label: 'Embeddings vergleichen', icon: '📐', hint: 'Textstücke als Punkte mit Distanzen' },
   { type: 'agent_trace', label: 'Agenten-Simulator', icon: '🤖', hint: 'Agent läuft mit; würde-tun statt tun' },
   { type: 'orchestration', label: 'Orchestrierung', icon: '🧩', hint: 'Werkzeuge beschreiben, Ablauf planen lassen' },
+  { type: 'agent_loop', label: 'Agent-Schleife', icon: '🔁', hint: 'Ausführung Schritt für Schritt wie im Debugger' },
 ]
 
 export const BLOCK_TYPE_LABEL: Record<BlockType, string> = BLOCK_TYPES.reduce(
@@ -133,6 +134,20 @@ export function makeNewArtifact(type: BlockType): Artifact {
         title: 'Datenraum als Graph',
         instructions: 'Klicke einen Knoten, um seine Nachbarn zu laden, und erkunde so das Beziehungsnetz.',
         startType: 'Site',
+      }
+    case 'agent_loop':
+      return {
+        id,
+        type,
+        title: 'Die Agent-Schleife',
+        instructions:
+          'Ein Agent bekommt eine Verkaufsdokumentation und Werkzeuge für Lagedaten — aber nicht das Dokument selbst. Gib die Ausführung Schritt für Schritt frei und sieh zu, was in jedem Durchlauf gedacht, aufgerufen und zurückgegeben wird. Die eigene Offerte lässt sich einsetzen.',
+        // Makro- und Mikroebene ausdruecklich zu nennen ist nicht fuehrend,
+        // sondern der uebliche Analyserahmen — und ohne ihn greift der Agent
+        // zuverlaessig nur zu den Gemeindedaten. Der Befund, den nur die
+        // Mikrolage hergibt, bliebe dann liegen.
+        defaultTask:
+          'Ist der geforderte Kaufpreis plausibel, und welche Risiken auf Makro- und Mikroebene nennt die Dokumentation nicht?',
       }
     case 'orchestration':
       return {

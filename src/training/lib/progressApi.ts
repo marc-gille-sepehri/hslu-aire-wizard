@@ -74,6 +74,18 @@ export type Interaction =
       rejected: number
       gaps: number
     }
+  // Die Schleife: wie viele Durchläufe es brauchte, und wie viel des
+  // Tokenverbrauchs aus wiederholt mitgeschicktem Gespräch entstand. Die
+  // zweite Zahl ist der Lerngegenstand, nicht die erste.
+  | {
+      type: 'agentloop'
+      turns: number
+      toolCalls: number
+      tokensIn: number
+      tokensOut: number
+      resentShare: number | null
+      finished: boolean
+    }
   // How many of the agent's would-be actions the learner waved through is the
   // measurement this block exists for — the approval rate, not the run count.
   | {
