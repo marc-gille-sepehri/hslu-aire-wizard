@@ -27,6 +27,7 @@ import {
   marketPriceTrend,
 } from '../api/marketMcpApi'
 import './MarketTestPage.css'
+import { labels } from '../training/labels'
 
 const { Title, Paragraph, Text } = Typography
 
@@ -43,10 +44,10 @@ const EXAMPLES = [
 const tierColor = { prime: 'magenta', urban: 'blue', suburban: 'green', rural: 'gold' }
 
 const resolvedByMeta = {
-  coordinates: { label: 'Koordinaten', color: 'green' },
-  'city-name': { label: 'Stadtname', color: 'green' },
+  coordinates: { label: labels.marketTest.matchCoordinates, color: 'green' },
+  'city-name': { label: labels.marketTest.matchCity, color: 'green' },
   'postal-code': { label: 'PLZ', color: 'cyan' },
-  hash: { label: 'Hash (unsicher)', color: 'red' },
+  hash: { label: labels.marketTest.matchHash, color: 'red' },
 }
 
 function ResultCard({ title, error, children }) {
@@ -133,12 +134,12 @@ const paramColumns = [
   },
   { title: 'Typ', dataIndex: 'type', key: 'type', render: (v) => <Text code>{v}</Text> },
   {
-    title: 'Default',
+    title: labels.marketTest.colDefault,
     dataIndex: 'default',
     key: 'default',
     render: (v) => (v === undefined ? '–' : <Text code>{String(v)}</Text>),
   },
-  { title: 'Beschreibung', dataIndex: 'description', key: 'description' },
+  { title: labels.marketTest.colDescription, dataIndex: 'description', key: 'description' },
 ]
 
 function ToolMetadata({ tool }) {
@@ -157,7 +158,7 @@ function ToolMetadata({ tool }) {
         </Space>
       )}
       <div>
-        <Text strong>Eingabe (inputSchema)</Text>
+        <Text strong>{labels.marketTest.inputSchema}</Text>
         <Table
           size="small"
           rowKey="key"
@@ -168,7 +169,7 @@ function ToolMetadata({ tool }) {
         />
       </div>
       <div>
-        <Text strong>Ausgabe (outputSchema)</Text>
+        <Text strong>{labels.marketTest.outputSchema}</Text>
         <Table
           size="small"
           rowKey="key"
@@ -248,7 +249,7 @@ function MarketTestPage() {
   const run = async () => {
     const loc = buildLocationArgs()
     if (!loc) {
-      setGlobalError('Bitte eine Adresse (≥3 Zeichen) ODER Breiten- und Längengrad angeben.')
+      setGlobalError(labels.marketTest.needAddressOrCoords)
       return
     }
     setGlobalError(null)
@@ -281,15 +282,15 @@ function MarketTestPage() {
   const offeringColumns = [
     { title: 'Typ', dataIndex: 'propertyType', key: 'propertyType' },
     {
-      title: 'Geschäft',
+      title: labels.marketTest.colDeal,
       dataIndex: 'transaction',
       key: 'transaction',
       render: (v) => (v === 'buy' ? 'Kauf' : 'Miete'),
     },
-    { title: 'Zimmer', dataIndex: 'rooms', key: 'rooms' },
-    { title: 'Fläche m²', dataIndex: 'livingAreaM2', key: 'livingAreaM2' },
+    { title: labels.marketTest.colRooms, dataIndex: 'rooms', key: 'rooms' },
+    { title: labels.marketTest.colArea, dataIndex: 'livingAreaM2', key: 'livingAreaM2' },
     {
-      title: 'Preis / Miete',
+      title: labels.marketTest.colPrice,
       key: 'price',
       render: (_, r) =>
         r.transaction === 'buy'
@@ -302,8 +303,8 @@ function MarketTestPage() {
       key: 'pricePerM2',
       render: (v) => fmtChf(v),
     },
-    { title: 'Distanz m', dataIndex: 'distanceM', key: 'distanceM' },
-    { title: 'Inseriert (Tage)', dataIndex: 'listedDaysAgo', key: 'listedDaysAgo' },
+    { title: labels.marketTest.colDistance, dataIndex: 'distanceM', key: 'distanceM' },
+    { title: labels.marketTest.colListed, dataIndex: 'listedDaysAgo', key: 'listedDaysAgo' },
   ]
 
   const trendData = trend?.data
@@ -311,9 +312,8 @@ function MarketTestPage() {
   return (
     <section className="market-test-section">
       <div className="container">
-        <Title level={2}>Marktdaten (synthetisch)</Title>
-        <Paragraph type="secondary">
-          Testoberfläche für den <Text code>ch-market</Text> MCP-Server. Alle Werte sind
+        <Title level={2}>{labels.marketTest.title}</Title>
+        <Paragraph type="secondary">{labels.marketTest.subtitle}<Text code>ch-market</Text> MCP-Server. Alle Werte sind
           deterministisch erzeugte Dummy-Daten – sie spiegeln keine realen Marktverhältnisse
           wider und dienen ausschliesslich dem Testen der Tool-Anbindung.
         </Paragraph>
@@ -351,21 +351,21 @@ function MarketTestPage() {
           )}
         </Card>
 
-        <Card title="Standort & Parameter" className="market-controls">
+        <Card title={labels.marketTest.sectionLocation} className="market-controls">
           <Form layout="vertical">
             <Row gutter={16}>
               <Col xs={24} md={12}>
-                <Form.Item label="Adresse" help="Adresse ODER Koordinaten angeben.">
+                <Form.Item label={labels.marketTest.address} help="Adresse ODER Koordinaten angeben.">
                   <Input
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder="z. B. Bahnhofstrasse 1, 8001 Zürich"
+                    placeholder={labels.marketTest.addressPlaceholder}
                     allowClear
                   />
                 </Form.Item>
               </Col>
               <Col xs={12} md={4}>
-                <Form.Item label="Breitengrad (lat)">
+                <Form.Item label={labels.marketTest.lat}>
                   <InputNumber
                     style={{ width: '100%' }}
                     value={lat}
@@ -376,7 +376,7 @@ function MarketTestPage() {
                 </Form.Item>
               </Col>
               <Col xs={12} md={4}>
-                <Form.Item label="Längengrad (lon)">
+                <Form.Item label={labels.marketTest.lon}>
                   <InputNumber
                     style={{ width: '100%' }}
                     value={lon}
@@ -387,15 +387,15 @@ function MarketTestPage() {
                 </Form.Item>
               </Col>
               <Col xs={24} md={4}>
-                <Form.Item label="Objekttyp">
+                <Form.Item label={labels.marketTest.objectType}>
                   <Select
                     value={propertyType}
                     onChange={setPropertyType}
                     options={[
                       { value: 'any', label: 'Alle' },
-                      { value: 'apartment', label: 'Wohnung' },
+                      { value: 'apartment', label: labels.marketTest.typeApartment },
                       { value: 'house', label: 'Haus' },
-                      { value: 'commercial', label: 'Gewerbe' },
+                      { value: 'commercial', label: labels.marketTest.typeCommercial },
                     ]}
                   />
                 </Form.Item>
@@ -404,7 +404,7 @@ function MarketTestPage() {
 
             <Row gutter={16}>
               <Col xs={12} md={4}>
-                <Form.Item label="Geschäft (Angebote)">
+                <Form.Item label={labels.marketTest.dealType}>
                   <Select
                     value={transaction}
                     onChange={setTransaction}
@@ -417,7 +417,7 @@ function MarketTestPage() {
                 </Form.Item>
               </Col>
               <Col xs={12} md={4}>
-                <Form.Item label="Min. Zimmer">
+                <Form.Item label={labels.marketTest.minRooms}>
                   <InputNumber
                     style={{ width: '100%' }}
                     value={minRooms}
@@ -429,7 +429,7 @@ function MarketTestPage() {
                 </Form.Item>
               </Col>
               <Col xs={12} md={4}>
-                <Form.Item label="Max. Preis CHF">
+                <Form.Item label={labels.marketTest.maxPrice}>
                   <InputNumber
                     style={{ width: '100%' }}
                     value={maxPriceChf}
@@ -440,7 +440,7 @@ function MarketTestPage() {
                 </Form.Item>
               </Col>
               <Col xs={12} md={4}>
-                <Form.Item label="Anzahl Angebote">
+                <Form.Item label={labels.marketTest.listingCount}>
                   <InputNumber
                     style={{ width: '100%' }}
                     value={limit}
@@ -451,19 +451,19 @@ function MarketTestPage() {
                 </Form.Item>
               </Col>
               <Col xs={12} md={4}>
-                <Form.Item label="Trend-Metrik">
+                <Form.Item label={labels.marketTest.trendMetric}>
                   <Select
                     value={metric}
                     onChange={setMetric}
                     options={[
-                      { value: 'sale', label: 'Kaufpreis' },
+                      { value: 'sale', label: labels.marketTest.dealPurchase },
                       { value: 'rent', label: 'Miete' },
                     ]}
                   />
                 </Form.Item>
               </Col>
               <Col xs={12} md={4}>
-                <Form.Item label="Trend-Monate">
+                <Form.Item label={labels.marketTest.trendMonths}>
                   <InputNumber
                     style={{ width: '100%' }}
                     value={months}
@@ -476,10 +476,8 @@ function MarketTestPage() {
             </Row>
 
             <Space wrap>
-              <Button type="primary" onClick={run} loading={loading}>
-                Abfragen
-              </Button>
-              <Text type="secondary">Beispiele:</Text>
+              <Button type="primary" onClick={run} loading={loading}>{labels.marketTest.query}</Button>
+              <Text type="secondary">{labels.marketTest.examples}</Text>
               {EXAMPLES.map((ex) => (
                 <Button key={ex.label} size="small" onClick={() => applyExample(ex)}>
                   {ex.label}
@@ -538,37 +536,37 @@ function MarketTestPage() {
                     <Row gutter={[12, 12]}>
                       <Col span={12}>
                         <Statistic
-                          title="Miete ⌀ (CHF/m²/Mt.)"
+                          title={labels.marketTest.rentAvg}
                           value={snap.data.rent.meanChfPerM2Month}
                         />
                       </Col>
                       <Col span={12}>
                         <Statistic
-                          title="Kaufpreis ⌀ (CHF/m²)"
+                          title={labels.marketTest.priceAvg}
                           value={snap.data.sale.meanChfPerM2}
                           formatter={(v) => fmtChf(v)}
                         />
                       </Col>
                       <Col span={8}>
-                        <Statistic title="Bruttorendite %" value={snap.data.grossYieldPct} />
+                        <Statistic title={labels.marketTest.grossYield} value={snap.data.grossYieldPct} />
                       </Col>
                       <Col span={8}>
-                        <Statistic title="Leerstand %" value={snap.data.vacancyRatePct} />
+                        <Statistic title={labels.marketTest.vacancy} value={snap.data.vacancyRatePct} />
                       </Col>
                       <Col span={8}>
-                        <Statistic title="YoY %" value={snap.data.yoyTrendPct} />
+                        <Statistic title={labels.marketTest.yoy} value={snap.data.yoyTrendPct} />
                       </Col>
                       <Col span={8}>
                         <Statistic
-                          title="Vermarktung (Tage)"
+                          title={labels.marketTest.marketingDays}
                           value={snap.data.daysOnMarketMedian}
                         />
                       </Col>
                       <Col span={8}>
-                        <Statistic title="Stichprobe" value={snap.data.sampleSize} />
+                        <Statistic title={labels.marketTest.sample} value={snap.data.sampleSize} />
                       </Col>
                       <Col span={8}>
-                        <Statistic title="Konfidenz" value={snap.data.confidence} />
+                        <Statistic title={labels.marketTest.confidence} value={snap.data.confidence} />
                       </Col>
                     </Row>
                   )}
@@ -601,16 +599,16 @@ function MarketTestPage() {
                     <>
                       <Space wrap size="large" style={{ marginBottom: 8 }}>
                         <Statistic
-                          title="Start"
+                          title={labels.marketTest.start}
                           value={trendData.startValue}
                           formatter={(v) => `CHF ${fmtChf(v)}`}
                         />
                         <Statistic
-                          title="Ende"
+                          title={labels.marketTest.end}
                           value={trendData.endValue}
                           formatter={(v) => `CHF ${fmtChf(v)}`}
                         />
-                        <Statistic title="CAGR %" value={trendData.cagrPct} />
+                        <Statistic title={labels.marketTest.cagr} value={trendData.cagrPct} />
                       </Space>
                       <TrendChart
                         key={runId}

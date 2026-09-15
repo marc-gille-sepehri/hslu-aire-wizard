@@ -3,6 +3,7 @@ import { apiBaseUrl } from '../config/configuration'
 import { fetchAwardCandidates, fetchVotingState } from '../api/awardApi'
 import { getYoutubeEmbedSrc, getLoomEmbedSrc } from '../utils/youtubeEmbed'
 import './AwardVotePage.css'
+import { labels } from '../training/labels'
 
 function AwardVotePage() {
   const [candidates, setCandidates] = useState([])
@@ -30,7 +31,7 @@ function AwardVotePage() {
         }
       } catch (e) {
         if (!cancelled) {
-          setLoadError(e.message || 'Kandidaten konnten nicht geladen werden.')
+          setLoadError(e.message || labels.award.loadCandidatesError)
         }
       } finally {
         if (!cancelled) setLoading(false)
@@ -79,7 +80,7 @@ function AwardVotePage() {
 
     const trimmed = email.trim()
     if (!trimmed) {
-      setError('Bitte gib eine E-Mail-Adresse ein.')
+      setError(labels.award.needEmail)
       return
     }
 
@@ -100,7 +101,7 @@ function AwardVotePage() {
       const data = await response.json().catch(() => ({}))
 
       if (!response.ok) {
-        throw new Error(data.error || 'Stimme konnte nicht gespeichert werden.')
+        throw new Error(data.error || labels.award.voteSaveError)
       }
 
       if (data.code === 'VOTING_CLOSED') {
@@ -109,7 +110,7 @@ function AwardVotePage() {
       }
       setSuccess(true)
     } catch (err) {
-      setError(err.message || 'Es ist ein Fehler aufgetreten.')
+      setError(err.message || labels.award.genericError)
     } finally {
       setSubmitting(false)
     }
@@ -118,10 +119,8 @@ function AwardVotePage() {
   return (
     <section className="award-vote-page">
       <div className="container">
-        <h1 className="award-vote-title">AI@RE Award 2026 · Publikumsvoting</h1>
-        <p className="award-vote-intro">
-          Stimme für einen der folgenden Kandidaten. Nach Eingabe deiner E-Mail erhältst du eine Bestätigung.
-        </p>
+        <h1 className="award-vote-title">{labels.award.voteTitle}</h1>
+        <p className="award-vote-intro">{labels.award.voteLead}</p>
 
         {votingStopped && (
           <p className="award-vote-closed-banner">
@@ -136,12 +135,10 @@ function AwardVotePage() {
             target="_blank"
             rel="noopener noreferrer"
             className="cta-button"
-          >
-            Zur Konferenz anmelden
-          </a>
+          >{labels.award.registerConference}</a>
         </div>
 
-        {loading && <p className="award-vote-status">Laden …</p>}
+        {loading && <p className="award-vote-status">{labels.award.loading}</p>}
         {loadError && <p className="award-vote-error">{loadError}</p>}
 
         {!loading && !loadError && (
@@ -157,9 +154,9 @@ function AwardVotePage() {
                 : null
               const iframeEmbedSrc = youtubeEmbedSrc || loomEmbedSrc
               const externalLinkLabel = youtubeEmbedSrc
-                ? 'Auf YouTube öffnen'
+                ? labels.award.openYoutube
                 : loomEmbedSrc
-                ? 'Auf Loom öffnen'
+                ? labels.award.openLoom
                 : null
               const hasFileVideo = Boolean(resolvedVideoUrl) && !iframeEmbedSrc
               return (
@@ -216,7 +213,7 @@ function AwardVotePage() {
                 </div>
                 {c.description && (
                   <div className="award-vote-jury">
-                    <h3 className="award-vote-jury-heading">Beurteilung der Jury</h3>
+                    <h3 className="award-vote-jury-heading">{labels.award.juryVerdict}</h3>
                     <p className="award-vote-synopsis">{c.description}</p>
                   </div>
                 )}
@@ -241,7 +238,7 @@ function AwardVotePage() {
               type="button"
               className="award-vote-modal-close"
               onClick={closeModal}
-              aria-label="Schließen"
+              aria-label={labels.award.close}
             >
               ×
             </button>
@@ -249,7 +246,7 @@ function AwardVotePage() {
             {success ? (
               <div className="award-vote-success">
                 <h2 id="award-vote-modal-title">
-                  {closed ? 'Abstimmung beendet' : 'Vielen Dank'}
+                  {closed ? labels.award.votingClosed : labels.award.thanks}
                 </h2>
                 {closed ? (
                   <p>
@@ -263,13 +260,11 @@ function AwardVotePage() {
                     <strong>{email.trim()}</strong>.
                   </p>
                 )}
-                <button type="button" className="award-vote-button" onClick={closeModal}>
-                  Schließen
-                </button>
+                <button type="button" className="award-vote-button" onClick={closeModal}>{labels.award.close}</button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="award-vote-form">
-                <h2 id="award-vote-modal-title">Stimme abgeben</h2>
+                <h2 id="award-vote-modal-title">{labels.award.castVote}</h2>
                 <p className="award-vote-modal-choice">
                   <strong>{selected.companyName}</strong>
                   {selected.description && (
@@ -281,9 +276,7 @@ function AwardVotePage() {
                   )}
                 </p>
 
-                <label className="award-vote-label" htmlFor="award-vote-email">
-                  E-Mail
-                </label>
+                <label className="award-vote-label" htmlFor="award-vote-email">{labels.award.email}</label>
                 <input
                   id="award-vote-email"
                   type="email"
@@ -295,9 +288,7 @@ function AwardVotePage() {
                   disabled={submitting}
                 />
 
-                <p className="award-vote-privacy">
-                  Deine E-Mail wird nur im Zusammenhang mit dem AI@RE Award 2026 genutzt.
-                </p>
+                <p className="award-vote-privacy">{labels.award.emailUseNote}</p>
 
                 <label className="award-vote-checkbox-row">
                   <input
@@ -306,7 +297,7 @@ function AwardVotePage() {
                     onChange={(ev) => setWantsUpdates(ev.target.checked)}
                     disabled={submitting}
                   />
-                  <span>Updates zu AI@RE erhalten.</span>
+                  <span>{labels.award.newsletterOptIn}</span>
                 </label>
 
                 {error && <p className="award-vote-error">{error}</p>}
@@ -317,11 +308,9 @@ function AwardVotePage() {
                     className="cta-button cta-button-secondary"
                     onClick={closeModal}
                     disabled={submitting}
-                  >
-                    Abbrechen
-                  </button>
+                  >{labels.award.cancel}</button>
                   <button type="submit" className="award-vote-button" disabled={submitting}>
-                    {submitting ? 'Wird gesendet…' : 'Stimme bestätigen'}
+                    {submitting ? labels.award.sending : labels.award.confirmVote}
                   </button>
                 </div>
               </form>

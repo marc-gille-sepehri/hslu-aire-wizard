@@ -4,6 +4,7 @@ import { Select, Space, ConfigProvider } from 'antd'
 import { dimensions } from '../data/questions'
 import { apiBaseUrl } from '../config/configuration'
 import './Statistics.css'
+import { labels } from '../training/labels'
 
 // Mock statistics for local dev when backend is unavailable
 const getMockStatistics = () => {
@@ -35,29 +36,29 @@ function Statistics() {
   })
 
   const companySizeOptions = [
-    { value: '1-10', label: '1-10 Mitarbeitende' },
-    { value: '11-50', label: '11-50 Mitarbeitende' },
-    { value: '51-250', label: '51-250 Mitarbeitende' },
-    { value: '251-1000', label: '251-1000 Mitarbeitende' },
-    { value: '1000+', label: 'Mehr als 1000 Mitarbeitende' },
+    { value: '1-10', label: labels.statistics.sizeRange('1-10') },
+    { value: '11-50', label: labels.statistics.sizeRange('11-50') },
+    { value: '51-250', label: labels.statistics.sizeRange('51-250') },
+    { value: '251-1000', label: labels.statistics.sizeRange('251-1000') },
+    { value: '1000+', label: labels.statistics.sizeOver1000 },
   ]
 
   const companyBusinessOptions = [
-    { value: 'Asset Management', label: 'Asset Management' },
-    { value: 'Facility Management', label: 'Facility Management' },
-    { value: 'Makler', label: 'Makler' },
-    { value: 'Immobilienentwicklung', label: 'Immobilienentwicklung' },
-    { value: 'Immobilienverwaltung', label: 'Immobilienverwaltung' },
-    { value: 'Immobilienberatung', label: 'Immobilienberatung' },
-    { value: 'Projektentwicklung', label: 'Projektentwicklung' },
-    { value: 'Immobilienfinanzierung', label: 'Immobilienfinanzierung' },
-    { value: 'Andere', label: 'Andere' },
+    { value: 'Asset Management', label: labels.statistics.bizAssetManagement },
+    { value: 'Facility Management', label: labels.statistics.bizFacilityManagement },
+    { value: 'Makler', label: labels.statistics.bizBroker },
+    { value: 'Immobilienentwicklung', label: labels.statistics.bizDevelopment },
+    { value: 'Immobilienverwaltung', label: labels.statistics.bizAdministration },
+    { value: 'Immobilienberatung', label: labels.statistics.bizConsulting },
+    { value: 'Projektentwicklung', label: labels.statistics.bizProjectDevelopment },
+    { value: 'Immobilienfinanzierung', label: labels.statistics.bizFinance },
+    { value: 'Andere', label: labels.statistics.bizOther },
   ]
 
   const countryOptions = [
-    { value: 'DE', label: 'Deutschland' },
-    { value: 'AT', label: 'Österreich' },
-    { value: 'CH', label: 'Schweiz' },
+    { value: 'DE', label: labels.statistics.countryDE },
+    { value: 'AT', label: labels.statistics.countryAT },
+    { value: 'CH', label: labels.statistics.countryCH },
   ]
 
   useEffect(() => {
@@ -92,7 +93,7 @@ function Statistics() {
         setUseMockData(true)
       } else {
         console.error('Error fetching statistics:', err)
-        setError('Fehler beim Laden der Statistiken')
+        setError(labels.statistics.loadError)
       }
     } finally {
       setLoading(false)
@@ -131,11 +132,11 @@ function Statistics() {
   }
 
   const scoreLegendLabels = [
-    'Score 1 - Trifft gar nicht zu',
-    'Score 2 - Trifft eher nicht zu',
-    'Score 3 - Neutral',
-    'Score 4 - Trifft eher zu',
-    'Score 5 - Trifft voll zu',
+    labels.statistics.score1,
+    labels.statistics.score2,
+    labels.statistics.score3,
+    labels.statistics.score4,
+    labels.statistics.score5,
   ]
 
   const createStackedBarChartOptions = () => {
@@ -208,7 +209,7 @@ function Statistics() {
     })
 
     return {
-      series: [{ name: 'Durchschnitt', data }],
+      series: [{ name: labels.statistics.average, data }],
       options: {
         chart: {
           type: 'radar',
@@ -314,7 +315,7 @@ function Statistics() {
               },
               total: {
                 show: true,
-                label: 'Total',
+                label: labels.statistics.chartTotal,
                 fontSize: isOverall ? '14px' : '12px',
                 fontWeight: 600,
                 color: '#5b6b85',
@@ -353,7 +354,7 @@ function Statistics() {
     return (
       <div className="statistics-container">
         <div className="statistics-loading">
-          <p>Statistiken werden geladen...</p>
+          <p>{labels.statistics.loading}</p>
         </div>
       </div>
     )
@@ -364,9 +365,7 @@ function Statistics() {
       <div className="statistics-container">
         <div className="statistics-error">
           <p>{error}</p>
-          <button onClick={fetchStatistics} className="retry-button">
-            Erneut versuchen
-          </button>
+          <button onClick={fetchStatistics} className="retry-button">{labels.statistics.retry}</button>
         </div>
       </div>
     )
@@ -376,7 +375,7 @@ function Statistics() {
     return (
       <div className="statistics-container">
         <div className="statistics-error">
-          <p>Keine Daten verfügbar</p>
+          <p>{labels.statistics.noData}</p>
         </div>
       </div>
     )
@@ -398,17 +397,15 @@ function Statistics() {
     >
       <div className="statistics-container apexcharts-wrapper">
         <div className="statistics-header">
-          <h1 className="statistics-title">Ist die Immobilienwirtschaft bereit für AI?</h1>
-          <p className="statistics-subtitle">
-            Hier der aktuelle Stand unserer Umfrage.
-          </p>
+          <h1 className="statistics-title">{labels.statistics.title}</h1>
+          <p className="statistics-subtitle">{labels.statistics.lead}</p>
         </div>
 
         <div className="statistics-content">
           <div className="statistics-filters">
             <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
               <div className="filter-group">
-                <label>Unternehmensgröße:</label>
+                <label>{labels.statistics.companySize}</label>
                 <Select
                   mode="multiple"
                   style={{ width: '100%' }}
@@ -416,12 +413,12 @@ function Statistics() {
                   value={filters.companySize}
                   onChange={(values) => handleFilterChange('companySize', values)}
                   allowClear
-                  options={[{ value: 'all', label: 'Alle' }, ...companySizeOptions]}
+                  options={[{ value: 'all', label: labels.statistics.all }, ...companySizeOptions]}
                 />
               </div>
 
               <div className="filter-group">
-                <label>Land:</label>
+                <label>{labels.statistics.country}</label>
                 <Select
                   mode="multiple"
                   style={{ width: '100%' }}
@@ -429,12 +426,12 @@ function Statistics() {
                   value={filters.companyCountry}
                   onChange={(values) => handleFilterChange('companyCountry', values)}
                   allowClear
-                  options={[{ value: 'all', label: 'Alle' }, ...countryOptions]}
+                  options={[{ value: 'all', label: labels.statistics.all }, ...countryOptions]}
                 />
               </div>
 
               <div className="filter-group">
-                <label>Branche:</label>
+                <label>{labels.statistics.business}</label>
                 <Select
                   mode="multiple"
                   style={{ width: '100%' }}
@@ -442,26 +439,22 @@ function Statistics() {
                   value={filters.companyBusiness}
                   onChange={(values) => handleFilterChange('companyBusiness', values)}
                   allowClear
-                  options={[{ value: 'all', label: 'Alle' }, ...companyBusinessOptions]}
+                  options={[{ value: 'all', label: labels.statistics.all }, ...companyBusinessOptions]}
                 />
               </div>
             </Space>
           </div>
 
           <div className="statistics-meta">
-            <span className="statistics-total">
-              Gesamt: <strong>{statistics.totalSubmissions}</strong> Einreichungen
-            </span>
+            <span className="statistics-total">{labels.statistics.total}<strong>{statistics.totalSubmissions}</strong>{labels.statistics.submissions}</span>
             {useMockData && (
-              <span className="statistics-mock-banner">
-                Demo-Daten (Backend nicht erreichbar). Filter haben keine Wirkung.
-              </span>
+              <span className="statistics-mock-banner">{labels.statistics.demoData}</span>
             )}
           </div>
 
           <div className="charts-grid">
             <div className="chart-card chart-card-large gesamtbewertung-section">
-              <h3 className="gesamtbewertung-title">Gesamtbewertung</h3>
+              <h3 className="gesamtbewertung-title">{labels.statistics.overallScore}</h3>
               <div className="gesamtbewertung-charts">
                 <div className="gesamtbewertung-donut">
                   {(() => {
@@ -493,7 +486,7 @@ function Statistics() {
             </div>
 
             <div className="chart-card chart-card-stacked-bar apexcharts-wrapper">
-              <h3 className="stacked-bar-title">Verteilung nach Dimensionen</h3>
+              <h3 className="stacked-bar-title">{labels.statistics.byDimension}</h3>
               <div className="apexcharts-wrapper">
                 {(() => {
                   const barData = createStackedBarChartOptions()
@@ -513,7 +506,7 @@ function Statistics() {
 
           <div className="statistics-legend">
             <div className="legend-items">
-              {['Score 1 - Trifft gar nicht zu', 'Score 2 - Trifft eher nicht zu', 'Score 3 - Neutral', 'Score 4 - Trifft eher zu', 'Score 5 - Trifft voll zu'].map((label, i) => (
+              {[labels.statistics.score1, labels.statistics.score2, labels.statistics.score3, labels.statistics.score4, labels.statistics.score5].map((label, i) => (
                 <div key={i} className="legend-item">
                   <span className="legend-color" style={{ backgroundColor: chartColors[i] }}></span>
                   <span className="legend-label">{label}</span>

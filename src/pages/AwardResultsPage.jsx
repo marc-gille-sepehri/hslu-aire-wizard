@@ -7,6 +7,7 @@ import {
   updateVotingState,
 } from '../api/awardApi'
 import './AwardResultsPage.css'
+import { labels } from '../training/labels'
 
 const ANIM_MS = 2200
 const AWARD_RESULTS_CODE = '271828'
@@ -70,7 +71,7 @@ function AwardResultsContent({ code }) {
         setVotingStopped(state.votingStopped)
         setDoubleCount(state.doubleCount)
       } catch (e) {
-        setAdminError(e.message || 'Aktualisierung fehlgeschlagen.')
+        setAdminError(e.message || labels.award.refreshFailed)
       } finally {
         setAdminBusy(false)
       }
@@ -94,7 +95,7 @@ function AwardResultsContent({ code }) {
         }
       } catch (e) {
         if (!cancelled) {
-          setError(e.message || 'Fehler beim Laden')
+          setError(e.message || labels.award.loadError)
         }
       } finally {
         if (!cancelled) setLoading(false)
@@ -172,7 +173,7 @@ function AwardResultsContent({ code }) {
   return (
     <section className="award-results-page">
       <div className="container">
-        <h1 className="award-results-title">AI@RE Award · Stimmen</h1>
+        <h1 className="award-results-title">{labels.award.resultsTitle}</h1>
         <p className="award-results-sub">
           {totalVotes === 1
             ? '1 abgegebene Stimme'
@@ -182,14 +183,10 @@ function AwardResultsContent({ code }) {
         <p
           className={`award-results-refreshing${refreshing ? ' is-visible' : ''}`}
           aria-live="polite"
-        >
-          Aktualisieren …
-        </p>
+        >{labels.award.refreshing}</p>
 
         {statsWarning && (
-          <p className="award-results-warn">
-            Stimmenzahlen vorübergehend nicht verfügbar — Balken zeigen 0.
-          </p>
+          <p className="award-results-warn">{labels.award.countsUnavailable}</p>
         )}
 
         <div className="award-results-admin">
@@ -200,7 +197,7 @@ function AwardResultsContent({ code }) {
               onClick={() => applyVotingState({ votingStopped: !votingStopped })}
               disabled={adminBusy}
             >
-              {votingStopped ? 'Voting neu starten' : 'Voting stoppen'}
+              {votingStopped ? labels.award.restartVoting : labels.award.stopVoting}
             </button>
             {!votingStopped && (
               <button
@@ -209,12 +206,11 @@ function AwardResultsContent({ code }) {
                 onClick={() => applyVotingState({ doubleCount: !doubleCount })}
                 disabled={adminBusy}
               >
-                {doubleCount ? 'Doppelzählung deaktivieren' : 'Doppelzählung aktivieren'}
+                {doubleCount ? labels.award.disableDoubleCount : labels.award.enableDoubleCount}
               </button>
             )}
           </div>
-          <p className="award-results-admin-state">
-            Voting: <strong>{votingStopped ? 'gestoppt' : 'aktiv'}</strong>
+          <p className="award-results-admin-state">{labels.award.votingLabel}<strong>{votingStopped ? 'gestoppt' : 'aktiv'}</strong>
             {!votingStopped && (
               <>
                 {' '}
@@ -225,7 +221,7 @@ function AwardResultsContent({ code }) {
           {adminError && <p className="award-results-error">{adminError}</p>}
         </div>
 
-        {loading && <p className="award-results-status">Laden …</p>}
+        {loading && <p className="award-results-status">{labels.award.loading}</p>}
         {error && <p className="award-results-error">{error}</p>}
 
         {!loading && !error && (
@@ -236,11 +232,9 @@ function AwardResultsContent({ code }) {
                 className="award-results-play"
                 onClick={handlePlay}
                 disabled={!candidates.length}
-                aria-label="And the winner is, animation starten"
+                aria-label={labels.award.startReveal}
               >
-                <FaPlay className="award-results-play-icon" aria-hidden />
-                And the winner is …
-              </button>
+                <FaPlay className="award-results-play-icon" aria-hidden />{labels.award.winnerReveal}</button>
             </div>
 
             <div className="award-results-chart" key={animKey}>
@@ -293,9 +287,7 @@ function AwardResultsContent({ code }) {
         )}
 
         <div className="award-results-back">
-          <Link to="/award" className="cta-button cta-button-secondary">
-            Zur Award-Übersicht
-          </Link>
+          <Link to="/award" className="cta-button cta-button-secondary">{labels.award.toOverview}</Link>
         </div>
       </div>
     </section>
