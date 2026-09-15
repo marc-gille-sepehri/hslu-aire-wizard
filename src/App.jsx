@@ -17,6 +17,8 @@ import RegisterDialog from './training/auth/RegisterDialog'
 import ProfileDialog from './training/auth/ProfileDialog'
 import { apiBaseUrl, contactEmail } from './config/configuration'
 import './App.css'
+import LocaleSwitcher from './training/components/LocaleSwitcher'
+import { labels } from './training/labels'
 
 function App() {
   const [showImprint, setShowImprint] = useState(false)
@@ -43,7 +45,7 @@ function App() {
     // Disable submit button to prevent double submission
     const submitButton = e.target.querySelector('button[type="submit"]')
     submitButton.disabled = true
-    submitButton.textContent = 'Wird gesendet...'
+    submitButton.textContent = labels.home.formSending
     
     try {
       const response = await fetch(`${apiBaseUrl}/contact-request`, {
@@ -68,10 +70,10 @@ function App() {
       e.target.reset()
       
       // Show success message
-      alert('Vielen Dank für Ihre Nachricht! Wir werden uns bald bei Ihnen melden.')
+      alert(labels.home.formThanks)
     } catch (error) {
       console.error('Error submitting contact form:', error)
-      alert('Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut oder kontaktieren Sie uns direkt per E-Mail.')
+      alert(labels.home.formError)
     } finally {
       // Re-enable submit button
       const submitButton = e.target.querySelector('button[type="submit"]')
@@ -109,14 +111,14 @@ function App() {
               </a>
             </div>
             <nav className="site-nav">
-              <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</Link>
-              <Link to="/statistics">Statistiken</Link>
-              <Link to="/market-test">Marktdaten</Link>
-              {status === 'authenticated' && user && <Link to="/training">Training</Link>}
-              {isCoder && <Link to="/enforcement-signal">Kodierung</Link>}
-              {isAdmin && <Link to="/admin">Administration</Link>}
+              <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>{labels.site.navHome}</Link>
+              <Link to="/statistics">{labels.site.navStatistics}</Link>
+              <Link to="/market-test">{labels.site.navMarketData}</Link>
+              {status === 'authenticated' && user && <Link to="/training">{labels.site.navTraining}</Link>}
+              {isCoder && <Link to="/enforcement-signal">{labels.site.navCoding}</Link>}
+              {isAdmin && <Link to="/admin">{labels.site.navAdmin}</Link>}
               {location.pathname === '/' && (
-                <a href="#contact" onClick={(e) => { e.preventDefault(); const element = document.getElementById('contact'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Kontakt</a>
+                <a href="#contact" onClick={(e) => { e.preventDefault(); const element = document.getElementById('contact'); if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>{labels.site.navContact}</a>
               )}
               {status === 'authenticated' && user ? (
                 <span className="nav-auth">
@@ -124,18 +126,21 @@ function App() {
                     type="button"
                     className="nav-user nav-user-btn"
                     onClick={() => setProfileOpen(true)}
-                    title="Mein Profil"
+                    title={labels.site.myProfile}
                   >
                     {`${user.firstName} ${user.lastName}`.trim()}
                   </button>
-                  <button type="button" className="nav-auth-btn" onClick={logout}>Abmelden</button>
+                  <button type="button" className="nav-auth-btn" onClick={logout}>{labels.site.signOut}</button>
                 </span>
               ) : status === 'anonymous' ? (
                 <span className="nav-auth">
-                  <button type="button" className="nav-auth-btn nav-auth-btn--primary" onClick={() => setRegisterOpen(true)}>Registrieren</button>
-                  <button type="button" className="nav-auth-btn" onClick={() => navigate('/training')}>Anmelden</button>
+                  <button type="button" className="nav-auth-btn nav-auth-btn--primary" onClick={() => setRegisterOpen(true)}>{labels.site.register}</button>
+                  <button type="button" className="nav-auth-btn" onClick={() => navigate('/training')}>{labels.site.signIn}</button>
                 </span>
               ) : null}
+              {/* Ganz rechts: wer die Sprache sucht, sucht sie am Rand der
+                  Kopfzeile — und zwar auch ohne Anmeldung. */}
+              <LocaleSwitcher className="nav-locale" />
             </nav>
           </div>
         </div>
@@ -191,20 +196,20 @@ function App() {
           <div className="footer-content">
             <div className="footer-section">
               <h3>AI@RE</h3>
-              <p>Künstliche Intelligenz im Immobilienwesen</p>
+              <p>{labels.site.tagline}</p>
             </div>
             <div className="footer-section">
-              <h4>Navigation</h4>
+              <h4>{labels.site.navigation}</h4>
               <ul>
-                <li><Link to="/">Home</Link></li>
-                <li><Link to="/statistics">Statistiken</Link></li>
+                <li><Link to="/">{labels.site.navHome}</Link></li>
+                <li><Link to="/statistics">{labels.site.navStatistics}</Link></li>
                 {location.pathname === '/' && (
-                  <li><a href="#contact">Kontakt</a></li>
+                  <li><a href="#contact">{labels.site.navContact}</a></li>
                 )}
               </ul>
             </div>
             <div className="footer-section">
-              <h4>Kontakt</h4>
+              <h4>{labels.site.navContact}</h4>
               <p>Email: {contactEmail}</p>
               <p>Tel: +41 41 757 67 34</p>
             </div>
@@ -224,7 +229,7 @@ function App() {
                   }
                 }}
               >
-                Impressum
+                {labels.site.imprint}
               </button>
               <button 
                 className="footer-link-button" 
@@ -238,7 +243,7 @@ function App() {
                   }
                 }}
               >
-                Datenschutz
+                {labels.site.privacy}
               </button>
             </div>
           </div>
@@ -253,11 +258,12 @@ function App() {
               <button 
                 className="imprint-close" 
                 onClick={() => setShowImprint(false)}
-                aria-label="Schließen"
+                aria-label={labels.site.close}
               >
                 ×
               </button>
             </div>
+              <p className="legal-language-note">{labels.site.legalGermanOnly}</p>
             <div className="imprint-content">
             <h3>Angaben gemäß Art. 321 OR</h3>
             <p>
@@ -304,11 +310,12 @@ function App() {
               <button 
                 className="imprint-close" 
                 onClick={() => setShowPrivacy(false)}
-                aria-label="Schließen"
+                aria-label={labels.site.close}
               >
                 ×
               </button>
             </div>
+              <p className="legal-language-note">{labels.site.legalGermanOnly}</p>
             <div className="imprint-content">
               <h3>1. Einleitung</h3>
               <p>

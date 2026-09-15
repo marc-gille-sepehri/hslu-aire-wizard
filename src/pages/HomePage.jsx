@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { contactEmail } from '../config/configuration'
 import './HomePage.css'
+import { labels } from '../training/labels'
 
 // Set to true to show PropTech Powerhouse in partner logos
 const SHOW_PROPTECH_POWERHOUSE = true
@@ -12,16 +13,12 @@ function HomePage({ onContactSubmit }) {
         <div className="container">
           <div className="hero-content">
             <div className="hero-award-block">
-              <h3 className="hero-award-title">Rückblick: AI@RE 2026</h3>
-              <p className="hero-award-text">
-                Die AI@RE-Konferenz hat stattgefunden. Über 160 Teilnehmer. Inspirierende
-                Keynotes. Spannende Deep Dives. Intensive Break-out Sessions. Und beeindruckende
-                AI@RE Award Winners. Danke allen und vor allem unseren Sponsoren.
-              </p>
+              <h3 className="hero-award-title">{labels.home.reviewTitle}</h3>
+              <p className="hero-award-text">{labels.home.conferenceReview}</p>
             </div>
 
             <div className="hero-sponsors">
-              <p className="hero-sponsors-label">Unsere Partner waren</p>
+              <p className="hero-sponsors-label">{labels.home.partnersWere}</p>
               <div className="hero-sponsors-logos">
                 <a href="https://www.gefma.de" target="_blank" rel="noopener noreferrer" className="hero-sponsor-link" aria-label="GEFMA">
                   <img src="/gefma.png" alt="GEFMA" className="hero-sponsor-logo" />
@@ -62,18 +59,10 @@ function HomePage({ onContactSubmit }) {
             </div>
 
             <div className="hero-cta-buttons">
-              <a href="https://www.hslu.ch/de-ch/wirtschaft/agenda/veranstaltungen/2027/06/07/reprogramming-real-estate-wie-ai-die-branche-neu-definiert/" target="_blank" rel="noopener noreferrer" className="cta-button">
-                Nach der Konferenz ist vor der Konferenz: AI@RE, Rotkreuz, 7.6.2027
-              </a>
-              <Link to="/check" className="cta-button cta-button-secondary">
-                Readiness Check starten
-              </Link>
-              <a href="/transformation-check.html" className="cta-button cta-button-secondary">
-                Transformation Check starten
-              </a>
-              <Link to="/statistics" className="cta-button cta-button-secondary">
-                Statistiken ansehen
-              </Link>
+              <a href="https://www.hslu.ch/de-ch/wirtschaft/agenda/veranstaltungen/2027/06/07/reprogramming-real-estate-wie-ai-die-branche-neu-definiert/" target="_blank" rel="noopener noreferrer" className="cta-button">{labels.home.nextConference}</a>
+              <Link to="/check" className="cta-button cta-button-secondary">{labels.home.startReadiness}</Link>
+              <a href="/transformation-check.html" className="cta-button cta-button-secondary">{labels.home.startTransformation}</a>
+              <Link to="/statistics" className="cta-button cta-button-secondary">{labels.home.viewStatistics}</Link>
             </div>
           </div>
         </div>
@@ -82,19 +71,17 @@ function HomePage({ onContactSubmit }) {
       <section className="content-section">
         <div className="container">
           <div className="section-content">
-            <p>
-              Die Immobilienwirtschaft verändert sich schneller, als viele Unternehmen reagieren können.
-            </p>
+            <p>{labels.home.leadChange}</p>
             <p>
               AI automatisiert Prozesse, verändert Rollen, verschiebt Wertschöpfung. Viele Unternehmen treiben Digitalisierung voran, ohne zu wissen, wo sie wirklich stehen.
             </p>
-            <h3>Die Folge:</h3>
+            <h3>{labels.home.consequence}</h3>
             <ul>
               <li>falsche Prioritäten</li>
               <li>teure Fehlentscheidungen</li>
-              <li>Projekte, die scheitern. Nicht wegen AI, sondern wegen fehlender Grundlagen</li>
-              <li>Teams, die überfordert sind</li>
-              <li>Strategien, die nicht greifen</li>
+              <li>{labels.home.consequence1}</li>
+              <li>{labels.home.consequence2}</li>
+              <li>{labels.home.consequence3}</li>
             </ul>
           </div>
         </div>
@@ -103,16 +90,14 @@ function HomePage({ onContactSubmit }) {
       <section className="content-section content-section-textured">
         <div className="container">
           <div className="section-content">
-            <h2 className="section-title">Der Readiness Check ist Ihre 7-Minuten-Standortbestimmung.</h2>
-            <p>
-              Er zeigt Ihnen neutral, unabhängig und evidenzbasiert:
-            </p>
+            <h2 className="section-title">{labels.home.checkIs}</h2>
+            <p>{labels.home.checkShows}</p>
             <ul>
-              <li>Wie gut Ihre Daten auf AI vorbereitet sind</li>
-              <li>Wo Ihre Organisation blockiert – und wo sie stark ist</li>
-              <li>Welche Kompetenzen fehlen</li>
-              <li>Wie gross Ihr Umsetzungspotenzial wirklich ist</li>
-              <li>Was Sie sofort tun können, um handlungsfähig zu sein</li>
+              <li>{labels.home.shows1}</li>
+              <li>{labels.home.shows2}</li>
+              <li>{labels.home.shows3}</li>
+              <li>{labels.home.shows4}</li>
+              <li>{labels.home.shows5}</li>
             </ul>
           </div>
         </div>
@@ -121,56 +106,52 @@ function HomePage({ onContactSubmit }) {
       <section id="wizard" className="wizard-preview-section">
         <div className="container">
           <div className="wizard-preview-content">
-            <h2 className="section-title">Was genau misst der Readiness Check?</h2>
+            <h2 className="section-title">{labels.home.dimensionsTitle}</h2>
             <p className="section-description">
               Wir analysieren den Reifegrad Ihres Unternehmens in 7 entscheidenden Dimensionen, die über Erfolg oder Scheitern von AI entscheiden:
             </p>
             <div className="dimensions-list">
               <div className="dimension-item">
                 <h3>1. Strategie & Orientierung</h3>
-                <p>Haben Sie klar definiert, wofür Sie AI nutzen wollen und warum?</p>
+                <p>{labels.home.dim1}</p>
               </div>
               <div className="dimension-item">
                 <h3>2. Daten & Informationsqualität</h3>
-                <p>Sind Ihre Daten nutzbar, strukturiert und verlässlich?</p>
+                <p>{labels.home.dim2}</p>
               </div>
               <div className="dimension-item">
                 <h3>3. Prozesse & Systeme</h3>
-                <p>Sind Ihre Abläufe digital genug für AI – oder voller manueller Brüche?</p>
+                <p>{labels.home.dim3}</p>
               </div>
               <div className="dimension-item">
                 <h3>4. Organisation & Rollen</h3>
-                <p>Wer trägt Verantwortung? Wer treibt AI voran?</p>
+                <p>{labels.home.dim4}</p>
               </div>
               <div className="dimension-item">
                 <h3>5. Kompetenzen & Skills</h3>
-                <p>Versteht Ihr Team AI und kann es damit arbeiten?</p>
+                <p>{labels.home.dim5}</p>
               </div>
               <div className="dimension-item">
                 <h3>6. Kultur & Veränderungsbereitschaft</h3>
-                <p>Ist Innovation möglich oder dominiert Risikoangst?</p>
+                <p>{labels.home.dim6}</p>
               </div>
               <div className="dimension-item">
                 <h3>7. Governance & Risiko</h3>
-                <p>Haben Sie Leitplanken, Sicherheit und Compliance im Griff?</p>
+                <p>{labels.home.dim7}</p>
               </div>
             </div>
-            <p className="section-description">
-              Das Ergebnis zeigt Ihnen Ihr komplettes AI-Profil, Ihre Stärken und Ihre grössten Handlungsfelder auf einen Blick.
-            </p>
-            <Link to="/check" className="cta-button">
-              Jetzt Readiness Check starten
-            </Link>
+            <p className="section-description">{labels.home.resultLead}</p>
+            <Link to="/check" className="cta-button">{labels.home.startNow}</Link>
           </div>
         </div>
       </section>
 
       <section id="contact" className="contact-section">
         <div className="container">
-          <h2 className="section-title">Kontakt</h2>
+          <h2 className="section-title">{labels.home.contactTitle}</h2>
           <div className="contact-content">
             <div className="contact-info">
-              <h3>Lassen Sie uns gemeinsam die Zukunft gestalten</h3>
+              <h3>{labels.home.contactLead}</h3>
               <p>
                 Haben Sie Fragen zu KI-Lösungen für die Immobilienbranche? 
                 Wir beraten Sie gerne zu den Möglichkeiten und der Implementierung 
@@ -178,15 +159,15 @@ function HomePage({ onContactSubmit }) {
               </p>
               <div className="contact-details">
                 <div className="contact-detail-item">
-                  <strong>E-Mail</strong>
+                  <strong>{labels.home.email}</strong>
                   <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
                 </div>
                 <div className="contact-detail-item">
-                  <strong>Telefon</strong>
+                  <strong>{labels.home.phone}</strong>
                   <a href="tel:+41417576734">+41 41 757 67 34</a>
                 </div>
                 <div className="contact-detail-item">
-                  <strong>Adresse</strong>
+                  <strong>{labels.home.address}</strong>
                   <p>Suurstoffi 1<br />6343 Rotkreuz, Schweiz</p>
                 </div>
               </div>
@@ -194,22 +175,22 @@ function HomePage({ onContactSubmit }) {
             <div className="contact-form">
               <form onSubmit={onContactSubmit}>
                 <div className="form-group">
-                  <label htmlFor="name">Name</label>
+                  <label htmlFor="name">{labels.home.formName}</label>
                   <input type="text" id="name" name="name" required />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="email">E-Mail</label>
+                  <label htmlFor="email">{labels.home.formEmail}</label>
                   <input type="email" id="email" name="email" required />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="subject">Betreff</label>
+                  <label htmlFor="subject">{labels.home.formSubject}</label>
                   <input type="text" id="subject" name="subject" required />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="message">Nachricht</label>
+                  <label htmlFor="message">{labels.home.formMessage}</label>
                   <textarea id="message" name="message" rows="5" required></textarea>
                 </div>
-                <button type="submit" className="cta-button">Nachricht senden</button>
+                <button type="submit" className="cta-button">{labels.home.formSend}</button>
               </form>
             </div>
           </div>

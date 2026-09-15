@@ -188,3 +188,14 @@ svg.icon:not(.apexcharts-svg) circle {
   display: none !important;
 }
 
+
+/* Hinweis ueber Impressum und Datenschutzerklaerung.
+   Beide bleiben deutsch: eine Datenschutzerklaerung nach DSG maschinell zu
+   uebersetzen waere ein Haftungsrisiko und kein Beschriftungsproblem. Der
+   Hinweis sagt das in der gewaehlten Sprache. */
+.legal-language-note {
+  margin: 0 0 1rem;
+  font-size: 0.8125rem;
+  font-style: italic;
+  color: var(--aire-slate-500, #64748b);
+}

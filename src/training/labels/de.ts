@@ -1280,4 +1280,83 @@ export const de = {
     sendRejection: 'Ablehnung senden',
     beforeAfter: 'Vorher / nachher',
   },
+  // Rahmen der oeffentlichen Seite: Navigation, Fusszeile, Kontaktformular.
+  //
+  // Impressum und Datenschutzerklaerung stehen bewusst NICHT hier. Das sind
+  // Rechtstexte: eine Datenschutzerklaerung nach DSG maschinell zu uebersetzen
+  // ist ein Haftungsrisiko und kein Beschriftungsproblem. Sie bleiben deutsch,
+  // und `legalGermanOnly` sagt das in der jeweiligen Sprache.
+  site: {
+    tagline: 'Künstliche Intelligenz im Immobilienwesen',
+    navHome: 'Home',
+    navStatistics: 'Statistiken',
+    navMarketData: 'Marktdaten',
+    navTraining: 'Training',
+    navCoding: 'Kodierung',
+    navAdmin: 'Administration',
+    navContact: 'Kontakt',
+    signOut: 'Abmelden',
+    register: 'Registrieren',
+    signIn: 'Anmelden',
+    myProfile: 'Mein Profil',
+    close: 'Schließen',
+    navigation: 'Navigation',
+    imprint: 'Impressum',
+    privacy: 'Datenschutz',
+    legalGermanOnly: 'Diese Angaben liegen nur auf Deutsch vor.',
+  },
+
+  // Startseite.
+  home: {
+    reviewTitle: 'Rückblick: AI@RE 2026',
+    conferenceReview:
+      'Die AI@RE-Konferenz hat stattgefunden. Über 160 Teilnehmer. Inspirierende Keynotes. Spannende Deep Dives. Intensive Break-out Sessions. Und beeindruckende AI@RE Award Winners. Danke allen und vor allem unseren Sponsoren.',
+    nextConference: 'Nach der Konferenz ist vor der Konferenz: AI@RE, Rotkreuz, 7.6.2027',
+    partnersWere: 'Unsere Partner waren',
+    startReadiness: 'Readiness Check starten',
+    startTransformation: 'Transformation Check starten',
+    viewStatistics: 'Statistiken ansehen',
+    leadChange:
+      'Die Immobilienwirtschaft verändert sich schneller, als viele Unternehmen reagieren können.',
+    leadBody:
+      'AI automatisiert Prozesse, verändert Rollen, verschiebt Wertschöpfung. Viele Unternehmen treiben Digitalisierung voran, ohne zu wissen, ob ihre Grundlagen tragen.',
+    consequence: 'Die Folge:',
+    consequence1: 'Projekte, die scheitern. Nicht wegen AI, sondern wegen fehlender Grundlagen',
+    consequence2: 'Teams, die überfordert sind',
+    consequence3: 'Strategien, die nicht greifen',
+    checkIs: 'Der Readiness Check ist Ihre 7-Minuten-Standortbestimmung.',
+    checkShows: 'Er zeigt Ihnen neutral, unabhängig und evidenzbasiert:',
+    shows1: 'Wie gut Ihre Daten auf AI vorbereitet sind',
+    shows2: 'Wo Ihre Organisation blockiert – und wo sie stark ist',
+    shows3: 'Welche Kompetenzen fehlen',
+    shows4: 'Wie gross Ihr Umsetzungspotenzial wirklich ist',
+    shows5: 'Was Sie sofort tun können, um handlungsfähig zu sein',
+    dimensionsTitle: 'Was genau misst der Readiness Check?',
+    dimensionsLead:
+      'Wir analysieren den Reifegrad Ihres Unternehmens in 7 entscheidenden Dimensionen, die über Erfolg oder Scheitern von AI entscheiden.',
+    dim1: 'Haben Sie klar definiert, wofür Sie AI nutzen wollen und warum?',
+    dim2: 'Sind Ihre Daten nutzbar, strukturiert und verlässlich?',
+    dim3: 'Sind Ihre Abläufe digital genug für AI – oder voller manueller Brüche?',
+    dim4: 'Wer trägt Verantwortung? Wer treibt AI voran?',
+    dim5: 'Versteht Ihr Team AI und kann es damit arbeiten?',
+    dim6: 'Ist Innovation möglich oder dominiert Risikoangst?',
+    dim7: 'Haben Sie Leitplanken, Sicherheit und Compliance im Griff?',
+    resultLead:
+      'Das Ergebnis zeigt Ihnen Ihr komplettes AI-Profil, Ihre Stärken und Ihre grössten Handlungsfelder auf einen Blick.',
+    startNow: 'Jetzt Readiness Check starten',
+    contactTitle: 'Kontakt',
+    contactLead: 'Lassen Sie uns gemeinsam die Zukunft gestalten',
+    email: 'E-Mail',
+    phone: 'Telefon',
+    address: 'Adresse',
+    formName: 'Name',
+    formEmail: 'E-Mail',
+    formSubject: 'Betreff',
+    formMessage: 'Nachricht',
+    formSend: 'Nachricht senden',
+    formSending: 'Wird gesendet...',
+    formThanks: 'Vielen Dank für Ihre Nachricht! Wir werden uns bald bei Ihnen melden.',
+    formError:
+      'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut oder kontaktieren Sie uns direkt per E-Mail.',
+  },
 }
