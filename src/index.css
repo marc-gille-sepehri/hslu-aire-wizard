@@ -199,3 +199,13 @@ svg.icon:not(.apexcharts-svg) circle {
   font-style: italic;
   color: var(--aire-slate-500, #64748b);
 }
+
+/* Sprachhinweis unter den Check-Knoepfen. Schmal gehalten: er steht neben
+   einer Handlungsaufforderung und darf sie nicht verdraengen. */
+.hero-language-note {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  max-width: 34rem;
+}

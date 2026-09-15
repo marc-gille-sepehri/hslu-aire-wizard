@@ -1359,4 +1359,15 @@ export const de = {
     formError:
       'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut oder kontaktieren Sie uns direkt per E-Mail.',
   },
+  // Hinweis auf die Sprache der beiden Checks.
+  //
+  // Die Fragen sind ein Erhebungsinstrument, kein Bedienelement: uebersetzt
+  // misst der Check moeglicherweise etwas anderes, und ein halb deutscher Check
+  // waere schlechter als ein ganz deutscher. Der Hinweis erscheint nur, wenn
+  // eine andere Sprache gewaehlt ist — einer deutschsprachigen Besucherin zu
+  // sagen, dass etwas auf Deutsch vorliegt, ist Rauschen.
+  germanOnly: {
+    check: 'Der Readiness Check ist nur in Deutsch verfügbar.',
+    transformation: 'Der Transformation Check ist nur in Deutsch verfügbar.',
+  },
 }

@@ -626,4 +626,8 @@ export const it: Labels = {
     formError:
       'Si è verificato un errore. Riprovi più tardi oppure ci contatti direttamente via e-mail.',
   },
+  germanOnly: {
+    check: 'Il Readiness Check è disponibile solo in tedesco.',
+    transformation: 'Il Transformation Check è disponibile solo in tedesco.',
+  },
 }

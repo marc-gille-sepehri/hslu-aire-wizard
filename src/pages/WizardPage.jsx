@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import Wizard from '../components/Wizard'
 import { apiBaseUrl } from '../config/configuration'
+import GermanOnlyNote, { checkNote } from '../training/components/GermanOnlyNote'
 
 function WizardPage() {
   const navigate = useNavigate()
@@ -45,6 +46,9 @@ function WizardPage() {
   return (
     <section className="wizard-section">
       <div className="container">
+        {/* Auch hier, nicht nur auf der Startseite: wer den Link direkt bekommt,
+            hat die Startseite nie gesehen. */}
+        <GermanOnlyNote text={checkNote()} className="mb-4" />
         <Wizard onComplete={handleComplete} />
       </div>
     </section>

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { contactEmail } from '../config/configuration'
 import './HomePage.css'
 import { labels } from '../training/labels'
+import GermanOnlyNote, { checkNote, transformationNote } from '../training/components/GermanOnlyNote'
 
 // Set to true to show PropTech Powerhouse in partner logos
 const SHOW_PROPTECH_POWERHOUSE = true
@@ -63,6 +64,12 @@ function HomePage({ onContactSubmit }) {
               <Link to="/check" className="cta-button cta-button-secondary">{labels.home.startReadiness}</Link>
               <a href="/transformation-check.html" className="cta-button cta-button-secondary">{labels.home.startTransformation}</a>
               <Link to="/statistics" className="cta-button cta-button-secondary">{labels.home.viewStatistics}</Link>
+            </div>
+            {/* Vor dem Klick, nicht danach: wer sich entscheidet, soll wissen,
+                worauf er sich einlaesst. */}
+            <div className="hero-language-note">
+              <GermanOnlyNote text={checkNote()} />
+              <GermanOnlyNote text={transformationNote()} />
             </div>
           </div>
         </div>
@@ -142,6 +149,7 @@ function HomePage({ onContactSubmit }) {
             </div>
             <p className="section-description">{labels.home.resultLead}</p>
             <Link to="/check" className="cta-button">{labels.home.startNow}</Link>
+            <GermanOnlyNote text={checkNote()} className="mt-3" />
           </div>
         </div>
       </section>
