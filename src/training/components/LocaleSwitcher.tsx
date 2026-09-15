@@ -7,9 +7,10 @@ import { LOCALES, LOCALE_LABEL, getLocale, isLocale, setLocale, useLocale } from
  * Menüpunkt, und sie kämpfen mit den Menüpunkten um Aufmerksamkeit, die sie
  * nicht verdienen: Sprache wählt man einmal, Menüpunkte benutzt man dauernd.
  *
- * Die Liste zeigt das Kürzel der aktiven Sprache; die vollen Namen stehen in
- * den Einträgen, wo sie beim Aufklappen gebraucht werden. `title` nennt den
- * vollen Namen auch im zugeklappten Zustand — für alle, denen „IT" nichts sagt.
+ * Die Einträge nennen die Sprache so, wie sie sich selbst nennt: Deutsch,
+ * English, Italiano. Kürzel wie „IT" spart zwar Platz, verlangt aber gerade von
+ * denen eine Übersetzungsleistung, die die Sprache suchen — und „Deutsch" ist
+ * immer noch schmaler als drei Knöpfe nebeneinander.
  */
 export default function LocaleSwitcher({ className = '' }: { className?: string }) {
   const active = useLocale()
@@ -26,7 +27,7 @@ export default function LocaleSwitcher({ className = '' }: { className?: string 
     >
       {LOCALES.map((locale) => (
         <option key={locale} value={locale} lang={locale}>
-          {locale.toUpperCase()} · {LOCALE_LABEL[locale]}
+          {LOCALE_LABEL[locale]}
         </option>
       ))}
     </select>

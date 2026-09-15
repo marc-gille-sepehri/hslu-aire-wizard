@@ -225,12 +225,12 @@ svg.icon:not(.apexcharts-svg) circle {
   font: inherit;
   font-size: 0.8125rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
   padding: 0.2rem 0.9rem 0.2rem 0.3rem;
   cursor: pointer;
-  /* Nur das Kuerzel ist sichtbar; der Rest des Eintrags wird abgeschnitten. */
-  width: 3.4rem;
+  /* Breit genug fuer den laengsten Namen (Italiano), schmaler als drei
+     Knoepfe nebeneinander. */
+  width: auto;
+  max-width: 7rem;
   background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
                     linear-gradient(135deg, currentColor 50%, transparent 50%);
   background-position: right 0.35rem center, right 0.05rem center;
@@ -246,8 +246,6 @@ svg.icon:not(.apexcharts-svg) circle {
 .locale-switcher option {
   color: #1e293b;
   background: #fff;
-  text-transform: none;
-  letter-spacing: normal;
 }
 
 /* In der Kopfzeile steht sie auf Navy; dort traegt die Schrift der Navigation. */
