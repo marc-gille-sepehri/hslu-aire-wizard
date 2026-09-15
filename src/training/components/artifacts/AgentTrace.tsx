@@ -10,6 +10,7 @@
 // no code path on the server that could perform it.
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { labels } from '../../labels'
 import type { AgentTraceArtifact } from '../../schema/types'
 import { useRecordInteraction } from '../../state/ProgressContext'
 import { useLearner } from '../../state/LearnerStateContext'
@@ -30,6 +31,8 @@ import SourcePane, { focusFromInfluence, type Focus } from '../../agent/SourcePa
 import IntentCard from '../../agent/IntentCard'
 import AgentForm from '../../agent/AgentForm'
 import ExpandableBlock from '../ExpandableBlock'
+
+const t = labels.agentTrace
 
 /** Sehen, überlegen, würde tun. A non-technical learner needs no other model. */
 const VERB_ICON: Record<RunStep['verb'], string> = {
@@ -96,7 +99,7 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
     try {
       await fn()
     } catch (err) {
-      setNotice(err instanceof Error ? err.message : 'Das hat nicht geklappt.')
+      setNotice(err instanceof Error ? err.message : t.failed)
     } finally {
       setBusy(false)
     }
@@ -106,7 +109,7 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
     return (
       <div className="space-y-4">
         {artifact.title && <h3 className="font-display text-lg font-bold text-navy">{artifact.title}</h3>}
-        <p className="font-sans text-sm text-slate-500">Arbeitsbereich wird geladen …</p>
+        <p className="font-sans text-sm text-slate-500">{t.loadingWorkspace}</p>
       </div>
     )
   }
@@ -116,7 +119,7 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
       <div className="space-y-4">
         {artifact.title && <h3 className="font-display text-lg font-bold text-navy">{artifact.title}</h3>}
         <p className="font-sans text-sm text-red-700">
-          {error ?? 'Der Arbeitsbereich ist nicht erreichbar.'}
+          {error ?? t.unreachable}
         </p>
       </div>
     )
@@ -129,7 +132,7 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
       : undefined
 
   return (
-    <ExpandableBlock label={artifact.title || 'Agent bei der Arbeit'}>
+    <ExpandableBlock label={artifact.title || t.blockLabel}>
     <div className="space-y-4">
       {artifact.title && <h3 className="font-display text-lg font-bold text-navy">{artifact.title}</h3>}
       {artifact.instructions && (
@@ -153,9 +156,7 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
               })
             }
             className="shrink-0 rounded-md border-2 border-navy px-3 py-1 font-sans text-sm font-semibold text-navy hover:bg-navy hover:text-white disabled:border-mist disabled:text-slate-400"
-          >
-            Szenario laden
-          </button>
+          >{t.loadScenario}</button>
         </div>
       )}
 
@@ -188,14 +189,14 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
               const outcome = await startRun(agentId)
               if (outcome.queued) {
                 setNotice(
-                  'Es läuft bereits ein Lauf. Dein Auslöser wartet — er startet, sobald der erste fertig ist.',
+                  t.queuedHint,
                 )
               }
             })
           }
           className="rounded-md border-2 border-navy bg-navy px-3 py-1.5 font-sans text-sm font-semibold text-white transition-colors hover:bg-white hover:text-navy disabled:border-mist disabled:bg-mist disabled:text-slate-400"
         >
-          {running ? 'Noch einen auslösen' : 'Lauf starten'}
+          {running ? t.startAnother : t.start}
         </button>
 
         <button
@@ -203,9 +204,7 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
           onClick={() => setEditing(agents.find((a) => a.agentId === agentId) ?? null)}
           disabled={!agentId}
           className="rounded-md border border-slate-300 px-3 py-1.5 font-sans text-sm text-slate-700 hover:bg-cream disabled:text-slate-300"
-        >
-          Bearbeiten
-        </button>
+        >{t.edit}</button>
         <button
           type="button"
           onClick={() => setEditing('new')}
@@ -229,9 +228,7 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
       {/* ---- three columns --------------------------------------------- */}
       <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.5fr)_minmax(0,1fr)]">
         <div className="space-y-3">
-          <div className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">
-            Ordner und Post
-          </div>
+          <div className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">{t.tabFiles}</div>
           <SourcePane
             scenario={state.scenario}
             focus={focus}
@@ -281,8 +278,8 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
             <div className="flex border-b border-mist">
               {(
                 [
-                  ['knows', 'Was ich gerade weiss'],
-                  ['whence', 'Woher kommt das?'],
+                  ['knows', t.tabKnows],
+                  ['whence', t.tabWhence],
                 ] as [Tab, string][]
               ).map(([key, label]) => (
                 <button
@@ -319,9 +316,7 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
         </div>
 
         <div className="space-y-3">
-          <div className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">
-            Absichten
-          </div>
+          <div className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">{t.intents}</div>
 
           {run?.intents.length ? (
             run.intents.map((intent) => (
@@ -340,9 +335,7 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
               />
             ))
           ) : (
-            <p className="rounded-md border border-mist bg-white px-3 py-3 font-sans text-sm text-slate-400">
-              Noch nichts, was der Agent tun würde.
-            </p>
+            <p className="rounded-md border border-mist bg-white px-3 py-3 font-sans text-sm text-slate-400">{t.noIntents}</p>
           )}
 
           {workspace.queue.length > 0 && (
@@ -369,15 +362,13 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
             disabled={busy || !running}
             onClick={() => guard(haltRun)}
             className="w-full rounded-md border-2 border-red-700 px-3 py-2 font-sans text-sm font-semibold text-red-700 transition-colors hover:bg-red-700 hover:text-white disabled:border-mist disabled:text-slate-300 disabled:hover:bg-transparent disabled:hover:text-slate-300"
-          >
-            Not-Aus
-          </button>
+          >{t.killSwitch}</button>
 
           <button
             type="button"
             disabled={busy || running}
             onClick={() => {
-              if (!window.confirm('Alle Inhalte und die gesamte Laufhistorie dieses Arbeitsbereichs löschen?')) return
+              if (!window.confirm(t.deleteConfirm)) return
               void guard(async () => {
                 await deleteEverything()
                 await refresh()
@@ -386,9 +377,7 @@ export default function AgentTrace({ artifact }: { artifact: AgentTraceArtifact 
               })
             }}
             className="w-full font-sans text-xs text-slate-400 hover:text-red-700 disabled:hover:text-slate-400"
-          >
-            Arbeitsbereich löschen
-          </button>
+          >{t.deleteWorkspace}</button>
         </div>
       </div>
 
@@ -446,9 +435,7 @@ function TraceView({
   if (!run) {
     return (
       <div className="rounded-md border border-mist bg-white px-4 py-6">
-        <p className="font-sans text-sm text-slate-400">
-          Noch kein Lauf. Wähle einen Agenten und starte ihn.
-        </p>
+        <p className="font-sans text-sm text-slate-400">{t.noRun}</p>
       </div>
     )
   }
@@ -478,7 +465,7 @@ function TraceView({
                 {step.influencedBy?.length ? (
                   <span className="mt-0.5 block font-sans text-xs text-slate-400">
                     stützt sich auf {step.influencedBy[0].path}
-                    {step.influencedBy[0].verified ? '' : ' (Stelle nicht überprüfbar)'}
+                    {step.influencedBy[0].verified ? '' : t.unverifiable}
                   </span>
                 ) : null}
 
@@ -531,19 +518,15 @@ function KnowsTab({
   return (
     <dl className="space-y-3 font-sans text-sm">
       <div>
-        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Auftrag</dt>
+        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t.task}</dt>
         <dd className="whitespace-pre-wrap text-slate-700">{state.scenario?.brief ?? '—'}</dd>
       </div>
       <div>
-        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-          Anweisung an den Agenten
-        </dt>
+        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t.instruction}</dt>
         <dd className="whitespace-pre-wrap text-slate-700">{agent.instruction}</dd>
       </div>
       <div>
-        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-          Gelesen in diesem Lauf
-        </dt>
+        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t.readThisRun}</dt>
         <dd className="text-slate-700">
           {readPaths.size ? (
             <ul className="list-inside list-disc">
@@ -559,9 +542,7 @@ function KnowsTab({
         </dd>
       </div>
       <div>
-        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-          Werkzeuge, die zur Verfügung stehen
-        </dt>
+        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t.tabTools}</dt>
         <dd className="text-slate-700">
           <ul className="list-inside list-disc">
             {agent.tools.map((name) => {
@@ -570,7 +551,7 @@ function KnowsTab({
                 <li key={name} className="font-mono text-xs">
                   {tool?.display ?? name}
                   <span className="ml-1 font-sans text-slate-400">
-                    {tool?.side === 'record' ? '(würde tun)' : '(sehen)'}
+                    {tool?.side === 'record' ? t.wouldDo : t.sees}
                   </span>
                 </li>
               )

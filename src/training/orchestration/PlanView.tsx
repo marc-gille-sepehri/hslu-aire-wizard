@@ -7,10 +7,13 @@
 // dem Graphen gerechnet.
 
 import type { Plan, PlanArgument, PlanStep } from './orchestrationApi'
+import { labels } from '../labels'
+
+const t = labels.orchestration
 
 const SOURCE_LABEL: Record<PlanArgument['source'], string> = {
   literal: 'fest',
-  user: 'aus der Anfrage',
+  user: t.fromRequest,
   step: 'aus Schritt',
   unknown: 'offen',
 }
@@ -29,9 +32,9 @@ const SOURCE_CLS: Record<PlanArgument['source'], string> = {
  */
 const VERDICT: Record<Plan['rules'][number]['verdict'], { icon: string; label: string; cls: string }> = {
   honoured: { icon: '✓', label: 'eingehalten (nachgerechnet)', cls: 'text-emerald-700' },
-  violated: { icon: '✗', label: 'nicht eingehalten', cls: 'text-red-700' },
-  not_applicable: { icon: '–', label: 'nicht anwendbar — Werkzeug kommt im Plan nicht vor', cls: 'text-slate-500' },
-  unchecked: { icon: '·', label: 'nicht nachprüfbar — nur die Aussage des Modells', cls: 'text-slate-500' },
+  violated: { icon: '✗', label: t.ruleViolated, cls: 'text-red-700' },
+  not_applicable: { icon: '–', label: t.ruleNotApplicable, cls: 'text-slate-500' },
+  unchecked: { icon: '·', label: t.ruleUnchecked, cls: 'text-slate-500' },
 }
 
 export default function PlanView({ plan }: { plan: Plan }) {
@@ -54,7 +57,7 @@ export default function PlanView({ plan }: { plan: Plan }) {
         <p className="font-sans text-xs text-slate-500">
           {plan.steps.length} {plan.steps.length === 1 ? 'Schritt' : 'Schritte'} in {plan.waves}{' '}
           {plan.waves === 1 ? 'Stufe' : 'Stufen'}
-          {plan.waves < plan.steps.length && ' — Schritte derselben Stufe könnten gleichzeitig laufen.'}
+          {plan.waves < plan.steps.length && t.wavesHint}
         </p>
       )}
 
@@ -100,7 +103,7 @@ export default function PlanView({ plan }: { plan: Plan }) {
                             className={`font-mono text-xs ${
                               arg.undeclared ? 'text-amber-800 line-through' : 'text-slate-700'
                             }`}
-                            title={arg.undeclared ? 'Dieser Parameter ist im Werkzeug nicht deklariert.' : undefined}
+                            title={arg.undeclared ? t.undeclaredParam : undefined}
                           >
                             {arg.name}
                           </span>
@@ -134,9 +137,7 @@ export default function PlanView({ plan }: { plan: Plan }) {
 
       {plan.rules.length > 0 && (
         <div className="rounded-md border border-mist bg-white px-3 py-2.5">
-          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">
-            Vorgaben
-          </p>
+          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">{t.guidanceLabel}</p>
           <ul className="mt-1.5 space-y-1.5">
             {plan.rules.map((rule, i) => {
               const mark = VERDICT[rule.verdict]
@@ -166,9 +167,7 @@ export default function PlanView({ plan }: { plan: Plan }) {
 
       {plan.rejected.length > 0 && (
         <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2.5" style={{ borderStyle: 'solid' }}>
-          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-red-900">
-            Verworfen: erfundene Werkzeuge
-          </p>
+          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-red-900">{t.rejectedInvented}</p>
           <ul className="mt-1 space-y-1">
             {plan.rejected.map((r, i) => (
               <li key={i} className="font-sans text-xs text-red-900">
@@ -187,9 +186,7 @@ export default function PlanView({ plan }: { plan: Plan }) {
 
       {plan.gaps.length > 0 && (
         <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5" style={{ borderStyle: 'solid' }}>
-          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-amber-900">
-            Wofür der Werkzeugkasten nichts hergibt
-          </p>
+          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-amber-900">{t.gaps}</p>
           <ul className="mt-1 space-y-1">
             {plan.gaps.map((g, i) => (
               <li key={i} className="font-sans text-xs text-amber-900">
@@ -202,9 +199,7 @@ export default function PlanView({ plan }: { plan: Plan }) {
 
       {plan.assumptions.length > 0 && (
         <div className="rounded-md border border-mist bg-white px-3 py-2.5">
-          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">
-            Annahmen
-          </p>
+          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">{t.assumptions}</p>
           <ul className="mt-1 list-inside list-disc">
             {plan.assumptions.map((a, i) => (
               <li key={i} className="font-sans text-xs text-slate-600">

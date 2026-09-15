@@ -7,7 +7,10 @@
 // set apart rather than listed with the rest.
 
 import { useState } from 'react'
+import { labels } from '../labels'
 import type { RunIntent } from './agentApi'
+
+const t = labels.intentCard
 
 interface Props {
   intent: RunIntent
@@ -73,9 +76,7 @@ export default function IntentCard({ intent, decidable, busy, onDecide, onShowSt
 
         {preview.kind === 'file' && (
           <div className="space-y-1">
-            <div className="font-sans text-[0.65rem] font-semibold uppercase tracking-wide text-slate-400">
-              Vorher / nachher
-            </div>
+            <div className="font-sans text-[0.65rem] font-semibold uppercase tracking-wide text-slate-400">{t.beforeAfter}</div>
             <pre className="max-h-32 overflow-auto whitespace-pre-wrap rounded bg-red-50 px-2 py-1 font-mono text-[0.7rem] text-red-900">
               {preview.before || '(Datei existiert noch nicht)'}
             </pre>
@@ -106,17 +107,13 @@ export default function IntentCard({ intent, decidable, busy, onDecide, onShowSt
               disabled={busy}
               onClick={() => setRejecting((v) => !v)}
               className="rounded border border-slate-300 px-2 py-1 font-sans text-xs font-semibold text-slate-600 transition-colors hover:bg-white disabled:opacity-40"
-            >
-              Ablehnen
-            </button>
+            >{t.reject}</button>
             <button
               type="button"
               disabled={busy}
               onClick={() => onDecide(true)}
               className="rounded border-2 border-navy bg-navy px-2 py-1 font-sans text-xs font-semibold text-white transition-colors hover:bg-white hover:text-navy disabled:opacity-40"
-            >
-              Freigeben
-            </button>
+            >{t.approve}</button>
           </div>
         ) : (
           // A timer run had no one in the loop. Saying so on the card is the
@@ -143,9 +140,7 @@ export default function IntentCard({ intent, decidable, busy, onDecide, onShowSt
               onDecide(false, reason.trim() || undefined)
             }}
             className="rounded border border-slate-300 px-2 py-1 font-sans text-xs font-semibold text-slate-700 hover:bg-cream disabled:opacity-40"
-          >
-            Ablehnung senden
-          </button>
+          >{t.sendRejection}</button>
         </div>
       )}
     </div>

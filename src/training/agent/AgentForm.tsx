@@ -7,7 +7,10 @@
 // for approval, and nothing under it is ever performed.
 
 import { useState } from 'react'
+import { labels } from '../labels'
 import type { AgentDef, AgentState } from './agentApi'
+
+const t = labels.agentForm
 
 interface Props {
   agent: AgentDef | null
@@ -55,26 +58,26 @@ export default function AgentForm({ agent, state, busy, onSave, onDelete, onClos
       <div className="w-full max-w-2xl rounded-2xl border border-mist bg-white shadow-lg">
         <div className="flex items-center justify-between border-b border-mist bg-cream px-6 py-4">
           <h2 className="font-display text-lg font-bold text-navy">
-            {agent ? 'Agent bearbeiten' : 'Neuer Agent'}
+            {agent ? t.titleEdit : t.titleNew}
           </h2>
           <button type="button" onClick={onClose} className="font-sans text-sm text-slate-500 hover:text-navy">
-            Schliessen
+            {t.close}
           </button>
         </div>
 
         <div className="space-y-4 px-6 py-5">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className={labelCls}>Name</label>
+              <label className={labelCls}>{t.name}</label>
               <input
                 value={draft.name}
                 onChange={(e) => set({ name: e.target.value })}
                 className={inputCls}
-                placeholder="Offertenprüfer"
+                placeholder={t.namePlaceholder}
               />
             </div>
             <div>
-              <label className={labelCls}>Modell</label>
+              <label className={labelCls}>{t.model}</label>
               <select
                 value={draft.model}
                 onChange={(e) => set({ model: e.target.value })}
@@ -90,28 +93,28 @@ export default function AgentForm({ agent, state, busy, onSave, onDelete, onClos
           </div>
 
           <div>
-            <label className={labelCls}>Beschreibung</label>
+            <label className={labelCls}>{t.description}</label>
             <input
               value={draft.description}
               onChange={(e) => set({ description: e.target.value })}
               className={inputCls}
-              placeholder="Prüft eingehende Offerten und schlägt eine Empfehlung vor."
+              placeholder={t.descriptionPlaceholder}
             />
           </div>
 
           <div>
-            <label className={labelCls}>Anweisung</label>
+            <label className={labelCls}>{t.instruction}</label>
             <textarea
               value={draft.instruction}
               onChange={(e) => set({ instruction: e.target.value })}
               rows={6}
               className={`${inputCls} font-mono text-xs`}
-              placeholder="Was soll der Agent tun? Schreib es so, wie du es einer neuen Aushilfe sagen würdest."
+              placeholder={t.instructionPlaceholder}
             />
           </div>
 
           <div>
-            <label className={labelCls}>Auslöser</label>
+            <label className={labelCls}>{t.trigger}</label>
             <div className="flex flex-wrap items-center gap-2">
               <select
                 value={draft.trigger.type}
@@ -130,9 +133,9 @@ export default function AgentForm({ agent, state, busy, onSave, onDelete, onClos
                 }
                 className={`${inputCls} w-auto`}
               >
-                <option value="file">Neue Datei</option>
-                <option value="message">Neue Nachricht</option>
-                <option value="timer">Zeitgesteuert</option>
+                <option value="file">{t.triggerFile}</option>
+                <option value="message">{t.triggerMessage}</option>
+                <option value="timer">{t.triggerTimer}</option>
               </select>
 
               {draft.trigger.type === 'file' && (
@@ -142,7 +145,7 @@ export default function AgentForm({ agent, state, busy, onSave, onDelete, onClos
                     set({ trigger: { ...draft.trigger, match: { ...draft.trigger.match, folder: e.target.value } } })
                   }
                   className={`${inputCls} w-40`}
-                  placeholder="Ordner"
+                  placeholder={t.folderPlaceholder}
                 />
               )}
 
@@ -158,7 +161,7 @@ export default function AgentForm({ agent, state, busy, onSave, onDelete, onClos
                     })
                   }
                   className={`${inputCls} w-56`}
-                  placeholder="Betreff enthält …"
+                  placeholder={t.subjectPlaceholder}
                 />
               )}
 
@@ -179,7 +182,7 @@ export default function AgentForm({ agent, state, busy, onSave, onDelete, onClos
                     }
                     className={`${inputCls} w-20`}
                   />
-                  <span className="font-sans text-sm text-slate-600">Minuten</span>
+                  <span className="font-sans text-sm text-slate-600">{t.minutes}</span>
                 </div>
               )}
             </div>
@@ -193,7 +196,7 @@ export default function AgentForm({ agent, state, busy, onSave, onDelete, onClos
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className={labelCls}>Sehen (wird ausgeführt)</label>
+              <label className={labelCls}>{t.toolsRead}</label>
               <ul className="mt-1 space-y-1">
                 {state.tools.read.map((tool) => (
                   <li key={tool.name}>
@@ -211,7 +214,7 @@ export default function AgentForm({ agent, state, busy, onSave, onDelete, onClos
               </ul>
             </div>
             <div>
-              <label className={labelCls}>Würde tun (wird nur festgehalten)</label>
+              <label className={labelCls}>{t.toolsRecord}</label>
               <ul className="mt-1 space-y-1">
                 {state.tools.record.map((tool) => (
                   <li key={tool.name}>
@@ -232,7 +235,7 @@ export default function AgentForm({ agent, state, busy, onSave, onDelete, onClos
 
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className={labelCls}>Max. Schritte</span>
+              <span className={labelCls}>{t.maxSteps}</span>
               <input
                 type="number"
                 min={1}
@@ -250,7 +253,7 @@ export default function AgentForm({ agent, state, busy, onSave, onDelete, onClos
                 onChange={(e) => set({ enabled: e.target.checked })}
                 className="h-3.5 w-3.5 accent-navy"
               />
-              <span className="font-sans text-sm text-slate-700">eingeschaltet</span>
+              <span className="font-sans text-sm text-slate-700">{t.enabled}</span>
             </label>
           </div>
         </div>
@@ -262,7 +265,7 @@ export default function AgentForm({ agent, state, busy, onSave, onDelete, onClos
               onClick={onDelete}
               className="font-sans text-sm text-slate-500 hover:text-red-700"
             >
-              Agent löschen
+              {t.deleteAgent}
             </button>
           ) : (
             <span />
@@ -273,7 +276,7 @@ export default function AgentForm({ agent, state, busy, onSave, onDelete, onClos
             onClick={() => onSave({ ...draft, agentId: draft.agentId || undefined })}
             className="rounded-md border-2 border-navy bg-navy px-4 py-1.5 font-sans text-sm font-semibold text-white transition-colors hover:bg-white hover:text-navy disabled:border-mist disabled:bg-mist disabled:text-slate-400"
           >
-            Speichern
+            {t.save}
           </button>
         </div>
       </div>

@@ -11,6 +11,7 @@
 // Ausführung erfahrbar.
 
 import { useEffect, useRef, useState } from 'react'
+import { labels } from '../../labels'
 import type { OrchestrationArtifact } from '../../schema/types'
 import { useRecordInteraction } from '../../state/ProgressContext'
 import { useLearner } from '../../state/LearnerStateContext'
@@ -29,6 +30,8 @@ import ToolboxEditor from '../../orchestration/ToolboxEditor'
 import PlanView from '../../orchestration/PlanView'
 import PromptView from '../../orchestration/PromptView'
 import ExpandableBlock from '../ExpandableBlock'
+
+const t = labels.orchestration
 
 const DEFAULT_LIMITS: Limits = {
   maxTools: 20,
@@ -138,16 +141,14 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
         {/* ---- Werkzeugkasten ---- */}
         <div className="space-y-2">
           <div className="flex items-baseline justify-between gap-2">
-            <span className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">
-              Werkzeuge
-            </span>
+            <span className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">{t.toolsLabel}</span>
             <span className="font-sans text-xs text-slate-400">
               {(tools ?? []).length} / {limits.maxTools}
             </span>
           </div>
 
           {tools === null ? (
-            <p className="font-sans text-sm text-slate-400">Werkzeugkasten wird geladen …</p>
+            <p className="font-sans text-sm text-slate-400">{t.loadingToolbox}</p>
           ) : (
             <ToolboxEditor
               tools={tools}
@@ -168,9 +169,7 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
           */}
           <div className="pt-2">
             <div className="mb-1 flex items-baseline justify-between gap-2">
-              <span className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">
-                Vorgaben
-              </span>
+              <span className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">{t.guidanceLabel}</span>
               <span className="font-sans text-xs text-slate-400">
                 {guidance.length} / {limits.maxGuidanceChars}
               </span>
@@ -183,7 +182,7 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
                 setGuidance(e.target.value)
                 setDirty(true)
               }}
-              placeholder={'Eine Regel pro Zeile, z. B.\nPrüfe den Referenzzinssatz, bevor du eine Mitteilung entwirfst.'}
+              placeholder={t.guidancePlaceholder}
               className="w-full rounded-md border border-slate-300 px-2 py-1.5 font-sans text-sm text-slate-800 focus:border-slate-500 focus:outline-none"
             />
             <p className="mt-1 font-sans text-xs text-slate-500">
@@ -205,7 +204,7 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
               type="button"
               disabled={busy}
               onClick={() => {
-                if (!window.confirm('Werkzeugkasten auf den Startsatz zurücksetzen? Deine eigenen Werkzeuge gehen dabei verloren.')) return
+                if (!window.confirm(t.resetConfirm)) return
                 void guard(async () => {
                   const box = await resetToolbox()
                   setTools(box.tools)
@@ -227,14 +226,12 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
 
         {/* ---- Anfrage und Plan ---- */}
         <div className="space-y-3">
-          <span className="block font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">
-            Anfrage
-          </span>
+          <span className="block font-sans text-xs font-semibold uppercase tracking-kicker text-slate-500">{t.requestLabel}</span>
           <textarea
             rows={3}
             value={request}
             onChange={(e) => setRequest(e.target.value)}
-            placeholder="Was soll erledigt werden? Formuliere es so, wie du es einer Person sagen würdest."
+            placeholder={t.requestPlaceholder}
             className="w-full rounded-md border border-slate-300 px-3 py-2 font-sans text-sm text-slate-800 focus:border-slate-500 focus:outline-none"
           />
           <div className="flex flex-wrap items-center gap-3">
@@ -250,7 +247,7 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
               {request.length} / {limits.maxPromptChars}
             </span>
             {!(tools ?? []).length && tools !== null && (
-              <span className="font-sans text-xs text-slate-400">Lege zuerst ein Werkzeug an.</span>
+              <span className="font-sans text-xs text-slate-400">{t.needTool}</span>
             )}
           </div>
 
@@ -261,7 +258,7 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
           {(plan?.prompt ?? preview) && (
             <PromptView
               prompt={(plan?.prompt ?? preview)!}
-              title={plan ? 'Was an das Modell ging' : 'Was an das Modell gehen würde'}
+              title={plan ? t.promptShown : t.promptWould}
             />
           )}
 
@@ -283,9 +280,7 @@ export default function Orchestration({ artifact }: { artifact: OrchestrationArt
                   })
                 }
                 className="mt-2 font-sans text-xs text-navy hover:underline disabled:text-slate-300"
-              >
-                Prompt vorab ansehen (ohne Modellaufruf)
-              </button>
+              >{t.previewPrompt}</button>
             </div>
           )}
         </div>

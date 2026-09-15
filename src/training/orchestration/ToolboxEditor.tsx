@@ -6,7 +6,10 @@
 // weglässt und den Plan danebengehen sieht, hat die Lektion.
 
 import { useState } from 'react'
+import { labels } from '../labels'
 import { PARAM_TYPES, blankTool, type ToolSpec, type Limits } from './orchestrationApi'
+
+const t = labels.orchestration
 
 interface Props {
   tools: ToolSpec[]
@@ -57,7 +60,7 @@ export default function ToolboxEditor({ tools, limits, busy, onChange }: Props) 
                   {tool.name || 'ohne Namen'}
                 </span>
                 <span className="block truncate font-sans text-xs text-slate-500">
-                  {tool.description || 'keine Beschreibung'}
+                  {tool.description || t.noDescription}
                 </span>
               </button>
               <span className="shrink-0 pt-0.5 font-sans text-xs text-slate-400">
@@ -68,7 +71,7 @@ export default function ToolboxEditor({ tools, limits, busy, onChange }: Props) 
                 disabled={busy}
                 onClick={() => remove(tool.toolId)}
                 aria-label="Werkzeug entfernen"
-                title="Werkzeug entfernen"
+                title={t.removeTool}
                 className="shrink-0 rounded p-1 text-slate-300 transition-colors hover:text-red-700 disabled:opacity-40"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -80,28 +83,28 @@ export default function ToolboxEditor({ tools, limits, busy, onChange }: Props) 
             {expanded && (
               <div className="space-y-3 border-t border-mist px-3 py-3" style={{ borderTopStyle: 'solid' }}>
                 <div>
-                  <label className={labelCls}>Name</label>
+                  <label className={labelCls}>{t.toolName}</label>
                   <input
                     className={`${inputCls} font-mono`}
                     value={tool.name}
                     onChange={(e) => patch(tool.toolId, { name: e.target.value })}
-                    placeholder="mietvertrag_suchen"
+                    placeholder={t.toolNamePlaceholder}
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>Beschreibung</label>
+                  <label className={labelCls}>{t.toolDescription}</label>
                   <textarea
                     className={inputCls}
                     rows={2}
                     value={tool.description}
                     onChange={(e) => patch(tool.toolId, { description: e.target.value })}
-                    placeholder="Was tut dieses Werkzeug? Ein Satz — das Modell hat nur diesen."
+                    placeholder={t.toolDescriptionPlaceholder}
                   />
                 </div>
 
                 <div>
                   <div className="mb-1 flex items-baseline justify-between">
-                    <span className={labelCls}>Parameter</span>
+                    <span className={labelCls}>{t.parameters}</span>
                     {tool.params.length < limits.maxParams && (
                       <button
                         type="button"
@@ -121,7 +124,7 @@ export default function ToolboxEditor({ tools, limits, busy, onChange }: Props) 
                   </div>
 
                   {tool.params.length === 0 && (
-                    <p className="font-sans text-xs text-slate-400">Keine Parameter.</p>
+                    <p className="font-sans text-xs text-slate-400">{t.noParameters}</p>
                   )}
 
                   <div className="space-y-2">
@@ -138,7 +141,7 @@ export default function ToolboxEditor({ tools, limits, busy, onChange }: Props) 
                                 ),
                               })
                             }
-                            placeholder="stichtag"
+                            placeholder={t.paramNamePlaceholder}
                           />
                           <select
                             className={`${inputCls} w-28`}
@@ -195,7 +198,7 @@ export default function ToolboxEditor({ tools, limits, busy, onChange }: Props) 
                               ),
                             })
                           }
-                          placeholder="Wofür steht dieser Parameter?"
+                          placeholder={t.paramDescriptionPlaceholder}
                         />
                       </div>
                     ))}

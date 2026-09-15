@@ -243,9 +243,7 @@ function Setup({
           {t.documentLabel}
         </label>
         <p className="mb-2 max-w-prose font-sans text-xs text-slate-500">
-          Markdown. Der Agent bekommt diesen Text <strong>nicht</strong> in den Kontext — er holt sich die
-          Abschnitte mit Werkzeugen. Eine eigene Offerte lässt sich einsetzen; die Lagedaten kennen dann
-          allerdings nur die hinterlegten Adressen.
+          {t.documentHint}
         </p>
         <textarea
           id="loop-doc"
@@ -677,10 +675,7 @@ function Protokollsicht({
       {raw && raw.index === gewaehlt && (
         <>
           <p className="max-w-prose font-sans text-xs text-slate-500">
-            Der vollständige Inhalt von Aufruf {raw.index}: {raw.request.messages.length}{' '}
-            {raw.request.messages.length === 1 ? 'Nachricht' : 'Nachrichten'} plus Systemprompt und{' '}
-            {raw.request.tools.length} Werkzeugdeklarationen. Beim nächsten Aufruf geht alles davon noch
-            einmal mit — das ist das gesamte Gedächtnis des Agenten.
+            {t.logIntro(raw.index, raw.request.messages.length, raw.request.tools.length)}
           </p>
 
           <Feld label="system" ton="text">
