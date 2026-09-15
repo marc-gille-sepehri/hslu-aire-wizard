@@ -18,9 +18,14 @@ import ProfileDialog from './training/auth/ProfileDialog'
 import { apiBaseUrl, contactEmail } from './config/configuration'
 import './App.css'
 import LocaleSwitcher from './training/components/LocaleSwitcher'
-import { labels } from './training/labels'
+import { labels, useLocale } from './training/labels'
 
 function App() {
+  // Der Katalog ist eine lebende Sicht, aber React muss davon erfahren: ohne
+  // diesen Aufruf bleibt die Kopfzeile nach dem Sprachwechsel stehen, waehrend
+  // der Lernbereich darunter schon umgestellt hat — und genau so ist es
+  // aufgefallen.
+  useLocale()
   const [showImprint, setShowImprint] = useState(false)
   const [showPrivacy, setShowPrivacy] = useState(false)
   const location = useLocation()

@@ -1,37 +1,37 @@
-import { LOCALES, LOCALE_LABEL, setLocale, useLocale } from '../labels'
+import { LOCALES, LOCALE_LABEL, getLocale, isLocale, setLocale, useLocale } from '../labels'
 
 /**
- * Sprachwahl.
+ * Sprachwahl — eine Auswahlliste, kein Knopfband.
  *
- * Drei Sprachen, also Knöpfe statt Auswahlliste: bei drei Einträgen kostet eine
- * Liste einen Klick mehr und verbirgt, dass es überhaupt eine Wahl gibt.
+ * Drei Knöpfe nebeneinander kosten in der Kopfzeile so viel Platz wie ein
+ * Menüpunkt, und sie kämpfen mit den Menüpunkten um Aufmerksamkeit, die sie
+ * nicht verdienen: Sprache wählt man einmal, Menüpunkte benutzt man dauernd.
  *
- * Kurzformen (DE · EN · IT) mit vollem Namen als Titel — in einer Kopfzeile
- * konkurriert „Deutsch English Italiano" mit allem anderen um Platz, und wer
- * die Sprache wechseln will, erkennt sein Kürzel.
+ * Die Liste zeigt das Kürzel der aktiven Sprache; die vollen Namen stehen in
+ * den Einträgen, wo sie beim Aufklappen gebraucht werden. `title` nennt den
+ * vollen Namen auch im zugeklappten Zustand — für alle, denen „IT" nichts sagt.
  */
 export default function LocaleSwitcher({ className = '' }: { className?: string }) {
   const active = useLocale()
   return (
-    <div className={`flex items-center gap-0.5 ${className}`} role="group" aria-label="Sprache">
+    <select
+      className={`locale-switcher ${className}`}
+      value={active}
+      title={LOCALE_LABEL[active]}
+      aria-label={LOCALE_LABEL[active]}
+      onChange={(e) => {
+        const next = e.target.value
+        if (isLocale(next)) setLocale(next)
+      }}
+    >
       {LOCALES.map((locale) => (
-        <button
-          key={locale}
-          type="button"
-          onClick={() => setLocale(locale)}
-          lang={locale}
-          title={LOCALE_LABEL[locale]}
-          aria-current={locale === active ? 'true' : undefined}
-          className={
-            'rounded px-1.5 py-0.5 font-sans text-xs font-semibold uppercase transition-colors ' +
-            (locale === active
-              ? 'bg-navy text-white'
-              : 'text-slate-400 hover:bg-mist hover:text-slate-700')
-          }
-        >
-          {locale}
-        </button>
+        <option key={locale} value={locale} lang={locale}>
+          {locale.toUpperCase()} · {LOCALE_LABEL[locale]}
+        </option>
       ))}
-    </div>
+    </select>
   )
 }
+
+/** Für Stellen, die nur wissen wollen, was gerade gilt. */
+export { getLocale }

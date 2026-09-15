@@ -209,3 +209,49 @@ svg.icon:not(.apexcharts-svg) circle {
   margin-top: 0.75rem;
   max-width: 34rem;
 }
+
+/* Sprachwahl in der Kopfzeile.
+   Schmal gehalten und ohne eigenen Rahmen: sie steht neben den Menuepunkten
+   und soll weniger Gewicht haben als diese — Sprache waehlt man einmal,
+   Menuepunkte benutzt man dauernd. Die Breite traegt das Kuerzel; die vollen
+   Namen erscheinen erst beim Aufklappen. */
+.locale-switcher {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background: transparent;
+  color: inherit;
+  opacity: 0.72;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.9rem 0.2rem 0.3rem;
+  cursor: pointer;
+  /* Nur das Kuerzel ist sichtbar; der Rest des Eintrags wird abgeschnitten. */
+  width: 3.4rem;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 0.35rem center, right 0.05rem center;
+  background-size: 0.3rem 0.3rem, 0.3rem 0.3rem;
+  background-repeat: no-repeat;
+}
+.locale-switcher:hover,
+.locale-switcher:focus {
+  opacity: 1;
+  outline: none;
+}
+/* Die Eintraege liegen im Menue des Systems und brauchen dessen Farben. */
+.locale-switcher option {
+  color: #1e293b;
+  background: #fff;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* In der Kopfzeile steht sie auf Navy; dort traegt die Schrift der Navigation. */
+.site-nav .nav-locale {
+  color: #fff;
+  margin-left: 0.25rem;
+}
