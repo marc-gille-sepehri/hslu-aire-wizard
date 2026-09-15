@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import './styles.css'
-import { labels } from './labels'
+import { labels, useLocale } from './labels'
 import { validateModule, type ValidationFailure } from './schema/validate'
 import type { Module } from './schema/types'
 import SchemaError from './components/SchemaError'
@@ -16,6 +16,7 @@ import { EditModeProvider, useEditMode } from './editor/EditModeContext'
 import { ViewAsProvider, useViewAs } from './state/ViewAsContext'
 import { fetchModule, type ModuleMeta } from './lib/moduleApi'
 import ChatWidget from './chat/ChatWidget'
+import LocaleSwitcher from './components/LocaleSwitcher'
 
 type LoadState =
   | { kind: 'loading' }
@@ -36,6 +37,11 @@ export interface TrainingAppProps {
 
 export default function TrainingApp(props: TrainingAppProps = {}) {
   // AuthProvider is mounted app-wide in main.jsx.
+  //
+  // useLocale() steht hier und nirgends sonst: der Katalog selbst ist eine
+  // lebende Sicht und braucht React nicht, aber ein Sprachwechsel muss den Baum
+  // neu rendern — sonst sind die Beschriftungen richtig und unsichtbar.
+  useLocale()
   return (
     <EditModeProvider>
       <TrainingGate {...props} />
@@ -97,16 +103,22 @@ function ViewAsBanner() {
   )
 }
 
-/** Slim bar above the training content holding the admin edit toggle.
-    Name + logout now live in the main site header. */
+/** Slim bar above the training content holding the language choice and the
+    admin edit toggle. Name + logout live in the main site header.
+
+    Die Sprachwahl steht hier und nicht in der globalen Kopfzeile: ausserhalb
+    des Lernbereichs ist noch nichts übersetzt, und ein Umschalter, nach dem
+    sichtbar nichts geschieht, sieht kaputt aus statt unfertig. Er wandert nach
+    oben, sobald die öffentlichen Seiten nachgezogen sind. */
 function TrainingHeader() {
   const { isAdmin, editing, toggleEditing } = useEditMode()
-  if (!isAdmin) return null
   return (
     <div className="training-root font-sans border-b border-mist bg-cream">
       <div className="max-w-prose mx-auto px-4 py-3 flex items-center justify-end gap-4">
+        <LocaleSwitcher />
         {/* Module editors portal their Save controls in here, next to Fertig. */}
         <div id="training-edit-toolbar" className="flex items-center gap-3" />
+        {isAdmin && (
         <button
           type="button"
           onClick={toggleEditing}
@@ -119,6 +131,7 @@ function TrainingHeader() {
         >
           {editing ? labels.editor.exitEditMode : labels.editor.enterEditMode}
         </button>
+        )}
       </div>
     </div>
   )

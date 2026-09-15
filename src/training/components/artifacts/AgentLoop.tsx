@@ -13,6 +13,7 @@ import {
   type TurnSummary,
 } from '../../loop/loopApi'
 import type { AgentLoopArtifact } from '../../schema/types'
+import { labels } from '../../labels'
 import { useRecordInteraction } from '../../state/ProgressContext'
 import { useLearner } from '../../state/LearnerStateContext'
 
@@ -34,11 +35,13 @@ import { useLearner } from '../../state/LearnerStateContext'
 // `while`-Schleife im Browser wäre dieselbe Lüge wie eine Fortschrittsanzeige,
 // die vor dem Ergebnis fertig ist.
 
+const t = labels.agentLoop
+
 type Ansicht = 'ablauf' | 'protokoll'
 
 export default function AgentLoop({ artifact }: { artifact: AgentLoopArtifact }) {
   return (
-    <ExpandableBlock label={artifact.title || 'Die Agent-Schleife'}>
+    <ExpandableBlock label={artifact.title || t.blockLabel}>
       <div className="space-y-4">
         {artifact.title && <h3 className="font-display text-lg font-bold text-navy">{artifact.title}</h3>}
         {artifact.instructions && (
@@ -72,7 +75,7 @@ function Widget({ artifact }: { artifact: AgentLoopArtifact }) {
         setModel((m) => m || c.defaultModel)
         setDocument((d) => d || artifact.document || c.beispiel)
       })
-      .catch((e) => setConfigError(e instanceof Error ? e.message : 'Konnte nicht geladen werden.'))
+      .catch((e) => setConfigError(e instanceof Error ? e.message : t.loadError))
   }, [artifact.document])
 
   useEffect(load, [load])
@@ -87,7 +90,7 @@ function Widget({ artifact }: { artifact: AgentLoopArtifact }) {
       setFokus(null)
       setAnsicht('ablauf')
     } catch (e) {
-      setError(e instanceof LoopApiError ? e.message : 'Der Lauf konnte nicht gestartet werden.')
+      setError(e instanceof LoopApiError ? e.message : t.startFailed)
     } finally {
       setBusy(false)
     }
@@ -117,7 +120,7 @@ function Widget({ artifact }: { artifact: AgentLoopArtifact }) {
       // passiert ist, nicht dort stehen bleiben, wo man vorher war.
       setFokus(after.turns.length ? after.turns[after.turns.length - 1].index : null)
     } catch (e) {
-      setError(e instanceof LoopApiError ? e.message : 'Der Schritt ist fehlgeschlagen.')
+      setError(e instanceof LoopApiError ? e.message : t.stepFailed)
     } finally {
       setBusy(false)
     }
@@ -128,12 +131,12 @@ function Widget({ artifact }: { artifact: AgentLoopArtifact }) {
       <div className="rounded-md border-0 border-l-4 border-solid border-l-red-400 bg-red-50 px-4 py-3 font-sans text-sm text-red-800">
         {configError}{' '}
         <button type="button" onClick={load} className="font-semibold underline underline-offset-2">
-          Erneut versuchen
+          {t.retry}
         </button>
       </div>
     )
   }
-  if (!config) return <p className="font-sans text-sm text-slate-500">Wird geladen …</p>
+  if (!config) return <p className="font-sans text-sm text-slate-500">{t.loading}</p>
 
   if (!run) {
     return (
@@ -160,10 +163,10 @@ function Widget({ artifact }: { artifact: AgentLoopArtifact }) {
 
       <div className="flex items-center gap-1 border-0 border-b border-solid border-b-mist">
         <Reiter aktiv={ansicht === 'ablauf'} onClick={() => setAnsicht('ablauf')}>
-          Ablauf
+          {t.tabFlow}
         </Reiter>
         <Reiter aktiv={ansicht === 'protokoll'} onClick={() => setAnsicht('protokoll')}>
-          Protokoll ({run.messageCount})
+          {t.tabLog(run.messageCount)}
         </Reiter>
       </div>
 
@@ -222,7 +225,7 @@ function Setup({
     <div className="space-y-4">
       <div>
         <label className="mb-1.5 block font-sans text-sm font-semibold text-slate-800" htmlFor="loop-task">
-          Frage an den Agenten
+          {t.taskLabel}
         </label>
         <textarea
           id="loop-task"
@@ -230,14 +233,14 @@ function Setup({
           onChange={(e) => onTask(e.target.value)}
           rows={2}
           maxLength={config.limits.maxTaskChars}
-          placeholder="z. B. Ist der geforderte Kaufpreis plausibel?"
+          placeholder={t.taskPlaceholder}
           className="w-full rounded-md border border-solid border-slate-300 p-2.5 font-sans text-sm text-slate-800 focus:border-slate-500 focus:outline-none"
         />
       </div>
 
       <div>
         <label className="mb-1.5 block font-sans text-sm font-semibold text-slate-800" htmlFor="loop-doc">
-          Verkaufsdokumentation
+          {t.documentLabel}
         </label>
         <p className="mb-2 max-w-prose font-sans text-xs text-slate-500">
           Markdown. Der Agent bekommt diesen Text <strong>nicht</strong> in den Kontext — er holt sich die
@@ -257,7 +260,7 @@ function Setup({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <label className="mb-1.5 block font-sans text-sm font-semibold text-slate-800" htmlFor="loop-model">
-            Modell
+            {t.modelLabel}
           </label>
           <select
             id="loop-model"
@@ -282,7 +285,7 @@ function Setup({
               : 'cursor-not-allowed rounded-md bg-mist px-6 py-2.5 font-sans text-sm font-semibold text-slate-400'
           }
         >
-          {busy ? 'Wird angelegt …' : 'Lauf anlegen'}
+          {busy ? t.starting : t.start}
         </button>
       </div>
 
@@ -295,13 +298,13 @@ function Setup({
         {/* Wortwoertlich, nicht nacherzaehlt: der Systemprompt und die
             Werkzeugbeschreibungen sind der halbe Lerngegenstand. */}
         <p className="mt-3 font-sans text-xs font-semibold uppercase tracking-kicker text-slate-400">
-          Systemprompt
+          {t.systemPrompt}
         </p>
         <pre className="mt-1 overflow-x-auto whitespace-pre-wrap rounded bg-cream px-3 py-2 font-mono text-xs text-slate-700">
           {config.systemPrompt}
         </pre>
         <p className="mt-3 font-sans text-xs font-semibold uppercase tracking-kicker text-slate-400">
-          Werkzeuge
+          {t.tools}
         </p>
         <ul className="mt-1 space-y-1">
           {config.tools.map((t) => (
@@ -330,13 +333,13 @@ function Kopf({ run, config, onReset }: { run: LoopRun; config: LoopConfig; onRe
           onClick={onReset}
           className="font-sans text-xs font-semibold text-navy underline underline-offset-2 hover:text-gold-dark"
         >
-          Neuer Lauf
+          {t.newRun}
         </button>
       </div>
       <dl className="mt-3 flex flex-wrap gap-x-6 gap-y-1 font-sans text-xs text-slate-500">
-        <Kennzahl label="Modell" wert={modell} />
-        <Kennzahl label="Durchläufe" wert={`${run.turns.length} von ${run.maxTurns}`} />
-        <Kennzahl label="Gespräch" wert={`${run.messageCount} Nachrichten`} />
+        <Kennzahl label={t.kModel} wert={modell} />
+        <Kennzahl label={t.kTurns} wert={t.kTurnsOf(run.turns.length, run.maxTurns)} />
+        <Kennzahl label={t.kConversation} wert={t.kMessages(run.messageCount)} />
         <Kennzahl
           label="Tokens"
           wert={`${run.cost.tokensIn.toLocaleString('de-CH')} ein · ${run.cost.tokensOut.toLocaleString('de-CH')} aus`}
@@ -345,7 +348,7 @@ function Kopf({ run, config, onReset }: { run: LoopRun; config: LoopConfig; onRe
           // Die Zahl, die das Kostengespraech ueber Agenten ueberhaupt erst
           // fuehrbar macht: wie viel davon war noch einmal dasselbe.
           <Kennzahl
-            label="davon Wiederholung"
+            label={t.kResent}
             wert={`${Math.round(run.cost.resentShare * 100)} %`}
             hervorgehoben
           />
@@ -406,7 +409,7 @@ function Ablaufsicht({
         </div>
       )}
 
-      {turn ? <Durchlauf turn={turn} /> : <p className="font-sans text-sm text-slate-500">Noch kein Durchlauf.</p>}
+      {turn ? <Durchlauf turn={turn} /> : <p className="font-sans text-sm text-slate-500">{t.noTurnYet}</p>}
 
       {error && <Fehler text={error} />}
       <Weiter run={run} busy={busy} onStep={onStep} />
@@ -433,10 +436,10 @@ function Kreis({ run, busy }: { run: LoopRun; busy: boolean }) {
         : 'ende'
 
   const schritte: { key: string; label: string }[] = [
-    { key: 'modell', label: 'Modell fragen' },
-    { key: 'verzweigung', label: 'Werkzeug gerufen?' },
-    { key: 'werkzeug', label: 'Werkzeug ausführen' },
-    { key: 'ergebnis', label: 'Ergebnis anhängen' },
+    { key: 'modell', label: t.cycleModel },
+    { key: 'verzweigung', label: t.cycleBranch },
+    { key: 'werkzeug', label: t.cycleTool },
+    { key: 'ergebnis', label: t.cycleAppend },
   ]
 
   return (
@@ -458,14 +461,14 @@ function Kreis({ run, busy }: { run: LoopRun; busy: boolean }) {
         <span className="text-slate-400">↻</span>
       </div>
       <p className="mt-2 font-sans text-xs text-slate-500">
-        {stelle === 'start' && 'Der Lauf ist angelegt. Noch wurde nichts an das Modell geschickt.'}
-        {stelle === 'modell' && 'Das Modell denkt — das gesamte bisherige Gespräch geht mit.'}
+        {stelle === 'start' && t.atStart}
+        {stelle === 'modell' && t.atModel}
         {stelle === 'ergebnis' &&
-          'Die Werkzeugergebnisse hängen jetzt im Gespräch. Der nächste Durchlauf schickt alles erneut.'}
+          t.atAppend}
         {stelle === 'ende' &&
           (run.status === 'stopped'
-            ? 'Die Obergrenze ist erreicht. Der Agent wurde gestoppt — er war nicht fertig.'
-            : 'Das Modell hat ohne Werkzeugaufruf geantwortet. Damit endet die Schleife.')}
+            ? t.atStopped
+            : t.atDone)}
       </p>
     </div>
   )
@@ -476,20 +479,20 @@ function Durchlauf({ turn }: { turn: TurnSummary }) {
     <div className="space-y-3">
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 font-sans text-xs text-slate-500">
         <span className="font-semibold uppercase tracking-kicker text-slate-400">
-          Durchlauf {turn.index}
+          {t.turnN(turn.index)}
         </span>
-        <span>{(turn.ms / 1000).toFixed(1).replace('.', ',')} s</span>
+        <span>{t.seconds((turn.ms / 1000).toFixed(1).replace('.', ','))}</span>
         <span>
           {turn.tokensIn.toLocaleString('de-CH')} ein · {turn.tokensOut.toLocaleString('de-CH')} aus
         </span>
         <span>
-          Gespräch bei diesem Aufruf: <strong className="text-slate-700">{turn.messageCount}</strong>
+          {t.conversationAtCall} <strong className="text-slate-700">{turn.messageCount}</strong>
         </span>
         <Ausgang outcome={turn.outcome} stopReason={turn.stopReason} />
       </div>
 
       {turn.thinking && (
-        <Feld label="Reasoning" ton="denken">
+        <Feld label={t.reasoning} ton="denken">
           <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-700">
             {turn.thinking}
           </pre>
@@ -497,7 +500,7 @@ function Durchlauf({ turn }: { turn: TurnSummary }) {
       )}
 
       {turn.text && (
-        <Feld label={turn.outcome === 'final' ? 'Antwort' : 'Text neben dem Aufruf'} ton="text">
+        <Feld label={turn.outcome === 'final' ? t.answerField : t.textBesideCall} ton="text">
           <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-800">
             {turn.text}
           </pre>
@@ -528,17 +531,16 @@ function Werkzeugaufruf({ call }: { call: ToolCall }) {
       </p>
       {call.unknown && (
         <p className="mt-1 font-sans text-xs text-amber-800">
-          Dieses Werkzeug gibt es nicht. Der Agent bekommt einen Fehler zurück und darf es im nächsten
-          Durchlauf besser machen.
+          {t.unknownTool}
         </p>
       )}
       <div className="mt-2 grid gap-2 md:grid-cols-2">
         <div>
-          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-400">Eingabe</p>
+          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-400">{t.toolInput}</p>
           <Json value={call.input} />
         </div>
         <div>
-          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-400">Ausgabe</p>
+          <p className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-400">{t.toolOutput}</p>
           <Json value={call.output} />
         </div>
       </div>
@@ -560,10 +562,10 @@ function Weiter({ run, busy, onStep }: { run: LoopRun; busy: boolean; onStep: ()
               : 'rounded-md bg-navy px-6 py-2.5 font-sans text-sm font-semibold text-white transition-colors hover:bg-navy-light'
           }
         >
-          {busy ? 'Durchlauf läuft …' : run.turns.length ? 'Nächster Durchlauf' : 'Ersten Durchlauf starten'}
+          {busy ? t.stepRunning : run.turns.length ? t.stepNext : t.stepFirst}
         </button>
         <span className="font-sans text-xs text-slate-500">
-          Ein Klick = ein Modellaufruf. Das ganze Gespräch geht mit.
+          {t.stepHint}
         </span>
       </div>
     )
@@ -571,7 +573,7 @@ function Weiter({ run, busy, onStep }: { run: LoopRun; busy: boolean; onStep: ()
   if (run.status === 'completed') {
     return (
       <div className="rounded-md border-0 border-l-4 border-solid border-l-gold bg-gold-soft px-4 py-3">
-        <p className="font-display text-sm font-bold uppercase tracking-kicker text-navy">Ergebnis</p>
+        <p className="font-display text-sm font-bold uppercase tracking-kicker text-navy">{t.result}</p>
         <pre className="mt-2 max-w-prose whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-800">
           {run.answer}
         </pre>
@@ -581,8 +583,7 @@ function Weiter({ run, busy, onStep }: { run: LoopRun; busy: boolean; onStep: ()
   if (run.status === 'stopped') {
     return (
       <div className="rounded-md border-0 border-l-4 border-solid border-l-amber-400 bg-amber-50 px-4 py-3 font-sans text-sm text-amber-900">
-        Die Obergrenze von {run.maxTurns} Durchläufen ist erreicht. Der Agent wurde gestoppt — das ist kein
-        Ergebnis, sondern ein Abbruch.
+        {t.stoppedNote(run.maxTurns)}
       </div>
     )
   }
@@ -628,7 +629,7 @@ function Protokollsicht({
         if (!abgebrochen) setRaw(t)
       })
       .catch(() => {
-        if (!abgebrochen) setFehler('Der Durchlauf konnte nicht geladen werden.')
+        if (!abgebrochen) setFehler(t.turnLoadError)
       })
       .finally(() => {
         if (!abgebrochen) setLadend(false)
@@ -639,14 +640,14 @@ function Protokollsicht({
   }, [run.runId, gewaehlt])
 
   if (gewaehlt === null) {
-    return <p className="font-sans text-sm text-slate-500">Noch kein Durchlauf aufgezeichnet.</p>
+    return <p className="font-sans text-sm text-slate-500">{t.noTurnRecorded}</p>
   }
 
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-sans text-xs font-semibold uppercase tracking-kicker text-slate-400">
-          Aufruf
+          {t.call}
         </span>
         {run.turns.map((t) => (
           <button
@@ -666,11 +667,11 @@ function Protokollsicht({
           onClick={() => onFokus(gewaehlt)}
           className="ml-auto font-sans text-xs font-semibold text-navy underline underline-offset-2"
         >
-          Im Ablauf ansehen
+          {t.showInFlow}
         </button>
       </div>
 
-      {ladend && <p className="font-sans text-sm text-slate-500">Wird geladen …</p>}
+      {ladend && <p className="font-sans text-sm text-slate-500">{t.loading}</p>}
       {fehler && <Fehler text={fehler} />}
 
       {raw && raw.index === gewaehlt && (
@@ -768,12 +769,12 @@ function Json({ value }: { value: unknown }) {
 function Ausgang({ outcome, stopReason }: { outcome: TurnSummary['outcome']; stopReason: string | null }) {
   const text =
     outcome === 'tool_use'
-      ? 'Werkzeug gerufen → weiter'
+      ? t.outToolUse
       : outcome === 'final'
-        ? 'ohne Werkzeug → Ende'
+        ? t.outFinal
         : outcome === 'max_turns'
-          ? 'Obergrenze → gestoppt'
-          : 'Fehler'
+          ? t.outMaxTurns
+          : t.outError
   return (
     <span className="rounded bg-mist px-2 py-0.5 text-slate-600">
       {text}

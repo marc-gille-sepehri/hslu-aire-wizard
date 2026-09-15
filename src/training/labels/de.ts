@@ -1,5 +1,13 @@
-// German UI labels. Centralized so they can be swapped later.
-export const labels = {
+// Die deutschen Beschriftungen — und zugleich die FORM des Katalogs.
+//
+// `de` ist die Quelle der Wahrheit für die Struktur: `Labels` wird daraus
+// abgeleitet, und `en` und `it` müssen ihr entsprechen. Ein Schlüssel, der dort
+// fehlt, ist damit ein Übersetzungsfehler zur Bauzeit und kein stiller Rückfall
+// auf Deutsch zur Laufzeit.
+//
+// Kein `as const`: mit literalen Typen müsste die englische Fassung dieselben
+// deutschen Zeichenketten enthalten, um dem Typ zu genügen.
+export const de = {
   appTitle: 'Training',
   loading: 'Wird geladen…',
   noModules: 'Keine Module verfügbar.',
@@ -1033,4 +1041,90 @@ export const labels = {
     doneLocked: 'Weitere Eingaben sind nicht mehr möglich.',
     doneThanks: 'Vielen Dank für Ihre Mitarbeit.',
   },
-} as const
+
+  // Schleifenlektion: die Ausfuehrung Schritt fuer Schritt.
+  agentLoop: {
+    blockLabel: 'Die Agent-Schleife',
+    loading: 'Wird geladen …',
+    retry: 'Erneut versuchen',
+    loadError: 'Konnte nicht geladen werden.',
+
+    // Start
+    taskLabel: 'Frage an den Agenten',
+    taskPlaceholder: 'z. B. Ist der geforderte Kaufpreis plausibel?',
+    documentLabel: 'Verkaufsdokumentation',
+    documentHint:
+      'Markdown. Der Agent bekommt diesen Text nicht in den Kontext — er holt sich die Abschnitte mit Werkzeugen. Eine eigene Offerte lässt sich einsetzen; die Lagedaten kennen dann allerdings nur die hinterlegten Adressen.',
+    modelLabel: 'Modell',
+    start: 'Lauf anlegen',
+    starting: 'Wird angelegt …',
+    startFailed: 'Der Lauf konnte nicht gestartet werden.',
+    whatAgentGets: (n: number) => `Was der Agent mitbekommt (${n} Werkzeuge)`,
+    systemPrompt: 'Systemprompt',
+    tools: 'Werkzeuge',
+
+    // Kopf
+    newRun: 'Neuer Lauf',
+    kModel: 'Modell',
+    kTurns: 'Durchläufe',
+    kTurnsOf: (n: number, max: number) => `${n} von ${max}`,
+    kConversation: 'Gespräch',
+    kMessages: (n: number) => `${n} Nachrichten`,
+    kTokens: 'Tokens',
+    kTokensValue: (inTok: string, outTok: string) => `${inTok} ein · ${outTok} aus`,
+    kResent: 'davon Wiederholung',
+
+    // Ansichten
+    tabFlow: 'Ablauf',
+    tabLog: (n: number) => `Protokoll (${n})`,
+
+    // Kreis
+    cycleModel: 'Modell fragen',
+    cycleBranch: 'Werkzeug gerufen?',
+    cycleTool: 'Werkzeug ausführen',
+    cycleAppend: 'Ergebnis anhängen',
+    atStart: 'Der Lauf ist angelegt. Noch wurde nichts an das Modell geschickt.',
+    atModel: 'Das Modell denkt — das gesamte bisherige Gespräch geht mit.',
+    atAppend:
+      'Die Werkzeugergebnisse hängen jetzt im Gespräch. Der nächste Durchlauf schickt alles erneut.',
+    atStopped: 'Die Obergrenze ist erreicht. Der Agent wurde gestoppt — er war nicht fertig.',
+    atDone: 'Das Modell hat ohne Werkzeugaufruf geantwortet. Damit endet die Schleife.',
+
+    // Durchlauf
+    noTurnYet: 'Noch kein Durchlauf.',
+    turnN: (n: number) => `Durchlauf ${n}`,
+    seconds: (s: string) => `${s} s`,
+    conversationAtCall: 'Gespräch bei diesem Aufruf:',
+    reasoning: 'Reasoning',
+    answerField: 'Antwort',
+    textBesideCall: 'Text neben dem Aufruf',
+    toolInput: 'Eingabe',
+    toolOutput: 'Ausgabe',
+    unknownTool:
+      'Dieses Werkzeug gibt es nicht. Der Agent bekommt einen Fehler zurück und darf es im nächsten Durchlauf besser machen.',
+
+    // Ausgang
+    outToolUse: 'Werkzeug gerufen → weiter',
+    outFinal: 'ohne Werkzeug → Ende',
+    outMaxTurns: 'Obergrenze → gestoppt',
+    outError: 'Fehler',
+
+    // Weiter
+    stepFirst: 'Ersten Durchlauf starten',
+    stepNext: 'Nächster Durchlauf',
+    stepRunning: 'Durchlauf läuft …',
+    stepHint: 'Ein Klick = ein Modellaufruf. Das ganze Gespräch geht mit.',
+    stepFailed: 'Der Schritt ist fehlgeschlagen.',
+    result: 'Ergebnis',
+    stoppedNote: (max: number) =>
+      `Die Obergrenze von ${max} Durchläufen ist erreicht. Der Agent wurde gestoppt — das ist kein Ergebnis, sondern ein Abbruch.`,
+
+    // Protokoll
+    noTurnRecorded: 'Noch kein Durchlauf aufgezeichnet.',
+    call: 'Aufruf',
+    showInFlow: 'Im Ablauf ansehen',
+    turnLoadError: 'Der Durchlauf konnte nicht geladen werden.',
+    logIntro: (index: number, messages: number, tools: number) =>
+      `Der vollständige Inhalt von Aufruf ${index}: ${messages} ${messages === 1 ? 'Nachricht' : 'Nachrichten'} plus Systemprompt und ${tools} Werkzeugdeklarationen. Beim nächsten Aufruf geht alles davon noch einmal mit — das ist das gesamte Gedächtnis des Agenten.`,
+  },
+}
