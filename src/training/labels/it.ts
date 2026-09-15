@@ -29,7 +29,7 @@ export const it: Labels = {
 
   dashboard: {
     completedCourses: 'Corsi completati',
-    ofCourses: (done: number, total: number) => `${done} di ${total} corsi`,
+    ofCourses: (done: number, total: number): string => `${done} di ${total} corsi`,
     certificates: 'Attestati',
     inProgressHeading: 'In corso',
     completedTag: 'Completato',
@@ -54,7 +54,7 @@ export const it: Labels = {
     requestCode: 'Richiedi il codice',
     sending: 'Invio del codice…',
     codeHeading: 'Inserisca il codice',
-    codeSentTo: (email: string) =>
+    codeSentTo: (email: string): string =>
       `Abbiamo inviato un codice di sei cifre a ${email}. È valido per 10 minuti.`,
     codeLabel: 'Codice di accesso',
     codePlaceholder: '123456',
@@ -66,11 +66,343 @@ export const it: Labels = {
     logout: 'Esci',
     genericRequestError: 'Non è stato possibile inviare il codice. Riprovi.',
     wrongCode: 'Codice errato. Riprovi.',
-    wrongCodeRemaining: (n: number) =>
+    wrongCodeRemaining: (n: number): string =>
       n === 1 ? 'Codice errato. Resta 1 tentativo.' : `Codice errato. Restano ${n} tentativi.`,
     expiredCode: 'Il codice non è valido o è scaduto. Ne richieda uno nuovo.',
     lockedCode: 'Troppi tentativi. Richieda un nuovo codice.',
     noUser: 'Per questo indirizzo non esiste alcun accesso.',
     invalidEmail: 'Inserisca un indirizzo e-mail valido.',
+  },
+  appTitle: 'Formazione',
+  loading: 'Caricamento…',
+  noModules: 'Nessun modulo disponibile.',
+  moduleSelectLabel: 'Scelga il modulo',
+  resetProgress: 'Azzera i progressi',
+  resetConfirm: 'Azzerare davvero i progressi? Risposte e annotazioni andranno perse.',
+  progressOf: (done: number, total: number): string => `${done} / ${total} sezioni`,
+  objectives: 'Obiettivi',
+  prev: 'Indietro',
+  next: 'Avanti',
+  submit: 'Verifica la risposta',
+  tryAgain: 'Riprova',
+  correct: 'Corretto',
+  incorrect: 'Errato',
+  savedHint: 'salvato',
+  validationError: 'Il JSON del modulo non è valido.',
+  loadError: 'Non è stato possibile caricare il modulo.',
+  missingResource: (id: string): string => `Risorsa mancante: ${id}`,
+  missingAlt: 'Testo alternativo mancante',
+
+  viewAs: {
+    open: 'Vista partecipante',
+    title: 'Vista partecipante',
+    subtitle: 'Consulti i progressi di una persona partecipante.',
+    ownView: 'La mia vista',
+    noParticipants: 'In questo corso nessuno ha ancora fatto progressi.',
+    banner: (name: string): string => `Vista partecipante: ${name}`,
+    readOnly: 'sola lettura',
+    exit: 'Torna alla mia vista',
+    loadError: 'Non è stato possibile caricare i partecipanti.',
+    close: 'Chiudi',
+  },
+
+  saveError: {
+    title: 'Progressi non salvati',
+    body:
+      'Non è stato possibile salvare questo elemento sul server. Non dipende da ciò che ha inserito — può proseguire, ma per ora questo elemento non conta come completato. La preghiamo di segnalarlo alla direzione del corso.',
+    detail: (artifactId: string, code: string): string => `Elemento ${artifactId} · ${code}`,
+    dismiss: 'Nascondi',
+  },
+
+  llm: {
+    title: 'Provi un prompt',
+    model: 'Modello',
+    unavailable: 'non disponibile',
+    promptLabel: 'Prompt',
+    promptPlaceholder: 'Scriva qui il Suo prompt …',
+    send: 'Invia',
+    sending: 'Invio in corso …',
+    response: 'Risposta',
+    refused: 'Il modello ha rifiutato la richiesta.',
+    modelsError: 'Non è stato possibile caricare i modelli.',
+    tokens: (input: number, output: number): string => `${input} → ${output} token`,
+  },
+
+  routes: {
+    notFoundTitle: 'Questo indirizzo non porta da nessuna parte',
+    notFoundBody:
+      'L’indirizzo punta a qualcosa che non esiste (più) — oppure i segmenti non corrispondono. Verifichi il collegamento.',
+    toCatalog: '← Alla panoramica dei corsi',
+    resolving: 'Risoluzione in corso …',
+    supersededTitle: 'Versione superata',
+    supersededBody: (v: number): string =>
+      `Sta consultando la versione ${v}. Di questo corso esiste una versione attiva più recente.`,
+    toActive: 'Alla versione attuale',
+    courseModules: 'Moduli',
+    noModules: 'Questo corso non contiene ancora moduli.',
+    unpublishedTag: 'Non pubblicato',
+    adminOnlyHint:
+      'Per i partecipanti questo indirizzo è un 404 — i corsi non pubblicati non sono visibili.',
+  },
+
+  media: {
+    download: 'Scarica',
+    dropHint: 'Trascini qui un file o faccia clic — PDF, Excel, video, immagine',
+    uploading: 'Caricamento …',
+    uploadError: 'Caricamento non riuscito.',
+    needCourse: 'I caricamenti richiedono il contesto di un corso — questo modulo è aperto senza.',
+    remove: 'Rimuovi il file',
+    orUrl: 'oppure incolli un indirizzo',
+  },
+
+  mcp: {
+    url: 'URL del server MCP',
+    urlPlaceholder: 'https://…/mcp',
+    connect: 'Connetti',
+    connecting: 'Connessione …',
+    connected: 'Connesso',
+    disconnect: 'Disconnetti',
+    tools: 'Strumenti',
+    noTools: 'Il server non segnala alcuno strumento.',
+    selectToolHint: 'Scelga a sinistra uno strumento per eseguirlo.',
+    parameters: 'Parametri',
+    noParams: 'Questo strumento non ha parametri.',
+    run: 'Esegui',
+    running: 'Esecuzione …',
+    result: 'Risultato',
+    error: 'Errore',
+    required: 'obbligatorio',
+    stepUrl: 'Server connesso',
+    stepTool: 'Strumento eseguito',
+    done: 'Completato',
+    authRequired: 'Questo server richiede l’accesso',
+    authHint:
+      'Si aprirà la finestra di accesso del fornitore. L’accesso passa poi dal nostro server; il Suo token resta lì e non viene conservato nel browser.',
+    signIn: 'Accedi',
+    signingIn: 'Accesso in corso …',
+    authFailed: 'L’accesso è stato annullato o non è riuscito.',
+    popupBlocked: 'La finestra di accesso è stata bloccata. Consenta i pop-up per questo sito.',
+    viaProxy: 'tramite il nostro server',
+    authenticated: 'connesso',
+    signOut: 'Esci',
+  },
+
+  ontologyBlock: {
+    classes: 'Classi',
+    relationships: 'Relazioni',
+    node: 'Nodo',
+    edge: 'Arco',
+    erpCore: 'Nucleo ERP',
+    extensions: 'Estensioni',
+    erpTag: 'ERP',
+    extensionTag: 'previsto',
+    attributes: 'Attributi',
+    relOut: 'Relazioni (in uscita)',
+    relIn: 'Relazioni (in entrata)',
+  },
+
+  dataQuery: {
+    run: 'Esegui',
+    running: 'In corso …',
+    hint: '⌘/Ctrl + Invio',
+    syntaxToggle: 'Sintassi supportata',
+    syntaxBody:
+      'Una tabella (una classe dell’ontologia), nessun JOIN. WHERE con AND/OR e = != < <= > >= LIKE. Sola lettura.',
+    rowCount: (n: number, coll: string): string => `${n} rig${n === 1 ? 'a' : 'he'} da ${coll}`,
+    noRows: 'Nessuna riga — modifichi le condizioni.',
+  },
+
+  docConvert: {
+    drop: 'Trascini qui un file o faccia clic',
+    formats: 'PDF, PPTX, DOCX, immagini → Markdown · Excel → Markdown, vista celle + analisi',
+    converting: 'Conversione …',
+    raw: 'Testo grezzo',
+    rendered: 'Visualizzato',
+    copyAll: 'Copia tutto',
+    copied: 'Copiato ✓',
+    tab: { markdown: 'Markdown', cells: 'Celle', analysis: 'Analisi' },
+    cellsNotApplicable: 'Vista celle non applicabile — questo file non ha struttura tabellare.',
+    cellsTruncated: 'Output troncato — il file supera il limite di visualizzazione.',
+    formulaModeLabel: (m: string): string =>
+      m === 'formula' ? 'formule visibili' : m === 'error' ? 'valori di errore visibili' : 'solo valori',
+  },
+
+  objectGraph: {
+    seed: 'Inizio:',
+    hint: 'Faccia clic su un nodo per caricarne i vicini',
+    nodeCount: (n: number): string => `${n} nodi`,
+    cypherRun: 'Interroga',
+    cypherClear: 'Azzera',
+    // Unveraendert: die Knotenbezeichner sind Daten aus der Ontologie, keine
+    // Beschriftung. Uebersetzt liefe die Abfrage ins Leere.
+    cypherPlaceholder: 'MATCH (a:Liegenschaft)<-[:liegt_in]-(u:Einheit) RETURN a, u',
+    matchCount: (n: number): string => `${n} risultati evidenziati`,
+  },
+
+  chat: {
+    title: 'Assistente del corso',
+    subtitle: 'Domande sul materiale del corso',
+    open: 'Apri l’assistente',
+    close: 'Chiudi',
+    welcome: 'Buongiorno! Rispondo a domande sul materiale dei corsi AI@RE. Che cosa desidera sapere?',
+    suggestionsTitle: 'Domande frequenti',
+    suggestions: [
+      'Che cos’è l’AI readiness?',
+      'Mi spieghi il Transformation Circle',
+      'In che modo l’IA aiuta nella valutazione?',
+    ],
+    placeholder: 'Scriva la Sua domanda …',
+    send: 'Invia',
+    sources: 'Fonti',
+    disclaimer: 'Le risposte possono contenere errori. Verifichi le informazioni importanti.',
+    error: 'Qualcosa è andato storto. Riprovi.',
+  },
+  embeddingCompare: {
+    title: 'Confronta gli embedding',
+    listHeading: 'Frammenti di testo',
+    addPlaceholder: 'Incolli un frammento, lo scriva, oppure trascini qui un file di testo …',
+    add: 'Aggiungi',
+    addChunked: (n: number): string => `Suddividi in ${n} frammenti`,
+    dropHint: 'Trascini testo o un file di testo',
+    fileTooBig: 'Il file è troppo grande — al massimo 2 MB di testo.',
+    chunkSize: 'Dimensione del frammento',
+    chunkOverlap: 'Sovrapposizione',
+    chars: 'caratteri',
+    chunkHint:
+      'Il testo lungo viene suddiviso al momento dell’inserimento — esattamente come in una '
+      + 'pipeline RAG, che non vede mai un documento ma solo i suoi frammenti. Il taglio avviene '
+      + 'di preferenza ai capoversi, altrimenti ai confini di frase o di parola. La '
+      + 'sovrapposizione ripete la fine del frammento precedente, così un’affermazione non va '
+      + 'persa sulla giuntura. Come regola pratica, quattro caratteri equivalgono a circa un token.',
+    splitInto: (n: number): string =>
+      `Il testo appena aggiunto è stato suddiviso in ${n} frammenti.`,
+    chunkBadge: (i: number, total: number): string => `Frammento ${i}/${total}`,
+    modePlane: 'Piano',
+    modeRetrieve: 'Recupero',
+    modePlaneHint: 'Tutti i frammenti fra loro — utile per pochi testi.',
+    modeRetrieveHint: 'Una domanda contro tutti i frammenti — così cerca il RAG.',
+    tooManyForPlane: (n: number, edges: number): string =>
+      `${n} punti producono ${edges} linee di collegamento — ormai illeggibile.`,
+    switchToRetrieve: 'Passa al recupero',
+    queryLabel: 'Domanda',
+    queryPlaceholder: 'Che cosa si deve trovare? Per esempio: chi sostiene i costi di manutenzione?',
+    retrieveAction: 'Recupera',
+    retrieveAgain: 'Recupera di nuovo',
+    topK: 'Frammenti nel contesto',
+    chunks: 'frammenti',
+    needQuery: 'Formuli prima una domanda.',
+    needOne: 'Selezioni almeno un frammento.',
+    retrievalDirty: 'La domanda o la selezione è cambiata — recuperi di nuovo.',
+    cutoff: 'Da qui in giù: fuori dal contesto',
+    contextSummary: (k: number, chars: number, total: number): string =>
+      `${k} frammenti su ${total} sono andati al modello come contesto — ${chars} caratteri in tutto.`,
+    retrievalNote:
+      'Il modello vede solo ciò che sta sopra la linea. Tutto ciò che sta sotto continua a '
+      + 'esistere nella raccolta e comunque non compare nella risposta — anche quando è corretto. '
+      + 'È proprio qui che nascono le lacune che poi si attribuiscono al modello.',
+    colMedium: 'Supporto',
+    colDescription: 'Descrizione',
+    remove: 'Rimuovi',
+    selectAll: 'Seleziona tutto',
+    selectOne: 'Seleziona la voce',
+    removeSelected: 'Rimuovi i selezionati',
+    removeSelectedTitle: (n: number): string => `Rimuovi ${n} voci selezionate`,
+    removeSelectedNone: 'Selezioni prima delle voci',
+    removeManyConfirm: (n: number): string =>
+      `Rimuovere ${n} voci dalla mediateca? I file restano archiviati.`,
+    empty: 'Nessun frammento. Ne aggiunga due o più per confrontarli.',
+    selectHint: 'I frammenti selezionati sono mostrati sotto come punti.',
+    compute: 'Confronta',
+    computing: 'Calcolo dei vettori …',
+    recompute: 'Ricalcola',
+    needTwo: 'Selezioni almeno due frammenti.',
+    dirty: 'La selezione è cambiata — ricalcoli.',
+    modelLine: (model: string, dims: number): string => `${model} · ${dims} dimensioni`,
+    distanceHint: 'L’etichetta indica la distanza angolare: 0 = stessa direzione, 1 = opposta.',
+    exact:
+      'Questa rappresentazione è esatta — tre punti si dispongono sempre su un piano senza distorsione.',
+    projected: (pct: string): string =>
+      `Proiezione: da quattro testi in poi le distanze non entrano più in un piano senza distorsione. Distorsione ${pct}.`,
+    projectedNote:
+      'I numeri sulle linee sono le distanze reali; le lunghezze disegnate sono solo la migliore approssimazione possibile.',
+    error: 'Non è stato possibile calcolare i vettori.',
+    notConfigured: 'Per questo elemento non è ancora configurato alcun servizio di embedding.',
+  },
+
+  agentLoop: {
+    blockLabel: 'Il ciclo dell’agente',
+    loading: 'Caricamento …',
+    retry: 'Riprova',
+    loadError: 'Non è stato possibile caricare.',
+
+    taskLabel: 'Domanda per l’agente',
+    taskPlaceholder: 'p. es. Il prezzo richiesto è plausibile?',
+    documentLabel: 'Documentazione di vendita',
+    documentHint:
+      'Markdown. L’agente non riceve questo testo nel proprio contesto — recupera le sezioni con gli strumenti. Può inserire una propria offerta; i dati di ubicazione conoscono però solo gli indirizzi archiviati.',
+    modelLabel: 'Modello',
+    start: 'Crea l’esecuzione',
+    starting: 'Creazione …',
+    startFailed: 'Non è stato possibile avviare l’esecuzione.',
+    whatAgentGets: (n: number): string => `Che cosa riceve l’agente (${n} strumenti)`,
+    systemPrompt: 'Prompt di sistema',
+    tools: 'Strumenti',
+
+    newRun: 'Nuova esecuzione',
+    kModel: 'Modello',
+    kTurns: 'Cicli',
+    kTurnsOf: (n: number, max: number): string => `${n} di ${max}`,
+    kConversation: 'Conversazione',
+    kMessages: (n: number): string => `${n} messaggi`,
+    kTokens: 'Token',
+    kTokensValue: (inTok: string, outTok: string): string => `${inTok} in · ${outTok} out`,
+    kResent: 'di cui ripetuti',
+
+    tabFlow: 'Svolgimento',
+    tabLog: (n: number): string => `Protocollo (${n})`,
+
+    cycleModel: 'Interroga il modello',
+    cycleBranch: 'Strumento richiamato?',
+    cycleTool: 'Esegui lo strumento',
+    cycleAppend: 'Aggiungi il risultato',
+    atStart: 'L’esecuzione è creata. Al modello non è ancora stato inviato nulla.',
+    atModel: 'Il modello sta ragionando — l’intera conversazione precedente parte con esso.',
+    atAppend:
+      'I risultati degli strumenti fanno ora parte della conversazione. Il ciclo successivo invia di nuovo tutto.',
+    atStopped: 'Il limite è raggiunto. L’agente è stato fermato — non aveva finito.',
+    atDone: 'Il modello ha risposto senza richiamare alcuno strumento. Il ciclo termina qui.',
+
+    noTurnYet: 'Nessun ciclo finora.',
+    turnN: (n: number): string => `Ciclo ${n}`,
+    seconds: (s: string): string => `${s} s`,
+    conversationAtCall: 'Conversazione a questa chiamata:',
+    reasoning: 'Ragionamento',
+    answerField: 'Risposta',
+    textBesideCall: 'Testo accanto alla chiamata',
+    toolInput: 'Ingresso',
+    toolOutput: 'Uscita',
+    unknownTool:
+      'Questo strumento non esiste. L’agente riceve un errore e può fare meglio al ciclo successivo.',
+
+    outToolUse: 'strumento richiamato → prosegue',
+    outFinal: 'nessuno strumento → fine',
+    outMaxTurns: 'limite → fermato',
+    outError: 'Errore',
+
+    stepFirst: 'Avvia il primo ciclo',
+    stepNext: 'Ciclo successivo',
+    stepRunning: 'Ciclo in corso …',
+    stepHint: 'Un clic = una chiamata al modello. Parte tutta la conversazione.',
+    stepFailed: 'Il ciclo non è riuscito.',
+    result: 'Risultato',
+    stoppedNote: (max: number): string =>
+      `Il limite di ${max} cicli è raggiunto. L’agente è stato fermato — non è un risultato, è un’interruzione.`,
+
+    noTurnRecorded: 'Nessun ciclo registrato finora.',
+    call: 'Chiamata',
+    showInFlow: 'Mostra nello svolgimento',
+    turnLoadError: 'Non è stato possibile caricare il ciclo.',
+    logIntro: (index: number, messages: number, tools: number): string =>
+      `Il contenuto completo della chiamata ${index}: ${messages} ${messages === 1 ? 'messaggio' : 'messaggi'} più il prompt di sistema e ${tools} dichiarazioni di strumenti. Alla chiamata successiva riparte tutto — questa è l’intera memoria dell’agente.`,
   },
 }

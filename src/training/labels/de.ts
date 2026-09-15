@@ -14,7 +14,7 @@ export const de = {
   moduleSelectLabel: 'Modul wählen',
   resetProgress: 'Fortschritt zurücksetzen',
   resetConfirm: 'Fortschritt wirklich zurücksetzen? Antworten und Notizen gehen verloren.',
-  progressOf: (done: number, total: number) => `${done} / ${total} Abschnitte`,
+  progressOf: (done: number, total: number): string => `${done} / ${total} Abschnitte`,
   objectives: 'Lernziele',
   prev: 'Zurück',
   next: 'Weiter',
@@ -25,7 +25,7 @@ export const de = {
   savedHint: 'gespeichert',
   validationError: 'Modul-JSON ist ungültig.',
   loadError: 'Modul konnte nicht geladen werden.',
-  missingResource: (id: string) => `Ressource fehlt: ${id}`,
+  missingResource: (id: string): string => `Ressource fehlt: ${id}`,
   missingAlt: 'Alternativtext fehlt',
 
   // Course/module catalog (the offering)
@@ -49,7 +49,7 @@ export const de = {
     subtitle: 'Fortschritt einer teilnehmenden Person ansehen.',
     ownView: 'Meine Ansicht',
     noParticipants: 'Noch keine Teilnehmenden mit Fortschritt in diesem Kurs.',
-    banner: (name: string) => `Teilnehmeransicht: ${name}`,
+    banner: (name: string): string => `Teilnehmeransicht: ${name}`,
     readOnly: 'schreibgeschützt',
     exit: 'Zurück zu meiner Ansicht',
     loadError: 'Teilnehmende konnten nicht geladen werden.',
@@ -73,7 +73,7 @@ export const de = {
     requiresInstance: 'Braucht Durchführung',
     requiresInstanceHint:
       'Der Kurs wird begleitet gehalten, nicht im Selbststudium. Nur für gekennzeichnete Kurse lässt sich eine Durchführung anlegen.',
-    version: (n: number) => `Version ${n}`,
+    version: (n: number): string => `Version ${n}`,
     activeTag: 'aktiv',
     draftTag: 'Entwurf',
     setActive: 'Als aktive Version',
@@ -81,9 +81,9 @@ export const de = {
     clone: 'Version klonen',
     cloning: 'Wird geklont …',
     deleteVersion: 'Version löschen',
-    deleteVersionConfirm: (title: string, v: number) => `Version ${v} von „${title}" wirklich löschen?`,
+    deleteVersionConfirm: (title: string, v: number): string => `Version ${v} von „${title}" wirklich löschen?`,
     deleteCourse: 'Kurs löschen',
-    deleteCourseConfirm: (title: string) => `Kurs „${title}" wirklich löschen?`,
+    deleteCourseConfirm: (title: string): string => `Kurs „${title}" wirklich löschen?`,
     courseTitlePlaceholder: 'Kurstitel',
     courseDescPlaceholder: 'Kurzbeschreibung des Kurses …',
     addModule: 'Modul hinzufügen',
@@ -101,7 +101,7 @@ export const de = {
   // Learner progress dashboard (top of the catalog)
   dashboard: {
     completedCourses: 'Abgeschlossene Kurse',
-    ofCourses: (done: number, total: number) => `${done} von ${total} Kursen`,
+    ofCourses: (done: number, total: number): string => `${done} von ${total} Kursen`,
     certificates: 'Zertifikate',
     inProgressHeading: 'In Bearbeitung',
     completedTag: 'Abgeschlossen',
@@ -124,7 +124,7 @@ export const de = {
     title: 'Fortschritt nicht gespeichert',
     body:
       'Dieser Baustein konnte auf dem Server nicht gespeichert werden. Das liegt nicht an Ihrer Eingabe — Sie können weiterarbeiten, aber dieser Baustein zählt vorerst nicht als erledigt. Bitte melden Sie es Ihrer Kursleitung.',
-    detail: (artifactId: string, code: string) => `Baustein ${artifactId} · ${code}`,
+    detail: (artifactId: string, code: string): string => `Baustein ${artifactId} · ${code}`,
     dismiss: 'Ausblenden',
   },
 
@@ -140,7 +140,7 @@ export const de = {
     response: 'Antwort',
     refused: 'Das Modell hat die Anfrage abgelehnt.',
     modelsError: 'Modelle konnten nicht geladen werden.',
-    tokens: (input: number, output: number) => `${input} → ${output} Tokens`,
+    tokens: (input: number, output: number): string => `${input} → ${output} Tokens`,
   },
 
   // Auth / login gate
@@ -152,7 +152,7 @@ export const de = {
     requestCode: 'Code anfordern',
     sending: 'Code wird gesendet…',
     codeHeading: 'Code eingeben',
-    codeSentTo: (email: string) => `Wir haben einen 6-stelligen Code an ${email} gesendet. Er ist 10 Minuten gültig.`,
+    codeSentTo: (email: string): string => `Wir haben einen 6-stelligen Code an ${email} gesendet. Er ist 10 Minuten gültig.`,
     codeLabel: 'Anmeldecode',
     codePlaceholder: '123456',
     verify: 'Anmelden',
@@ -163,7 +163,7 @@ export const de = {
     logout: 'Abmelden',
     genericRequestError: 'Code konnte nicht gesendet werden. Bitte versuchen Sie es erneut.',
     wrongCode: 'Falscher Code. Bitte erneut versuchen.',
-    wrongCodeRemaining: (n: number) => `Falscher Code. Noch ${n} Versuch(e).`,
+    wrongCodeRemaining: (n: number): string => `Falscher Code. Noch ${n} Versuch(e).`,
     expiredCode: 'Der Code ist ungültig oder abgelaufen. Bitte fordern Sie einen neuen an.',
     lockedCode: 'Zu viele Versuche. Bitte fordern Sie einen neuen Code an.',
     noUser: 'Für diese Adresse besteht kein Zugang.',
@@ -178,7 +178,7 @@ export const de = {
     toCatalog: '← Zur Kursübersicht',
     resolving: 'Wird aufgelöst …',
     supersededTitle: 'Überholte Fassung',
-    supersededBody: (v: number) =>
+    supersededBody: (v: number): string =>
       `Sie sehen Version ${v}. Es gibt eine neuere aktive Fassung dieses Kurses.`,
     toActive: 'Zur aktuellen Fassung',
     courseModules: 'Module',
@@ -197,7 +197,7 @@ export const de = {
     drop: 'PowerPoint oder PDF hierher ziehen oder klicken',
     formats: 'PPTX, PPTM, PDF',
     forceHint: 'Mit gedrückter Alt-Taste ablegen, um eine bereits ausgewertete Datei erneut zu verarbeiten.',
-    uploading: (name: string) => `${name} wird hochgeladen …`,
+    uploading: (name: string): string => `${name} wird hochgeladen …`,
     wrongType: 'Nur PowerPoint (.pptx, .pptm) und PDF werden ausgewertet.',
     reused: 'Diese Datei wurde bereits ausgewertet — der bestehende Lauf wird angezeigt.',
     search: 'Suchen',
@@ -214,22 +214,22 @@ export const de = {
     zoomHint: 'Mausrad zoomt, Ziehen verschiebt, Esc schliesst',
     slide: 'Folie',
     authorAlt: 'Alternativtext vom Autor',
-    errorCount: (n: number) => `${n} Hinweis${n === 1 ? '' : 'e'} zum Lauf`,
+    errorCount: (n: number): string => `${n} Hinweis${n === 1 ? '' : 'e'} zum Lauf`,
     colMedium: 'Medium',
     colDescription: 'Beschreibung',
     remove: 'Entfernen',
     selectAll: 'Alle auswählen',
     selectOne: 'Eintrag auswählen',
     removeSelected: 'Ausgewählte entfernen',
-    removeSelectedTitle: (n: number) => `${n} ausgewählte Einträge entfernen`,
+    removeSelectedTitle: (n: number): string => `${n} ausgewählte Einträge entfernen`,
     removeSelectedNone: 'Erst Einträge auswählen',
-    removeManyConfirm: (n: number) =>
+    removeManyConfirm: (n: number): string =>
       `${n} Einträge aus der Mediathek entfernen? Die Dateien bleiben gespeichert.`,
-    removeConfirm: (name: string) => `„${name}" aus der Mediathek entfernen?`,
+    removeConfirm: (name: string): string => `„${name}" aus der Mediathek entfernen?`,
     removeSource: 'Diesen Lauf und seine Abbildungen löschen',
-    removeSourceConfirm: (doc: string) =>
+    removeSourceConfirm: (doc: string): string =>
       `Lauf „${doc}“ mitsamt seinen Abbildungen löschen? Danach lässt sich die Datei wieder neu auswerten.`,
-    removedSource: (doc: string, n: number) => `Lauf „${doc}“ gelöscht (${n} Abbildungen).`,
+    removedSource: (doc: string, n: number): string => `Lauf „${doc}“ gelöscht (${n} Abbildungen).`,
     state: {
       queued: 'Wartet',
       preparing: 'Wird vorbereitet',
@@ -260,7 +260,7 @@ export const de = {
     listHeading: 'Textstücke',
     addPlaceholder: 'Textstück einfügen, tippen oder eine Textdatei hierher ziehen …',
     add: 'Hinzufügen',
-    addChunked: (n: number) => `In ${n} Stücke zerlegen`,
+    addChunked: (n: number): string => `In ${n} Stücke zerlegen`,
     dropHint: 'Text oder Textdatei ablegen',
     fileTooBig: 'Die Datei ist zu gross — bitte höchstens 2 MB Text.',
     chunkSize: 'Chunk-Grösse',
@@ -272,13 +272,13 @@ export const de = {
       + 'an Absatz-, sonst an Satz- oder Wortgrenzen. Die Überlappung wiederholt das Ende '
       + 'des vorigen Stücks, damit eine Aussage nicht an der Schnittkante verloren geht. '
       + 'Als Faustregel entsprechen vier Zeichen etwa einem Token.',
-    splitInto: (n: number) => `Zuletzt hinzugefügter Text wurde in ${n} Stücke zerlegt.`,
-    chunkBadge: (i: number, total: number) => `Chunk ${i}/${total}`,
+    splitInto: (n: number): string => `Zuletzt hinzugefügter Text wurde in ${n} Stücke zerlegt.`,
+    chunkBadge: (i: number, total: number): string => `Chunk ${i}/${total}`,
     modePlane: 'Ebene',
     modeRetrieve: 'Abruf',
     modePlaneHint: 'Alle Stücke untereinander — gut für eine Handvoll Texte.',
     modeRetrieveHint: 'Eine Frage gegen alle Stücke — so sucht RAG.',
-    tooManyForPlane: (n: number, edges: number) =>
+    tooManyForPlane: (n: number, edges: number): string =>
       `${n} Punkte ergeben ${edges} Verbindungslinien — das ist kaum noch lesbar.`,
     switchToRetrieve: 'Zum Abruf wechseln',
     queryLabel: 'Frage',
@@ -291,7 +291,7 @@ export const de = {
     needOne: 'Wähle mindestens ein Textstück aus.',
     retrievalDirty: 'Frage oder Auswahl hat sich geändert — neu abrufen.',
     cutoff: 'Ab hier nicht mehr im Kontext',
-    contextSummary: (k: number, chars: number, total: number) =>
+    contextSummary: (k: number, chars: number, total: number): string =>
       `${k} von ${total} Stücken gingen als Kontext an das Modell — zusammen ${chars} Zeichen.`,
     retrievalNote:
       'Das Modell sieht nur, was oberhalb der Linie steht. Alles darunter existiert weiterhin '
@@ -303,9 +303,9 @@ export const de = {
     selectAll: 'Alle auswählen',
     selectOne: 'Eintrag auswählen',
     removeSelected: 'Ausgewählte entfernen',
-    removeSelectedTitle: (n: number) => `${n} ausgewählte Einträge entfernen`,
+    removeSelectedTitle: (n: number): string => `${n} ausgewählte Einträge entfernen`,
     removeSelectedNone: 'Erst Einträge auswählen',
-    removeManyConfirm: (n: number) =>
+    removeManyConfirm: (n: number): string =>
       `${n} Einträge aus der Mediathek entfernen? Die Dateien bleiben gespeichert.`,
     empty: 'Noch keine Textstücke. Füge zwei oder mehr ein, um sie zu vergleichen.',
     selectHint: 'Ausgewählte Stücke werden unten als Punkte gezeigt.',
@@ -314,10 +314,10 @@ export const de = {
     recompute: 'Neu berechnen',
     needTwo: 'Wähle mindestens zwei Textstücke aus.',
     dirty: 'Die Auswahl hat sich geändert — neu berechnen.',
-    modelLine: (model: string, dims: number) => `${model} · ${dims} Dimensionen`,
+    modelLine: (model: string, dims: number): string => `${model} · ${dims} Dimensionen`,
     distanceHint: 'Beschriftung: Winkeldistanz, 0 = identische Richtung, 1 = entgegengesetzt.',
     exact: 'Diese Darstellung ist exakt — drei Punkte lassen sich immer verzerrungsfrei in die Ebene legen.',
-    projected: (pct: string) =>
+    projected: (pct: string): string =>
       `Projektion: ab vier Texten passen die Abstände nicht mehr verzerrungsfrei in eine Ebene. Verzerrung ${pct}.`,
     projectedNote:
       'Die Zahlen an den Linien sind die echten Distanzen, die gezeichneten Längen nur die bestmögliche Annäherung.',
@@ -337,7 +337,7 @@ export const de = {
     // "enthält meinen Zugang".
     invite: {
       checkbox: 'Einladung per E-Mail senden',
-      checkboxBulk: (n: number) =>
+      checkboxBulk: (n: number): string =>
         n === 1 ? 'Einladung per E-Mail senden (1 Person)' : `Einladung per E-Mail senden (${n} Personen)`,
       hint: 'Enthält den Link zum Trainingsbereich und die Erklärung des Anmeldeverfahrens — keinen Code. Den fordert die Person selbst auf der Anmeldeseite an.',
     },
@@ -349,21 +349,21 @@ export const de = {
       reading: 'Die Datei wird gelesen und ausgewertet …',
       readFailed: 'Die Datei konnte nicht gelesen werden.',
       emptyAfterConvert: 'Aus dieser Datei liess sich kein Text gewinnen.',
-      recognised: (n: number) => `${n} ${n === 1 ? 'Person' : 'Personen'} erkannt`,
+      recognised: (n: number): string => `${n} ${n === 1 ? 'Person' : 'Personen'} erkannt`,
       editHint: 'Felder sind editierbar; abwählen schliesst eine Zeile aus',
       nothingFound: 'In dieser Datei wurde keine Person mit E-Mail-Adresse gefunden.',
-      skipped: (n: number) => `${n} ${n === 1 ? 'Zeile' : 'Zeilen'} nicht übernommen`,
+      skipped: (n: number): string => `${n} ${n === 1 ? 'Zeile' : 'Zeilen'} nicht übernommen`,
       customerForAll: 'Kunde für alle übernommenen Nutzer',
       rolesForAll: 'Rollen für alle übernommenen Nutzer',
-      willCreate: (n: number) => `${n} ${n === 1 ? 'Nutzer wird' : 'Nutzer werden'} angelegt`,
-      willCreateAndInvite: (n: number) =>
+      willCreate: (n: number): string => `${n} ${n === 1 ? 'Nutzer wird' : 'Nutzer werden'} angelegt`,
+      willCreateAndInvite: (n: number): string =>
         `${n} ${n === 1 ? 'Nutzer wird angelegt und eingeladen' : 'Nutzer werden angelegt und eingeladen'}`,
-      invitedCount: (n: number) => `${n} ${n === 1 ? 'Einladung' : 'Einladungen'} versendet.`,
-      inviteFailed: (n: number) => `${n} ${n === 1 ? 'Einladung' : 'Einladungen'} nicht zustellbar`,
+      invitedCount: (n: number): string => `${n} ${n === 1 ? 'Einladung' : 'Einladungen'} versendet.`,
+      inviteFailed: (n: number): string => `${n} ${n === 1 ? 'Einladung' : 'Einladungen'} nicht zustellbar`,
       confirm: 'Nutzer anlegen',
       writing: 'Wird angelegt …',
-      createdCount: (n: number) => `${n} ${n === 1 ? 'Nutzer' : 'Nutzer'} angelegt.`,
-      notCreated: (n: number) => `${n} nicht angelegt`,
+      createdCount: (n: number): string => `${n} ${n === 1 ? 'Nutzer' : 'Nutzer'} angelegt.`,
+      notCreated: (n: number): string => `${n} nicht angelegt`,
       close: 'Schliessen',
     },
     colName: 'Name',
@@ -377,7 +377,7 @@ export const de = {
     reactivate: 'Reaktivieren',
     noUsers: 'Keine Nutzer vorhanden.',
     searchUsers: 'Suchen: Name, E-Mail, Kunde, Ort, Strasse …',
-    noSearchMatch: (total: number) => `Kein Treffer unter ${total} Nutzern.`,
+    noSearchMatch: (total: number): string => `Kein Treffer unter ${total} Nutzern.`,
     loadError: 'Nutzer konnten nicht geladen werden.',
     // Create dialog
     dialogTitle: 'Neuen Nutzer erstellen',
@@ -401,7 +401,7 @@ export const de = {
     saving: 'Wird gespeichert …',
     emailRenameHint:
       'Adressänderung: der Login und alle Verweise (Kursfortschritt, Durchführungen) werden mitgezogen. Ein offener Anmeldecode für die alte Adresse verfällt.',
-    emailRenameConfirm: (from: string, to: string) =>
+    emailRenameConfirm: (from: string, to: string): string =>
       `Adresse von „${from}" auf „${to}" ändern? Der Login und alle Verweise werden mitgezogen.`,
     selfDemote: 'Sie können sich nicht selbst die Administratorrolle entziehen.',
     selfRename: 'Sie können Ihre eigene Adresse hier nicht ändern — das würde Ihre laufende Sitzung ungültig machen.',
@@ -482,7 +482,7 @@ export const de = {
     syntaxToggle: 'Unterstützte Syntax',
     syntaxBody:
       'Eine Tabelle (Klasse aus der Ontologie), keine JOINs. WHERE mit AND/OR und = != < <= > >= LIKE. Nur Lesezugriff.',
-    rowCount: (n: number, coll: string) => `${n} Zeile${n === 1 ? '' : 'n'} aus ${coll}`,
+    rowCount: (n: number, coll: string): string => `${n} Zeile${n === 1 ? '' : 'n'} aus ${coll}`,
     noRows: 'Keine Zeilen — passe die Bedingungen an.',
   },
 
@@ -498,7 +498,7 @@ export const de = {
     tab: { markdown: 'Markdown', cells: 'Zellen', analysis: 'Analyse' },
     cellsNotApplicable: 'Zellenformat nicht anwendbar — diese Datei hat keine Tabellenstruktur.',
     cellsTruncated: 'Ausgabe gekürzt — die Datei ist grösser als die Anzeigegrenze.',
-    formulaModeLabel: (m: string) =>
+    formulaModeLabel: (m: string): string =>
       m === 'formula' ? 'Formeln sichtbar' : m === 'error' ? 'Fehlerwerte sichtbar' : 'nur Werte',
   },
 
@@ -506,11 +506,11 @@ export const de = {
   objectGraph: {
     seed: 'Start:',
     hint: 'Klicke einen Knoten, um Nachbarn zu laden',
-    nodeCount: (n: number) => `${n} Knoten`,
+    nodeCount: (n: number): string => `${n} Knoten`,
     cypherRun: 'Abfragen',
     cypherClear: 'Zurücksetzen',
     cypherPlaceholder: "MATCH (a:Liegenschaft)<-[:liegt_in]-(u:Einheit) RETURN a, u",
-    matchCount: (n: number) => `${n} Treffer hervorgehoben`,
+    matchCount: (n: number): string => `${n} Treffer hervorgehoben`,
   },
 
   // Course-material chat assistant
@@ -546,7 +546,7 @@ export const de = {
     // Order action + dialog
     order: 'Bestellen',
     newOrder: 'Neue Bestellung',
-    dialogTitle: (course: string) => `Bestellung: ${course}`,
+    dialogTitle: (course: string): string => `Bestellung: ${course}`,
     fCourse: 'Kurs',
     noCoursesForOrder: 'Bitte zuerst einen Kurs anlegen.',
     fCustomer: 'Kunde',
@@ -569,31 +569,31 @@ export const de = {
     fNamedUsers: 'Namentlich gebundene Plätze',
     namedHint:
       'Diese Personen können jederzeit am Kurs teilnehmen, auch ausserhalb des Zeitraums. Ihr Platz ist für sie reserviert, ob sie ihn nutzen oder nicht. Die übrigen Plätze stehen allen Nutzern des Kunden offen — innerhalb des Zeitraums.',
-    namedCount: (named: number, seats: number) => `${named} von ${seats} Plätzen gebunden`,
+    namedCount: (named: number, seats: number): string => `${named} von ${seats} Plätzen gebunden`,
     noUsersForCustomer: 'Für diesen Kunden sind keine aktiven Nutzer angelegt.',
     customerNotLoaded:
       'Der Kunde dieser Bestellung ist in der geladenen Kundenliste nicht enthalten. Bitte die Seite neu laden.',
     loading: 'Wird geladen …',
     loadFailed: 'Die Liste konnte nicht geladen werden.',
-    loadFailedWith: (msg: string) => `Kunden oder Kurse konnten nicht geladen werden: ${msg}`,
-    tooManyNamed: (named: number, seats: number) =>
+    loadFailedWith: (msg: string): string => `Kunden oder Kurse konnten nicht geladen werden: ${msg}`,
+    tooManyNamed: (named: number, seats: number): string =>
       `${named} Personen benannt, aber nur ${seats} ${seats === 1 ? 'Platz' : 'Plätze'} bestellt.`,
-    raiseSeats: (n: number) => `Auf ${n} Plätze aufstocken`,
+    raiseSeats: (n: number): string => `Auf ${n} Plätze aufstocken`,
     datesHint:
       'Der Zeitraum gilt für die nicht gebundenen Plätze. Namentlich gebundene Personen können unabhängig davon teilnehmen.',
     colNamed: 'Gebunden',
     // Rechnungsstellung
     colInvoices: 'Rechnungen',
-    seatsBilled: (n: number) => `${n} ${n === 1 ? 'Platz' : 'Plätze'}`,
-    additionalSeats: (n: number) => `${n} zusätzliche ${n === 1 ? 'Platz' : 'Plätze'}`,
+    seatsBilled: (n: number): string => `${n} ${n === 1 ? 'Platz' : 'Plätze'}`,
+    additionalSeats: (n: number): string => `${n} zusätzliche ${n === 1 ? 'Platz' : 'Plätze'}`,
     invoiceTotal: 'Rechnungsbetrag',
     noAdditionalCharge: 'Keine zusätzlichen Plätze — es wird nichts berechnet.',
-    flatLine: (max?: number) => (max ? `Pauschale für bis zu ${max} Plätze` : 'Pauschale'),
+    flatLine: (max?: number): string => (max ? `Pauschale für bis zu ${max} Plätze` : 'Pauschale'),
     flatAlreadyPaid: 'Pauschale bereits berechnet — zusätzliche Plätze kosten nichts.',
-    seatCapHint: (max: number) => `Die Pauschale deckt höchstens ${max} Plätze ab.`,
-    invoiceSent: (nr: string, betrag: string) =>
+    seatCapHint: (max: number): string => `Die Pauschale deckt höchstens ${max} Plätze ab.`,
+    invoiceSent: (nr: string, betrag: string): string =>
       `Rechnung ${nr} über CHF ${betrag} wurde versendet.`,
-    invoiceNotSent: (nr: string) =>
+    invoiceNotSent: (nr: string): string =>
       `Rechnung ${nr} wurde erstellt, liess sich aber nicht zustellen.`,
   },
 
@@ -607,7 +607,7 @@ export const de = {
     colStart: 'Startdatum',
     noInstances: 'Noch keine Durchführungen vorhanden.',
     loadError: 'Durchführungen konnten nicht geladen werden.',
-    count: (n: number) => `${n} ${n === 1 ? 'Person' : 'Personen'}`,
+    count: (n: number): string => `${n} ${n === 1 ? 'Person' : 'Personen'}`,
     // action + dialog
     add: 'Durchführung anlegen',
     newInstance: 'Neue Durchführung',
@@ -623,7 +623,7 @@ export const de = {
     fParticipants: 'Teilnehmer',
     fTrainers: 'Trainer',
     fStart: 'Startdatum',
-    version: (n: number) => `Version ${n}`,
+    version: (n: number): string => `Version ${n}`,
     noCourses:
       'Kein Kurs ist als „Braucht Durchführung" gekennzeichnet. Setze das Kennzeichen im Kurskatalog, dann lässt sich hier eine Durchführung anlegen.',
     searchPlaceholder: 'Nach Name oder E-Mail filtern …',
@@ -661,7 +661,7 @@ export const de = {
     searchCustomers: 'Suchen: Name, Ort, Strasse …',
     // "Nichts gefunden" und "nichts vorhanden" sind verschiedene Aussagen. Die
     // Gesamtzahl mitzugeben verhindert den Schreck, die Liste sei leer.
-    noSearchMatch: (total: number) => `Kein Treffer unter ${total} Einträgen.`,
+    noSearchMatch: (total: number): string => `Kein Treffer unter ${total} Einträgen.`,
     loadError: 'Kunden konnten nicht geladen werden.',
   },
 
@@ -674,8 +674,8 @@ export const de = {
     empty: 'Noch keine Änderungen aufgezeichnet.',
     loadMore: 'Ältere Revisionen laden',
     current: 'aktuell',
-    revLabel: (rev: number) => `Rev ${rev}`,
-    counts: (sections: number, artifacts: number) =>
+    revLabel: (rev: number): string => `Rev ${rev}`,
+    counts: (sections: number, artifacts: number): string =>
       `${sections} ${sections === 1 ? 'Abschnitt' : 'Abschnitte'} · ${artifacts} ${artifacts === 1 ? 'Artefakt' : 'Artefakte'}`,
     byPerson: 'Person',
     byAgent: 'Agent',
@@ -684,30 +684,30 @@ export const de = {
     compare: 'Vergleichen',
     restore: 'Wiederherstellen',
     restoring: 'Wird wiederhergestellt …',
-    restored: (rev: number) => `Als Revision ${rev} wiederhergestellt.`,
-    restoreConfirmTitle: (rev: number) => `Revision ${rev} wiederherstellen?`,
-    restoreConfirmBody: (rev: number, current: number) =>
+    restored: (rev: number): string => `Als Revision ${rev} wiederhergestellt.`,
+    restoreConfirmTitle: (rev: number): string => `Revision ${rev} wiederherstellen?`,
+    restoreConfirmBody: (rev: number, current: number): string =>
       `Der Inhalt von Revision ${rev} wird als neue Revision ${current + 1} geschrieben. ` +
       `Nichts wird gelöscht — die Revisionen ${rev + 1} bis ${current} bleiben lesbar, ` +
       'diese Wiederherstellung lässt sich also selbst wieder zurücknehmen.',
     restoreConfirmChanges: 'Das macht folgende Änderungen rückgängig:',
-    forkedFrom: (rev: number) => `Aus einer früheren Kursversion übernommen (Revision ${rev})`,
-    previewBanner: (rev: number, date: string) => `Revision ${rev} vom ${date} — nur Ansicht`,
+    forkedFrom: (rev: number): string => `Aus einer früheren Kursversion übernommen (Revision ${rev})`,
+    previewBanner: (rev: number, date: string): string => `Revision ${rev} vom ${date} — nur Ansicht`,
     previewExit: 'Ansicht beenden',
-    diffTitle: (from: number, to: number) => `Revision ${from} → ${to}`,
+    diffTitle: (from: number, to: number): string => `Revision ${from} → ${to}`,
     diffUnchanged: 'Keine inhaltlichen Unterschiede.',
-    diffUnchangedArtifacts: (n: number) => `${n} ${n === 1 ? 'unverändertes Artefakt' : 'unveränderte Artefakte'}`,
+    diffUnchangedArtifacts: (n: number): string => `${n} ${n === 1 ? 'unverändertes Artefakt' : 'unveränderte Artefakte'}`,
     diffExpand: 'einblenden',
     diffCollapse: 'ausblenden',
     diffAdded: 'neu',
     diffRemoved: 'entfernt',
     diffMoved: 'verschoben',
     diffChanged: 'geändert',
-    diffMovedBy: (from: number, to: number) => `Position ${from + 1} → ${to + 1}`,
+    diffMovedBy: (from: number, to: number): string => `Position ${from + 1} → ${to + 1}`,
     diffBefore: 'Vorher',
     diffAfter: 'Nachher',
-    diffField: (name: string) => name,
-    undoBar: (rev: number) => `Gespeichert als Revision ${rev}.`,
+    diffField: (name: string): string => name,
+    undoBar: (rev: number): string => `Gespeichert als Revision ${rev}.`,
     undo: 'Rückgängig',
     tool: {
       create: 'angelegt',
@@ -727,12 +727,12 @@ export const de = {
       'Ein Satz genügt. Das steht später im Versionsverlauf und ist das, ' +
       'woran du eine Änderung wiederfindest.',
     placeholder: 'z. B. Aufgabenabschnitt am Ende angehängt',
-    hint: (min: number, max: number) => `${min}–${max} Zeichen`,
-    tooShort: (min: number) => `Bitte mindestens ${min} Zeichen.`,
+    hint: (min: number, max: number): string => `${min}–${max} Zeichen`,
+    tooShort: (min: number): string => `Bitte mindestens ${min} Zeichen.`,
     save: 'Speichern',
     cancel: 'Abbrechen',
     conflictTitle: 'Das Modul wurde zwischenzeitlich geändert',
-    conflictBody: (currentRev: number) =>
+    conflictBody: (currentRev: number): string =>
       `Jemand anderes hat gespeichert (jetzt Revision ${currentRev}). Deine Änderungen wurden ` +
       'NICHT geschrieben, damit sie die fremde Änderung nicht überschreiben. Lade das Modul neu ' +
       'und übertrage deine Änderung auf den aktuellen Stand.',
@@ -741,15 +741,15 @@ export const de = {
   draft: {
     // §3 status indicator. The middle state must never read like a done save —
     // an author who thinks the work is committed will not press Speichern.
-    committed: (rev: number) => `Gespeichert als Revision ${rev}`,
-    unsavedWithDraft: (time: string) => `Ungespeicherte Änderungen · Entwurf gesichert ${time}`,
+    committed: (rev: number): string => `Gespeichert als Revision ${rev}`,
+    unsavedWithDraft: (time: string): string => `Ungespeicherte Änderungen · Entwurf gesichert ${time}`,
     unsavedNoDraft: 'Ungespeicherte Änderungen',
     autosaving: 'Entwurf wird gesichert …',
     failed: 'Entwurf konnte nicht gesichert werden',
     retry: 'Erneut versuchen',
     // §4 recovery
     recoveryTitle: 'Ungespeicherte Änderungen gefunden',
-    recoveryBody: (when: string) =>
+    recoveryBody: (when: string): string =>
       `Du hast am ${when} an diesem Modul gearbeitet, ohne zu speichern.`,
     continue: 'Weiterbearbeiten',
     discard: 'Entwurf verwerfen',
@@ -758,9 +758,9 @@ export const de = {
     discardReally: 'Wirklich verwerfen',
     // §5 stale draft
     staleTitle: 'Modul wurde zwischenzeitlich geändert',
-    staleBody: (baseRev: number, currentRev: number) =>
+    staleBody: (baseRev: number, currentRev: number): string =>
       `Dein Entwurf basiert auf Revision ${baseRev}. Inzwischen existiert Revision ${currentRev}`,
-    staleBy: (note: string, tool: string, actor: string, time: string) =>
+    staleBy: (note: string, tool: string, actor: string, time: string): string =>
       `„${note}", ${actor} · ${tool}, ${time}`,
     staleOverride: 'Entwurf trotzdem speichern',
     staleNote:
@@ -779,7 +779,7 @@ export const de = {
     dragToReorder: 'Zum Umordnen ziehen',
     paletteTitle: 'Blöcke',
     paletteHint: 'Auf die Trainingsfläche ziehen oder klicken zum Anhängen.',
-    dialogTitle: (typeLabel: string) => `${typeLabel} bearbeiten`,
+    dialogTitle: (typeLabel: string): string => `${typeLabel} bearbeiten`,
     cancel: 'Abbrechen',
     addItem: 'Hinzufügen',
     removeItem: 'Entfernen',
@@ -871,7 +871,7 @@ export const de = {
     // Sections
     addSection: 'Abschnitt',
     removeSection: 'Abschnitt entfernen',
-    removeSectionConfirm: (title: string) => `Abschnitt „${title}" mit allen Blöcken entfernen?`,
+    removeSectionConfirm: (title: string): string => `Abschnitt „${title}" mit allen Blöcken entfernen?`,
     sectionTitlePlaceholder: 'Abschnittstitel',
     // Markdown editor
     mdEdit: 'Bearbeiten',
@@ -924,7 +924,7 @@ export const de = {
       exampleHeading: 'Beispiel-Item',
       // `total` ist der Umfang EINES Laufs, nicht der der Erhebung — siehe
       // StudySession.itemsPerRater. Die beiden zu verwechseln schreckt ab.
-      exampleLead: (total: number, mode?: 'coding' | 'severity') =>
+      exampleLead: (total: number, mode?: 'coding' | 'severity'): string =>
         mode === 'severity'
           ? `Eine von ${total} Situationen, die Ihnen vorgelegt würden. Bewertende erhalten sie einzeln und in einer für sie zufälligen Reihenfolge; welche Situationen sie enthalten, wird hier nicht gezeigt.`
           : `Eines von ${total} Items, die Ihnen vorgelegt würden. Kodierende erhalten die Items einzeln und in einer für sie zufälligen Reihenfolge; welche Vorschriften die Stichprobe enthält, wird hier nicht gezeigt.`,
@@ -934,9 +934,9 @@ export const de = {
 
     // Startseite. Die Überschriften folgen dem Erhebungsmodus: „Kodierprotokoll“
     // über einer Schwerebewertung benennt eine Tätigkeit, die dort niemand ausübt.
-    introHeading: (mode?: 'coding' | 'severity') =>
+    introHeading: (mode?: 'coding' | 'severity'): string =>
       mode === 'severity' ? 'Bewertungsprotokoll' : 'Kodierprotokoll',
-    introLead: (mode?: 'coding' | 'severity') =>
+    introLead: (mode?: 'coding' | 'severity'): string =>
       mode === 'severity'
         ? 'Etwa eine Stunde, in Etappen möglich. Bitte lesen Sie diese Seite einmal ganz — sie bleibt während der Bewertung jederzeit aufklappbar.'
         : 'Bitte lesen Sie das Protokoll vollständig, bevor Sie beginnen. Es bleibt während der Kodierung jederzeit aufklappbar.',
@@ -944,19 +944,19 @@ export const de = {
     acknowledgeSeverity: 'Gelesen — jetzt beginnen',
 
     // Protokoll-Panel während der Erhebung
-    protocolPanel: (mode?: 'coding' | 'severity') =>
+    protocolPanel: (mode?: 'coding' | 'severity'): string =>
       mode === 'severity' ? 'Bewertungsprotokoll' : 'Kodierprotokoll',
 
     // Item-Ansicht
-    position: (n: number, total: number) => `Item ${n} von ${total}`,
+    position: (n: number, total: number): string => `Item ${n} von ${total}`,
     undecidable: 'nicht entscheidbar',
     optional: '(optional)',
     yes: 'Ja',
     no: 'Nein',
     excerptTruncated: 'Der Auszug ist gekürzt.',
-    rangeHint: (min: number, max: number) => `${min}–${max}`,
-    rangeMinHint: (min: number) => `ab ${min}`,
-    rangeMaxHint: (max: number) => `bis ${max}`,
+    rangeHint: (min: number, max: number): string => `${min}–${max}`,
+    rangeMinHint: (min: number): string => `ab ${min}`,
+    rangeMaxHint: (max: number): string => `bis ${max}`,
     lookedUp: 'Ich habe über den gezeigten Text hinaus nachgeschlagen',
     lookedUpHint: 'Nachschlagen ist erlaubt und erwünscht — es wird lediglich gezählt.',
     commentLabel: 'Bemerkung (optional)',
@@ -966,8 +966,8 @@ export const de = {
     saveError: 'Die Antwort konnte nicht gespeichert werden. Bitte erneut versuchen.',
     itemError: 'Das Item konnte nicht geladen werden.',
     numberInvalid: 'Bitte eine ganze Zahl eingeben.',
-    numberMin: (min: number) => `Der Wert muss mindestens ${min} betragen.`,
-    numberMax: (max: number) => `Der Wert darf höchstens ${max} betragen.`,
+    numberMin: (min: number): string => `Der Wert muss mindestens ${min} betragen.`,
+    numberMax: (max: number): string => `Der Wert darf höchstens ${max} betragen.`,
 
     // Erhebungsmodus 2: Schwerebewertung nach GEFMA 192, Tabelle 1.
     severity: {
@@ -977,7 +977,7 @@ export const de = {
       // Die Frage nennt die Achse, weil sie mit der Gefährdung feststeht. Wer
       // zugleich die Schadensart wählen müsste, beantwortete zwei Fragen, und
       // die Auswertung könnte beide nicht mehr trennen.
-      question: (axis: 'person' | 'environment' | 'property') =>
+      question: (axis: 'person' | 'environment' | 'property'): string =>
         axis === 'person'
           ? 'Welcher Personenschaden ist im ungünstigen Fall zu erwarten?'
           : axis === 'environment'
@@ -1018,14 +1018,14 @@ export const de = {
     correctionsLocalNote:
       'Diese Liste wird in diesem Browser geführt. An einem anderen Gerät erscheint sie leer — die Kodierungen selbst liegen unverändert auf dem Server.',
     correctionsEmpty: 'Noch nichts kodiert.',
-    correctionOf: (n: number) => `Korrektur zu Item ${n}`,
+    correctionOf: (n: number): string => `Korrektur zu Item ${n}`,
     saveCorrection: 'Korrektur speichern',
     back: 'Zurück zur Kodierung',
-    ratedAt: (d: string) => `kodiert am ${d}`,
+    ratedAt: (d: string): string => `kodiert am ${d}`,
 
     // Alle Items kodiert, noch nicht abgeschlossen
     finishHeading: 'Alle Items kodiert',
-    finishCount: (n: number) => (n === 1 ? 'Sie haben 1 Item kodiert.' : `Sie haben ${n} Items kodiert.`),
+    finishCount: (n: number): string => (n === 1 ? 'Sie haben 1 Item kodiert.' : `Sie haben ${n} Items kodiert.`),
     finishHint:
       'Mit dem Abschluss wird die Kodierung gesperrt. Danach sind keine Eingaben und keine Korrekturen mehr möglich.',
     finish: 'Kodierung abschliessen',
@@ -1036,7 +1036,7 @@ export const de = {
 
     // Abschlussseite
     doneHeading: 'Kodierung abgeschlossen',
-    doneCount: (n: number) =>
+    doneCount: (n: number): string =>
       n === 1 ? '1 Item wurde kodiert und übermittelt.' : `${n} Items wurden kodiert und übermittelt.`,
     doneLocked: 'Weitere Eingaben sind nicht mehr möglich.',
     doneThanks: 'Vielen Dank für Ihre Mitarbeit.',
@@ -1059,7 +1059,7 @@ export const de = {
     start: 'Lauf anlegen',
     starting: 'Wird angelegt …',
     startFailed: 'Der Lauf konnte nicht gestartet werden.',
-    whatAgentGets: (n: number) => `Was der Agent mitbekommt (${n} Werkzeuge)`,
+    whatAgentGets: (n: number): string => `Was der Agent mitbekommt (${n} Werkzeuge)`,
     systemPrompt: 'Systemprompt',
     tools: 'Werkzeuge',
 
@@ -1067,16 +1067,16 @@ export const de = {
     newRun: 'Neuer Lauf',
     kModel: 'Modell',
     kTurns: 'Durchläufe',
-    kTurnsOf: (n: number, max: number) => `${n} von ${max}`,
+    kTurnsOf: (n: number, max: number): string => `${n} von ${max}`,
     kConversation: 'Gespräch',
-    kMessages: (n: number) => `${n} Nachrichten`,
+    kMessages: (n: number): string => `${n} Nachrichten`,
     kTokens: 'Tokens',
-    kTokensValue: (inTok: string, outTok: string) => `${inTok} ein · ${outTok} aus`,
+    kTokensValue: (inTok: string, outTok: string): string => `${inTok} ein · ${outTok} aus`,
     kResent: 'davon Wiederholung',
 
     // Ansichten
     tabFlow: 'Ablauf',
-    tabLog: (n: number) => `Protokoll (${n})`,
+    tabLog: (n: number): string => `Protokoll (${n})`,
 
     // Kreis
     cycleModel: 'Modell fragen',
@@ -1092,8 +1092,8 @@ export const de = {
 
     // Durchlauf
     noTurnYet: 'Noch kein Durchlauf.',
-    turnN: (n: number) => `Durchlauf ${n}`,
-    seconds: (s: string) => `${s} s`,
+    turnN: (n: number): string => `Durchlauf ${n}`,
+    seconds: (s: string): string => `${s} s`,
     conversationAtCall: 'Gespräch bei diesem Aufruf:',
     reasoning: 'Reasoning',
     answerField: 'Antwort',
@@ -1116,7 +1116,7 @@ export const de = {
     stepHint: 'Ein Klick = ein Modellaufruf. Das ganze Gespräch geht mit.',
     stepFailed: 'Der Schritt ist fehlgeschlagen.',
     result: 'Ergebnis',
-    stoppedNote: (max: number) =>
+    stoppedNote: (max: number): string =>
       `Die Obergrenze von ${max} Durchläufen ist erreicht. Der Agent wurde gestoppt — das ist kein Ergebnis, sondern ein Abbruch.`,
 
     // Protokoll
@@ -1124,7 +1124,7 @@ export const de = {
     call: 'Aufruf',
     showInFlow: 'Im Ablauf ansehen',
     turnLoadError: 'Der Durchlauf konnte nicht geladen werden.',
-    logIntro: (index: number, messages: number, tools: number) =>
+    logIntro: (index: number, messages: number, tools: number): string =>
       `Der vollständige Inhalt von Aufruf ${index}: ${messages} ${messages === 1 ? 'Nachricht' : 'Nachrichten'} plus Systemprompt und ${tools} Werkzeugdeklarationen. Beim nächsten Aufruf geht alles davon noch einmal mit — das ist das gesamte Gedächtnis des Agenten.`,
   },
 }
