@@ -118,7 +118,9 @@ function App() {
             <nav className="site-nav">
               <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>{labels.site.navHome}</Link>
               <Link to="/statistics">{labels.site.navStatistics}</Link>
-              <Link to="/market-test">{labels.site.navMarketData}</Link>
+              {status === 'authenticated' && user && (
+                <Link to="/market-test">{labels.site.navMarketData}</Link>
+              )}
               {status === 'authenticated' && user && <Link to="/training">{labels.site.navTraining}</Link>}
               {isCoder && <Link to="/enforcement-signal">{labels.site.navCoding}</Link>}
               {isAdmin && <Link to="/admin">{labels.site.navAdmin}</Link>}

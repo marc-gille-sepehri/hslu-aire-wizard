@@ -28,6 +28,8 @@ import {
 } from '../api/marketMcpApi'
 import './MarketTestPage.css'
 import { labels } from '../training/labels'
+import { useAuth } from '../training/auth/AuthContext'
+import LoginGate from '../training/auth/LoginGate'
 
 const { Title, Paragraph, Text } = Typography
 
@@ -181,6 +183,39 @@ function ToolMetadata({ tool }) {
       </div>
     </Space>
   )
+}
+
+/**
+ * Die Marktdaten-Oberfläche hinter der Anmeldung.
+ *
+ * Der MCP-Server dahinter bleibt offen — er ist der Gegenstand, den man von
+ * aussen anbinden können soll. Was hier geschützt wird, ist die Oberfläche:
+ * sie ist eine Übungsumgebung des Lernbereichs und gehört zu ihm, nicht auf die
+ * Werbeseite.
+ *
+ * Der Server prüft nichts zusätzlich, und das ist Absicht: hier wird nichts
+ * verborgen, was über /mcp nicht ohnehin jeder abrufen kann. Eine Schranke, die
+ * nur die bequemere Tür schliesst, als Sicherheit auszugeben wäre die schlechte
+ * Variante davon.
+ */
+function MarketTestGate() {
+  const { status } = useAuth()
+
+  if (status === 'checking') {
+    return (
+      <div className="training-root font-sans">
+        <div className="max-w-prose mx-auto px-4 py-10 text-slate-500">{labels.auth.checking}</div>
+      </div>
+    )
+  }
+  if (status === 'anonymous') {
+    return (
+      <div className="training-root font-sans">
+        <LoginGate />
+      </div>
+    )
+  }
+  return <MarketTestPage />
 }
 
 function MarketTestPage() {
@@ -627,4 +662,4 @@ function MarketTestPage() {
   )
 }
 
-export default MarketTestPage
+export default MarketTestGate
