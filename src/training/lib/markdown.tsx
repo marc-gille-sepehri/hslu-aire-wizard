@@ -1,6 +1,7 @@
 import { Fragment, type ReactNode } from 'react'
 import { marked } from 'marked'
 import Media from '../components/artifacts/Media'
+import DownloadCard from './downloadCard'
 import { useResources } from '../state/ResourcesContext'
 import { labels } from '../labels'
 
@@ -44,16 +45,26 @@ marked.use({
   },
 })
 
-const MEDIA_RE = /\[\[media:([a-zA-Z0-9_\-]+)\]\]/g
+/**
+ * Zwei Token, ein Muster.
+ *
+ * `[[media:id]]` bettet eine Kursressource ein, `[[download:URL|Titel]]` eine
+ * Datei von irgendwo. Der zweite kam dazu, weil ein ZIP als Fliesstext-Link im
+ * Absatz stand: gestylt und trotzdem falsch — nichts daran sagte, dass ein
+ * Klick eine Datei holt statt eine Seite zu öffnen.
+ *
+ * Der Titel hinter `|` ist optional; ohne ihn steht der Dateiname da.
+ */
+const TOKEN_RE = /\[\[(?:media:([a-zA-Z0-9_\-]+)|download:([^\]|]+?)(?:\|([^\]]+))?)\]\]/g
 
-/** Split on [[media:id]] and render markdown text segments interleaved with media. */
+/** Split on the tokens and render markdown text segments interleaved with them. */
 export function Markdown({ text }: { text: string }): ReactNode {
   const resources = useResources()
   const parts: ReactNode[] = []
   let lastIndex = 0
   let key = 0
   let m: RegExpExecArray | null
-  MEDIA_RE.lastIndex = 0
+  TOKEN_RE.lastIndex = 0
 
   const pushText = (raw: string) => {
     if (!raw.trim()) return
@@ -63,9 +74,22 @@ export function Markdown({ text }: { text: string }): ReactNode {
     )
   }
 
-  while ((m = MEDIA_RE.exec(text)) !== null) {
+  while ((m = TOKEN_RE.exec(text)) !== null) {
     if (m.index > lastIndex) pushText(text.slice(lastIndex, m.index))
-    const id = m[1]
+
+    const [, id, downloadUrl, downloadLabel] = m
+    if (downloadUrl) {
+      parts.push(
+        <DownloadCard
+          key={`dl-${key++}`}
+          url={downloadUrl.trim()}
+          label={downloadLabel?.trim()}
+        />,
+      )
+      lastIndex = m.index + m[0].length
+      continue
+    }
+
     if (resources[id]) {
       parts.push(<Media key={`media-${key++}`} ref_={id} />)
     } else {

@@ -195,7 +195,14 @@ function UrlMedia({
  * other type gets its extension as the icon: an honest label beats a generic
  * paperclip, and it is the thing people actually recognise.
  */
-function FileCard({
+/**
+ * Karte für eine Datei: Kürzel, Name, Art, Grösse, Knopf.
+ *
+ * Exportiert, weil der Markdown-Renderer sie für `[[download:…]]` braucht. Ein
+ * Download soll überall gleich aussehen — ob er aus der Mediathek kommt oder
+ * von einer fremden Adresse, ändert für den Lesenden nichts.
+ */
+export function FileCard({
   url,
   ext,
   filename,
