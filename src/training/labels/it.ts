@@ -331,6 +331,16 @@ export const it: Labels = {
 
   agentLoop: {
     blockLabel: 'Il ciclo dell’agente',
+    scenarios: {
+      scn_offerten_v1: {
+        label: 'Analisi dell’offerta',
+        note: 'L’agente riceve una documentazione di vendita e strumenti di ubicazione — ma non il documento nel proprio contesto.',
+      },
+      scn_rollen_cfo_v1: {
+        label: 'Skill di ruolo: CFO',
+        note: 'L’agente dispone di una skill di ruolo come file e di un grafo della conoscenza con provenienza. I primi cicli leggono istruzioni anziché dati.',
+      },
+    },
     loading: 'Caricamento …',
     retry: 'Riprova',
     loadError: 'Non è stato possibile caricare.',

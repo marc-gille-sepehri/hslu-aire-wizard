@@ -85,7 +85,12 @@ function Widget({ artifact }: { artifact: AgentLoopArtifact }) {
     setBusy(true)
     setError(null)
     try {
-      const created = await startRun({ document, task, model })
+      const created = await startRun({
+        document,
+        task,
+        model,
+        scenarioId: config.scenarioId,
+      })
       setRun(created)
       setFokus(null)
       setAnsicht('ablauf')
@@ -220,9 +225,21 @@ function Setup({
   onModel: (v: string) => void
   onStart: () => void
 }) {
-  const bereit = document.trim().length > 0 && task.trim().length > 0 && !busy
+  // Ohne Frage geht es nie; ein Dokument verlangt nur das Szenario, das eines
+  // benutzt.
+  const bereit =
+    task.trim().length > 0 && (!config.usesDocument || document.trim().length > 0) && !busy
+  // Bezeichnung und Satz kommen aus dem Katalog, nicht aus der Serverantwort:
+  // der Server kennt die Sprache des Lernenden nicht.
+  const szenario = t.scenarios[config.scenarioId]
   return (
     <div className="space-y-4">
+      {szenario && (
+        <p className="max-w-prose font-sans text-xs text-slate-500">
+          <strong className="text-slate-700">{szenario.label}</strong> — {szenario.note}
+        </p>
+      )}
+
       <div>
         <label className="mb-1.5 block font-sans text-sm font-semibold text-slate-800" htmlFor="loop-task">
           {t.taskLabel}
@@ -238,22 +255,27 @@ function Setup({
         />
       </div>
 
+      {/* Nur wo das Szenario ein Dokument benutzt. Ein Feld, das nichts
+          bewirkt, ist schlimmer als keines: der Lernende sucht den Fehler bei
+          sich, wenn seine Eingabe folgenlos bleibt. */}
+      {config.usesDocument && (
       <div>
-        <label className="mb-1.5 block font-sans text-sm font-semibold text-slate-800" htmlFor="loop-doc">
-          {t.documentLabel}
-        </label>
-        <p className="mb-2 max-w-prose font-sans text-xs text-slate-500">
-          {t.documentHint}
-        </p>
-        <textarea
-          id="loop-doc"
-          value={document}
-          onChange={(e) => onDocument(e.target.value)}
-          rows={10}
-          maxLength={config.limits.maxDocumentChars}
-          className="w-full rounded-md border border-solid border-slate-300 p-2.5 font-mono text-xs leading-relaxed text-slate-800 focus:border-slate-500 focus:outline-none"
-        />
-      </div>
+          <label className="mb-1.5 block font-sans text-sm font-semibold text-slate-800" htmlFor="loop-doc">
+            {t.documentLabel}
+          </label>
+          <p className="mb-2 max-w-prose font-sans text-xs text-slate-500">
+            {t.documentHint}
+          </p>
+          <textarea
+            id="loop-doc"
+            value={document}
+            onChange={(e) => onDocument(e.target.value)}
+            rows={10}
+            maxLength={config.limits.maxDocumentChars}
+            className="w-full rounded-md border border-solid border-slate-300 p-2.5 font-mono text-xs leading-relaxed text-slate-800 focus:border-slate-500 focus:outline-none"
+          />
+        </div>
+      )}
 
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>

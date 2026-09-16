@@ -1045,6 +1045,19 @@ export const de = {
   // Schleifenlektion: die Ausfuehrung Schritt fuer Schritt.
   agentLoop: {
     blockLabel: 'Die Agent-Schleife',
+    // Szenarien. Die Bezeichnungen stehen hier und nicht auf dem Server:
+    // der Server kennt keine Sprache des Lernenden, und ein deutscher Satz
+    // mitten in einer englischen Oberflaeche faellt sofort auf.
+    scenarios: {
+      scn_offerten_v1: {
+        label: 'Offertenanalyse',
+        note: 'Der Agent bekommt eine Verkaufsdokumentation und Lagedaten — aber nicht das Dokument im Kontext.',
+      },
+      scn_rollen_cfo_v1: {
+        label: 'Rollen-Skill: CFO',
+        note: 'Der Agent hat eine Rollen-Skill als Dateien und einen Wissensgraph mit Provenienz. Die ersten Durchläufe lesen Anweisungen statt Daten.',
+      },
+    },
     loading: 'Wird geladen …',
     retry: 'Erneut versuchen',
     loadError: 'Konnte nicht geladen werden.',

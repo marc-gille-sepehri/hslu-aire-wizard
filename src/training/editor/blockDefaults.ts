@@ -139,6 +139,10 @@ export function makeNewArtifact(type: BlockType): Artifact {
       return {
         id,
         type,
+        // Die Offertenanalyse als Vorgabe: sie braucht keine Vorkenntnis und
+        // laesst sich mit einer eigenen Offerte sofort auf die eigene Arbeit
+        // beziehen. Das Rollenszenario waehlt man bewusst.
+        scenarioId: 'scn_offerten_v1',
         title: 'Die Agent-Schleife',
         instructions:
           'Ein Agent bekommt eine Verkaufsdokumentation und Werkzeuge für Lagedaten — aber nicht das Dokument selbst. Gib die Ausführung Schritt für Schritt frei und sieh zu, was in jedem Durchlauf gedacht, aufgerufen und zurückgegeben wird. Die eigene Offerte lässt sich einsetzen.',

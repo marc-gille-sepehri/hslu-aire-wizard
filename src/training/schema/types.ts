@@ -163,6 +163,12 @@ export type DocConvertArtifact = BaseArtifact & {
 
 export type AgentLoopArtifact = BaseArtifact & {
   type: 'agent_loop'
+  /**
+   * Welches Szenario. Die Szenarien unterscheiden sich in Werkzeugen,
+   * Systemprompt und darin, ob ein mitgebrachtes Dokument eine Rolle spielt —
+   * die Schleife selbst ist dieselbe.
+   */
+  scenarioId?: 'scn_offerten_v1' | 'scn_rollen_cfo_v1'
   title?: string
   /** Explanatory text shown above the widget. */
   instructions?: string
@@ -170,6 +176,9 @@ export type AgentLoopArtifact = BaseArtifact & {
    * Die Verkaufsdokumentation, mit der der Lauf startet. Leer lassen heisst:
    * die hinterlegte Beispiel-Offerte. Der Lernende kann sie in beiden Fällen
    * ersetzen — das Mitbringen eigener Unterlagen ist der Zweck der Übung.
+   *
+   * Wird ignoriert, wenn das Szenario keines vorsieht (`scn_rollen_cfo_v1`):
+   * dort liegen die Unterlagen im Datenraum.
    */
   document?: string
   /** Frage, mit der das Feld vorbelegt ist. */

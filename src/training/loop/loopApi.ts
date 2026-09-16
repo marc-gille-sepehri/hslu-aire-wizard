@@ -59,6 +59,7 @@ export interface Budget {
 
 export interface LoopRun {
   runId: string
+  scenarioId: ScenarioId
   task: string
   model: string
   status: LoopRunStatus
@@ -79,10 +80,24 @@ export interface ToolDeclaration {
   input_schema: unknown
 }
 
+export type ScenarioId = 'scn_offerten_v1' | 'scn_rollen_cfo_v1'
+
+export interface ScenarioInfo {
+  id: ScenarioId
+  label: string
+  note: string
+  /** Bringt der Lernende ein Dokument mit? */
+  usesDocument: boolean
+}
+
 export interface LoopConfig {
   models: { id: string; label: string; note: string }[]
   defaultModel: string
   maxTurns: number
+  scenarioId: ScenarioId
+  scenarios: ScenarioInfo[]
+  usesDocument: boolean
+  defaultTask: string
   systemPrompt: string
   tools: ToolDeclaration[]
   toolCount: number
@@ -147,11 +162,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return (await res.json()) as T
 }
 
-export function fetchConfig(): Promise<LoopConfig> {
-  return request<LoopConfig>('/config')
+export function fetchConfig(scenarioId?: string): Promise<LoopConfig> {
+  const q = scenarioId ? `?scenarioId=${encodeURIComponent(scenarioId)}` : ''
+  return request<LoopConfig>(`/config${q}`)
 }
 
-export function startRun(input: { document: string; task: string; model: string }): Promise<LoopRun> {
+export function startRun(input: {
+  document: string
+  task: string
+  model: string
+  scenarioId: string
+}): Promise<LoopRun> {
   return request<LoopRun>('/runs', { method: 'POST', body: JSON.stringify(input) })
 }
 

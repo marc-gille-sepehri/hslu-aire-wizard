@@ -336,6 +336,16 @@ export const en: Labels = {
 
   agentLoop: {
     blockLabel: 'The agent loop',
+    scenarios: {
+      scn_offerten_v1: {
+        label: 'Offer analysis',
+        note: 'The agent is given a sales document and location tools — but not the document in its context.',
+      },
+      scn_rollen_cfo_v1: {
+        label: 'Role skill: CFO',
+        note: 'The agent has a role skill as files and a knowledge graph with provenance. The first turns read instructions rather than data.',
+      },
+    },
     loading: 'Loading …',
     retry: 'Try again',
     loadError: 'Could not be loaded.',

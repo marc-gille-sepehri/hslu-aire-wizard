@@ -88,6 +88,7 @@ const orchestrationArtifact = baseArtifact.extend({
 
 const agentLoopArtifact = baseArtifact.extend({
   type: z.literal('agent_loop'),
+  scenarioId: z.enum(['scn_offerten_v1', 'scn_rollen_cfo_v1']).optional(),
   title: z.string().optional(),
   instructions: z.string().optional(),
   document: z.string().optional(),

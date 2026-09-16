@@ -342,6 +342,22 @@ function AgentLoopEditor({
 }) {
   return (
     <div className="space-y-4">
+      <Field label="Szenario">
+        <select
+          className={inputCls}
+          value={draft.scenarioId ?? 'scn_offerten_v1'}
+          onChange={(e) =>
+            set({ ...draft, scenarioId: e.target.value as AgentLoopArtifact['scenarioId'] })
+          }
+        >
+          <option value="scn_offerten_v1">Offertenanalyse — Dokument und Lagedaten</option>
+          <option value="scn_rollen_cfo_v1">Rollen-Skill CFO — Wissensgraph mit Provenienz</option>
+        </select>
+        <p className="mt-1 text-xs text-slate-500">
+          Die Schleife ist dieselbe; Werkzeuge, Systemprompt und Daten unterscheiden sich. Beim
+          CFO-Szenario gibt es kein Dokumentfeld — die Unterlagen liegen im Datenraum.
+        </p>
+      </Field>
       <Field label={t.fTitle}>
         <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
       </Field>
@@ -361,6 +377,7 @@ function AgentLoopEditor({
           onChange={(e) => set({ ...draft, defaultTask: e.target.value || undefined })}
         />
       </Field>
+      {(draft.scenarioId ?? 'scn_offerten_v1') === 'scn_offerten_v1' && (
       <Field label="Verkaufsdokumentation (Markdown)">
         <textarea
           className={`${inputCls} font-mono text-xs`}
@@ -374,6 +391,7 @@ function AgentLoopEditor({
           Werkzeuge wahrheitsgemäss „keine Daten“.
         </p>
       </Field>
+      )}
     </div>
   )
 }
