@@ -332,6 +332,13 @@ function App() {
                 ernst und behandeln diese vertraulich und entsprechend den gesetzlichen 
                 Bestimmungen.
               </p>
+              <p>
+                Unser Angebot besteht aus einem öffentlichen Teil (Informationsseiten, 
+                Readiness-Check, Award-Abstimmung) und einem passwortgeschützten Lernbereich 
+                unter <em>/training</em>. Im Lernbereich kommen interaktive Bausteine zum 
+                Einsatz, die Eingaben an KI-Dienste Dritter übermitteln. Was dabei genau 
+                übertragen wird, steht in Abschnitt 4.
+              </p>
 
               <h3>2. Verantwortliche Stelle</h3>
               <p>
@@ -394,20 +401,248 @@ function App() {
                 Anfrage automatisch gelöscht.
               </p>
 
-              <h4>3.3 Bei Nutzung des Wizards</h4>
+              <h4>3.3 Beim Readiness-Check und beim Transformation Check</h4>
               <p>
-                Bei der Nutzung unseres interaktiven Wizards werden Ihre Antworten lokal in 
-                Ihrem Browser gespeichert, um den Wizard-Fortschritt zu erhalten. Diese 
-                Daten werden nur auf Ihrem Gerät gespeichert und nicht an unsere Server 
-                übertragen, es sei denn, Sie senden die Ergebnisse explizit ab. Eine 
-                dauerhafte Speicherung erfolgt nicht.
+                Der Readiness-Check führt Sie durch einen Fragebogen. Während der Bearbeitung 
+                bleiben Ihre Antworten in Ihrem Browser. Erst wenn Sie den Check absenden, 
+                übermitteln Sie uns Vor- und Nachname, E-Mail-Adresse, Angaben zu Ihrem 
+                Unternehmen (Grösse, Land, Tätigkeitsfeld) sowie Ihre Antworten. Wir 
+                speichern diese Angaben zusammen mit dem berechneten Ergebnis in unserer 
+                Datenbank, um Ihnen die Auswertung zuzustellen und die Ergebnisse in 
+                anonymisierter Form auszuwerten. Ohne Absenden verlassen die Antworten Ihr 
+                Gerät nicht. Für den Transformation Check gilt dasselbe; zusätzlich geht bei 
+                jedem abgeschlossenen Check eine Benachrichtigung an unsere eigene 
+                Info-Adresse.
+              </p>
+              <p>
+                Das Feld für den Newsletter ist getrennt und freiwillig. Setzen Sie das 
+                Häkchen, erhalten Sie zunächst eine Bestätigungsmail; erst nach Ihrer 
+                Bestätigung (Double Opt-in) legen wir einen Kontakt bei unserem 
+                Newsletter-Dienstleister an (siehe Abschnitt 5). Ohne Bestätigung geschieht 
+                das nicht. Sie können den Newsletter jederzeit über den Link in jeder 
+                Aussendung oder per E-Mail an uns abbestellen.
               </p>
 
-              <h3>4. Weitergabe von Daten</h3>
+              <h4>3.4 Bei der Award-Abstimmung</h4>
               <p>
-                Eine Übermittlung Ihrer persönlichen Daten an Dritte zu anderen als den 
-                im Folgenden aufgeführten Zwecken findet nicht statt. Wir geben Ihre 
-                persönlichen Daten nur an Dritte weiter, wenn:
+                Bei der Abstimmung speichern wir Ihre E-Mail-Adresse, die gewählte
+                Kandidatur und den Zeitpunkt der Stimmabgabe. Die E-Mail-Adresse dient dazu,
+                dass jede Person nur einmal abstimmen kann; sie wird für kein anderes Ziel
+                verwendet. Möchten Sie zusätzlich über das Ergebnis informiert werden,
+                vermerken wir das gesondert. Die veröffentlichten Ergebnisse sind aggregiert
+                und lassen keinen Rückschluss auf einzelne Teilnehmende zu.
+              </p>
+
+              <h4>3.5 Konto und Anmeldung im Lernbereich</h4>
+              <p>
+                Der Lernbereich ist nur angemeldeten Personen zugänglich. Die Anmeldung 
+                erfolgt ohne Passwort: Sie geben Ihre E-Mail-Adresse an und erhalten einen 
+                Einmalcode, der zehn Minuten gültig und einmal verwendbar ist. Zu Ihrem 
+                Konto speichern wir Vor- und Nachname, E-Mail-Adresse, Ihre Rolle 
+                (z. B. Teilnehmende, Trainerin, Administrator), die Zuordnung zu einer 
+                Organisation sowie den Zeitpunkt der letzten Anmeldung.
+              </p>
+              <p>
+                Nach erfolgreicher Anmeldung legt der Browser ein Sitzungsmerkmal (JSON Web 
+                Token, 30 Tage gültig) im lokalen Speicher Ihres Geräts ab, damit Sie sich 
+                nicht bei jedem Seitenaufruf neu anmelden müssen. Es handelt sich nicht um 
+                ein Cookie zu Werbe- oder Analysezwecken; siehe Abschnitt 9.
+              </p>
+              <p>
+                Führen wir eine Schulung für ein Unternehmen durch, kann uns dessen 
+                Ansprechperson eine Teilnehmerliste übergeben, aus der wir die Konten 
+                anlegen. Zur Auswertung solcher Listen setzen wir ein KI-Modell ein — dabei 
+                werden Namen und E-Mail-Adressen an einen Dienstleister in den USA 
+                übermittelt (Abschnitt 4.2).
+              </p>
+
+              <h4>3.6 Lernfortschritt und Eingaben im Lernbereich</h4>
+              <p>
+                Damit Sie Ihren Fortschritt wiederfinden und wir Schulungen auswerten und 
+                abrechnen können, speichern wir zu Ihrem Konto, welche Bausteine Sie 
+                bearbeitet haben. Je nach Baustein gehört dazu auch der Inhalt Ihrer 
+                Eingabe:
+              </p>
+              <ul>
+                <li>bei Auswahlaufgaben die gewählte Antwort und ob sie richtig war;</li>
+                <li>bei Prompt-Bausteinen der von Ihnen abgeschickte Text und das gewählte Modell;</li>
+                <li>bei Reflexionsaufgaben Ihr freier Text;</li>
+                <li>bei Modellierungsaufgaben das von Ihnen erstellte Diagramm;</li>
+                <li>bei Werkzeug-Bausteinen die von Ihnen eingegebene Server-Adresse und das aufgerufene Werkzeug;</li>
+                <li>bei den Agenten-Bausteinen der vollständige Verlauf des Laufs — Ihre Aufgabenstellung, ein von Ihnen eingefügtes Dokument, die Werkzeugaufrufe sowie Anfragen und Antworten des Modells.</li>
+              </ul>
+              <p>
+                Diese Inhalte sind Ihrem Konto zugeordnet. Trainerinnen und Trainer sowie 
+                Administratorinnen und Administratoren Ihrer Organisation können den 
+                Bearbeitungsstand einsehen. Reine Bedienspuren ohne Lernwert — etwa reines 
+                Blättern — protokollieren wir nicht.
+              </p>
+
+              <h4>3.7 Hochgeladene Dokumente</h4>
+              <p>
+                Einzelne Bausteine erlauben es, eine Datei hochzuladen oder einen Text 
+                einzufügen, um Konvertierung und Auswertung zu üben. Diese Dateien laufen 
+                über unseren Server an einen von uns betriebenen Konvertierungsdienst und 
+                werden dort zur Umwandlung verarbeitet; die Datei selbst legen wir nicht 
+                dauerhaft ab. Gespeichert wird, dass und in welchem Format eine Umwandlung 
+                stattgefunden hat. Bei den Agenten-Bausteinen bleibt ein eingefügter 
+                Dokumententext dagegen Teil des gespeicherten Laufs (Abschnitt 3.6) und wird 
+                an den KI-Dienst übermittelt.
+              </p>
+              <p>
+                <strong>Bitte laden Sie in Übungsbausteinen keine Dokumente hoch, die 
+                Personendaten Dritter, Geschäftsgeheimnisse oder Mandantendaten enthalten.</strong> 
+                Verwenden Sie anonymisierte oder erfundene Unterlagen.
+              </p>
+
+              <h4>3.8 Teilnahme an Erhebungen und Studien</h4>
+              <p>
+                Wir führen im Lernbereich fachliche Erhebungen durch, etwa zur Bewertung 
+                von Fallbeispielen. Wenn Sie teilnehmen, speichern wir Ihre Bewertungen und 
+                Begründungen zusammen mit Ihrer Kennung sowie die zu Beginn erfragten 
+                Angaben zu Rolle und Vorerfahrung. Die Teilnahme ist freiwillig. 
+                Auswertungen und Veröffentlichungen erfolgen ausschliesslich aggregiert; 
+                einzelne Personen werden darin nicht genannt.
+              </p>
+
+              <h3>4. Einsatz von KI-Diensten</h3>
+              <h4>4.1 Warum und wann</h4>
+              <p>
+                Der Lernbereich zeigt den Umgang mit KI-Systemen nicht nur, er führt ihn 
+                vor. Dafür senden wir Inhalte an KI-Anbieter, deren Modelle wir nicht selbst 
+                betreiben. Das geschieht <strong>nur, wenn Sie einen entsprechenden Baustein 
+                aktiv auslösen</strong> — durch Abschicken eines Prompts, Starten eines 
+                Agentenlaufs oder Freigeben eines Schleifenschritts. Beim blossen Lesen 
+                eines Kursabschnitts verlässt nichts die Plattform.
+              </p>
+              <p>
+                Die Zugangsschlüssel liegen ausschliesslich auf unserem Server. Ihr Browser 
+                spricht nie direkt mit einem KI-Anbieter; jede Anfrage läuft über uns. 
+                Automatisierte Entscheidungen mit Rechtswirkung für Sie treffen wir auf 
+                dieser Grundlage nicht — die Ergebnisse sind Übungsmaterial.
+              </p>
+
+              <h4>4.2 Anthropic</h4>
+              <p>
+                Für die Sprachmodelle nutzen wir die Programmierschnittstelle von{' '}
+                <strong>Anthropic, PBC, 548 Market St, PMB 90375, San Francisco, CA 94104,
+                USA</strong>. An Anthropic übermittelt werden:
+              </p>
+              <ul>
+                <li>der Text, den Sie im Prompt-Baustein abschicken, samt der vom Kurs vorgegebenen Anweisung;</li>
+                <li>bei den Agenten-Bausteinen und der Agentenschleife: Ihre Aufgabenstellung, ein von Ihnen eingefügtes Dokument, die Beschreibungen der Übungswerkzeuge und deren Ergebnisse, und zwar in jedem Schleifendurchlauf erneut der bisherige Gesprächsverlauf;</li>
+                <li>beim Orchestrierungs-Baustein die Aufgabenstellung und der Werkzeugkatalog;</li>
+                <li>bei der Kurserstellung durch unsere Autorinnen und Autoren Auszüge des Kursmaterials, etwa zur Beschreibung von Abbildungen;</li>
+                <li>beim Import von Teilnehmerlisten durch Administratorinnen und Administratoren die in der Liste enthaltenen Namen und E-Mail-Adressen.</li>
+              </ul>
+              <p>
+                <strong>Nicht übermittelt</strong> werden Ihr Name, Ihre E-Mail-Adresse oder 
+                eine Konto-Kennung: Unsere Anfragen an Anthropic enthalten keine 
+                Nutzerkennung. Anthropic kann eine Anfrage daher nicht Ihnen zuordnen — es 
+                sei denn, Sie schreiben personenbezogene Angaben selbst in Ihre Eingabe. 
+                Einzige Ausnahme ist der Import von Teilnehmerlisten, bei dem die 
+                Personendaten gerade der Gegenstand der Verarbeitung sind.
+              </p>
+              <p>
+                Anthropic verarbeitet die Daten als unser Auftragsbearbeiter auf Grundlage
+                eines Vertrags zur Auftragsbearbeitung. Eingaben und Ausgaben werden
+                <strong> nicht zum Training der Modelle verwendet</strong>. Für unseren Zugang
+                ist zudem <strong>Zero Data Retention</strong> vereinbart: Anthropic bewahrt
+                die Inhalte nach Beantwortung der Anfrage nicht auf, auch nicht befristet zur
+                Missbrauchsprüfung. Was dauerhaft gespeichert bleibt, steht also bei uns
+                (Abschnitt 3.6), nicht dort. Die Verarbeitung selbst findet in den USA statt
+                (siehe Abschnitt 6).
+              </p>
+
+              <h4>4.3 Weitere KI-Dienste</h4>
+              <p>
+                Für den Baustein zum Vergleich von Textbedeutungen berechnen wir 
+                sogenannte Einbettungen. Dafür übermitteln wir die von Ihnen eingegebenen 
+                Texte an <strong>OpenAI, L.L.C., 1960 Bryant Street, San Francisco, CA 94110,
+                USA</strong>. Auch hier gehen keine Konto-Kennungen mit. Nach den 
+                Nutzungsbedingungen für die Programmierschnittstelle werden die Daten nicht 
+                zum Training verwendet.
+              </p>
+              <p>
+                Der Kursassistent, der Fragen zum Kursmaterial beantwortet, läuft über einen 
+                von uns beauftragten Dienst (siehe Abschnitt 5). Ihre Frage und der 
+                Gesprächsverlauf werden dorthin übermittelt.
+              </p>
+
+              <h3>5. Eingesetzte Dienstleister</h3>
+              <p>
+                Wir setzen die folgenden Dienstleister als Auftragsbearbeiter ein. Sie sind 
+                vertraglich verpflichtet, die Daten ausschliesslich für uns und nach unseren 
+                Weisungen zu verarbeiten.
+              </p>
+              <ul>
+                <li><strong>Amazon Web Services EMEA SARL, Luxemburg</strong> — Betrieb unserer 
+                    Anwendungsserver und Ablage von Kursdokumenten. Standort der Systeme: 
+                    Region Frankfurt am Main, Deutschland.</li>
+                <li><strong>MongoDB, Inc., USA</strong> (MongoDB Atlas) — Datenbank mit Konten, 
+                    Lernfortschritt und Check-Ergebnissen. Die Daten liegen physisch in 
+                    Frankfurt am Main, Deutschland.</li>
+                <li><strong>GitHub, Inc., USA</strong> (GitHub Pages) — Auslieferung der 
+                    Website-Dateien an Ihren Browser.</li>
+                <li><strong>IONOS SE, Montabaur, Deutschland</strong> — Versand unserer E-Mails, 
+                    etwa der Anmeldecodes und Auswertungen.</li>
+                <li><strong>Systeme.io, Frankreich</strong> — Verwaltung und Versand des 
+                    Newsletters. Ein Kontakt wird erst nach Ihrer Bestätigung angelegt 
+                    (Abschnitt 3.3).</li>
+                <li><strong>The Real Insight GmbH</strong> — Betrieb des Kursassistenten und 
+                    der Dienste zur Dokumentenaufbereitung.</li>
+                <li><strong>Anthropic, PBC, USA</strong> und <strong>OpenAI, L.L.C., USA</strong> — 
+                    KI-Dienste gemäss Abschnitt 4.</li>
+              </ul>
+              <p>
+                Wir setzen keine Dienste zur Reichweitenmessung, zur Werbung oder zum 
+                Nutzer-Tracking ein.
+              </p>
+
+              <h3>6. Bekanntgabe ins Ausland</h3>
+              <p>
+                Unsere Anwendungsserver, die Datenbank und der E-Mail-Versand befinden sich 
+                in Deutschland, der Newsletter-Dienst in Frankreich. Für diese Länder hat der 
+                Schweizer Bundesrat einen angemessenen Datenschutz anerkannt.
+              </p>
+              <p>
+                Bei den in Abschnitt 4 genannten KI-Diensten sowie bei der Auslieferung der
+                Website über GitHub Pages werden Daten in die <strong>USA</strong> übermittelt.
+                Die Übermittlung stützt sich auf die Standardvertragsklauseln der
+                Europäischen Kommission in der vom EDÖB anerkannten Fassung.
+              </p>
+              <p>
+                Für die Übermittlung an Anthropic kommt hinzu, dass die Inhalte dort nicht
+                gespeichert werden (Zero Data Retention, Abschnitt 4.2). Ein behördliches
+                Auskunftsbegehren könnte deshalb keinen Datenbestand erfassen, sondern
+                allenfalls Inhalte während ihrer Verarbeitung. Ganz ausschliessen lässt sich
+                ein Zugriff durch US-Behörden dennoch nicht. Wenn Sie das vermeiden möchten,
+                nutzen Sie die KI-Bausteine nicht oder geben Sie dort keine Angaben ein, die
+                Rückschlüsse auf Sie oder Dritte zulassen.
+              </p>
+
+              <h3>7. Aufbewahrung und Löschung</h3>
+              <ul>
+                <li>Server-Logfiles: kurzfristig, anschliessend automatisiert gelöscht.</li>
+                <li>Anmeldecodes: zehn Minuten, danach ungültig; das Sitzungsmerkmal im 
+                    Browser läuft nach 30 Tagen ab.</li>
+                <li>Konto, Lernfortschritt und Eingaben: für die Dauer des Schulungsverhältnisses 
+                    und so lange, wie wir sie zum Nachweis der Teilnahme benötigen.</li>
+                <li>Ergebnisse des Readiness-Checks: so lange, wie die Auswertung für Sie 
+                    abrufbar sein soll.</li>
+                <li>Anfragen über das Kontaktformular: bis zur Erledigung.</li>
+                <li>Newsletter-Kontakt: bis zur Abmeldung.</li>
+              </ul>
+              <p>
+                Darüber hinaus löschen wir Ihre Daten, sobald der Zweck entfällt und keine 
+                gesetzliche Aufbewahrungspflicht entgegensteht. Sie können jederzeit die 
+                Löschung Ihres Kontos und der zugehörigen Eingaben verlangen (Abschnitt 8).
+              </p>
+
+              <h3>8. Weitergabe von Daten und Ihre Rechte</h3>
+              <p>
+                Über die in den Abschnitten 4 und 5 genannten Auftragsbearbeiter hinaus 
+                geben wir Ihre persönlichen Daten nur an Dritte weiter, wenn:
               </p>
               <ul>
                 <li>Sie Ihre ausdrückliche Einwilligung dazu erteilt haben,</li>
@@ -419,8 +654,11 @@ function App() {
                 <li>dies gesetzlich zulässig und für die Abwicklung von Vertragsverhältnissen 
                     mit Ihnen erforderlich ist.</li>
               </ul>
-
-              <h3>5. Betroffenenrechte</h3>
+              <p>
+                Buchen Ihre Arbeitgeberin oder Ihr Arbeitgeber die Schulung, erfährt die dort 
+                benannte Ansprechperson, wer teilgenommen und welche Module abgeschlossen 
+                hat. Freitexte und Prompts aus Übungen geben wir dorthin nicht weiter.
+              </p>
               <p>
                 Gemäß dem schweizerischen Datenschutzgesetz (DSG) haben Sie folgende Rechte:
               </p>
@@ -436,21 +674,36 @@ function App() {
                 <li>Ihre personenbezogenen Daten in einem strukturierten, gängigen und 
                     maschinenlesbaren Format zu erhalten oder die Übermittlung an einen anderen 
                     Verantwortlichen zu verlangen (Datenportabilität);</li>
+                <li>eine erteilte Einwilligung jederzeit mit Wirkung für die Zukunft zu widerrufen;</li>
                 <li>sich beim Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten 
                     (EDÖB) zu beschweren, wenn Sie der Ansicht sind, dass die Verarbeitung Ihrer 
                     personenbezogenen Daten gegen das DSG verstößt.</li>
               </ul>
 
-              <h3>6. Datensicherheit</h3>
+              <h3>9. Cookies und lokale Speicherung</h3>
               <p>
-                Wir verwenden innerhalb des Website-Besuchs das verbreitete SSL-Verfahren 
-                (Secure Socket Layer) in Verbindung mit der jeweils höchsten Verschlüsselungsstufe, 
-                die von Ihrem Browser unterstützt wird. In der Regel handelt es sich dabei um 
-                eine 256 Bit Verschlüsselung. Falls Ihr Browser keine 256-Bit-Verschlüsselung 
-                unterstützt, greifen wir stattdessen auf 128-Bit v3 Technologie zurück. Ob eine 
-                einzelne Seite unseres Internetauftritts verschlüsselt übertragen wird, erkennen 
-                Sie an der geschlossenen Darstellung des Schüssel- beziehungsweise Schloss-Symbols 
-                in der unteren Statusleiste Ihres Browsers.
+                Wir setzen keine Cookies zu Werbe-, Analyse- oder Tracking-Zwecken ein und 
+                binden keine Dienste zur Reichweitenmessung ein. Aus diesem Grund erscheint 
+                auf unserer Website auch kein Einwilligungsbanner.
+              </p>
+              <p>
+                Im lokalen Speicher Ihres Browsers legen wir ausschliesslich technisch 
+                notwendige Angaben ab: das Sitzungsmerkmal nach der Anmeldung, Ihre 
+                Sprachwahl sowie den Bearbeitungsstand der Bausteine, damit er beim 
+                Neuladen nicht verloren geht. Diese Angaben verlassen Ihr Gerät nur, soweit 
+                in dieser Erklärung beschrieben, und lassen sich über die Einstellungen 
+                Ihres Browsers jederzeit löschen.
+              </p>
+
+              <h3>10. Datensicherheit</h3>
+              <p>
+                Der Datenverkehr zwischen Ihrem Browser und unseren Servern ist durchgehend 
+                mit TLS verschlüsselt (aktuell TLS 1.2 und 1.3). Ob eine Seite verschlüsselt 
+                übertragen wird, erkennen Sie am Schloss-Symbol in der Adresszeile Ihres 
+                Browsers. Die Zugangsschlüssel zu den eingesetzten Diensten liegen 
+                ausschliesslich serverseitig und werden nie an den Browser ausgeliefert. Der 
+                Zugriff auf Konten und Lernfortschritt ist an eine Anmeldung und an Rollen 
+                gebunden.
               </p>
               <p>
                 Wir bedienen uns im Übrigen geeigneter technischer und organisatorischer 
@@ -460,9 +713,9 @@ function App() {
                 entsprechend der technologischen Entwicklung fortlaufend verbessert.
               </p>
 
-              <h3>7. Aktualität und Änderung dieser Datenschutzerklärung</h3>
+              <h3>11. Aktualität und Änderung dieser Datenschutzerklärung</h3>
               <p>
-                Diese Datenschutzerklärung ist aktuell gültig und hat den Stand Dezember 2025.
+                Diese Datenschutzerklärung ist aktuell gültig und hat den Stand September 2026.
               </p>
               <p>
                 Durch die Weiterentwicklung unserer Website und Angebote darüber oder aufgrund 
@@ -472,7 +725,7 @@ function App() {
                 "Datenschutz" von Ihnen abgerufen und ausgedruckt werden.
               </p>
 
-              <h3>8. Kontakt für Datenschutzfragen</h3>
+              <h3>12. Kontakt für Datenschutzfragen</h3>
               <p>
                 Wenn Sie Fragen zum Datenschutz haben, schreiben Sie uns bitte eine E-Mail 
                 oder wenden Sie sich direkt an die für den Datenschutz verantwortliche Person 
