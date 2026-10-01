@@ -89,6 +89,22 @@
   opacity: 0.8;
 }
 
+.dhbw-logo-link {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+  overflow: hidden;
+}
+
+.dhbw-logo-link:hover {
+  opacity: 0.8;
+}
+
 .ib-logo-link {
   display: flex;
   align-items: center;
@@ -124,6 +140,21 @@
   margin: 0;
   padding: 0;
   vertical-align: top;
+}
+
+/* Hoeher als HSLU und IB: der Wuerfel steht ueber und unter der Wortmarke und
+   unter "DHBW" laeuft noch der zweizeilige Claim — auf gleicher Pixelhoehe waere
+   die Wortmarke halb so gross wie "HSLU". Die Datei bringt ihre Abstufung selbst
+   mit, deshalb hier kein invert-Filter. */
+.dhbw-logo {
+  height: 1.9rem;
+  width: auto;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: middle;
+  object-fit: contain;
 }
 
 .ib-logo {
@@ -1071,6 +1102,10 @@
     height: 1.15rem;
   }
 
+  .dhbw-logo {
+    height: 1.7rem;
+  }
+
   .site-nav {
     gap: 0.6rem;
   }
@@ -1121,6 +1156,10 @@
 
   .ib-logo {
     height: 1.3rem;
+  }
+
+  .dhbw-logo {
+    height: 1.9rem;
   }
 
   .hslu-logo-link svg,

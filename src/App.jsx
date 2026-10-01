@@ -104,6 +104,17 @@ function App() {
                   className="hslu-logo"
                 />
               </a>
+              <a href="https://www.dhbw-stuttgart.de/" target="_blank" rel="noopener noreferrer" className="dhbw-logo-link">
+                {/* Offizielle Negativfassung der DHBW Stuttgart, unveraendert.
+                    Sie bringt ihre Abstufung selbst mit (weiss, opacity 0.8/0.6
+                    auf den Wuerfelflaechen) — der invert-Filter der HSLU daneben
+                    wuerde sie zerstoeren. Verwendung von der DHBW freigegeben. */}
+                <img
+                  src="/dhbw-stuttgart-logo-white.svg"
+                  alt="DHBW Stuttgart — Duale Hochschule Baden-Württemberg"
+                  className="dhbw-logo"
+                />
+              </a>
               <a href="https://www.immobilienbusiness.ch/de/" target="_blank" rel="noopener noreferrer" className="ib-logo-link">
                 {/* Negativ-Version für den Navy-Header. Auf dunklem Grund ist
                     Gold der einzige Akzent — daher weiss statt Markenrot.
