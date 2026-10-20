@@ -42,6 +42,8 @@ export type Artifact =
   | AgentTraceArtifact
   | OrchestrationArtifact
   | AgentLoopArtifact
+  | HydeCompareArtifact
+  | DecisionModelArtifact
 
 export type BaseArtifact = {
   id: string
@@ -230,4 +232,38 @@ export type EmbeddingCompareArtifact = BaseArtifact & {
   defaultQuery?: string
   /** How many nearest chunks count as "the context", 1–10. Default 3. */
   topK?: number
+}
+
+export type HydeCompareArtifact = BaseArtifact & {
+  type: 'hyde_compare'
+  title?: string
+  /** Explanatory text shown above the widget. */
+  instructions?: string
+  /** Die Stellen, in denen gesucht wird, 2–20. Klein, damit man jede lesen kann. */
+  corpus: string[]
+  /** Frage, mit der das Feld vorbelegt ist. */
+  defaultQuestion?: string
+  /** Wie viele Treffer als „Kontext“ gelten, 1–10. Default 3. */
+  topK?: number
+  /** Ersetzt die Anweisung an das Modell, das das Phantombild schreibt. */
+  generatorPrompt?: string
+}
+
+/** Eine typisierte Frage im Stil von Jev. */
+export type DecisionQuestion =
+  | { id?: string; kind: 'choice'; prompt: string; options: string[] }
+  | { id?: string; kind: 'score'; prompt: string; levels: string[] }
+  | { id?: string; kind: 'noul'; prompt: string }
+
+export type DecisionModelArtifact = BaseArtifact & {
+  type: 'decision_model'
+  title?: string
+  /** Explanatory text shown above the widget. */
+  instructions?: string
+  /** Situation, mit der das Feld vorbelegt ist. */
+  defaultSituation?: string
+  /** Die Fragen, mit denen der Baustein startet, 1–8. Teilnehmende können sie ändern. */
+  questions: DecisionQuestion[]
+  /** Schwelle in Prozent, ab der gehandelt statt vorgelegt wird, 50–99. Default 90. */
+  threshold?: number
 }

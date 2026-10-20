@@ -71,6 +71,49 @@ const embeddingCompareArtifact = baseArtifact.extend({
   topK: z.number().min(1).max(10).optional(),
 })
 
+const hydeCompareArtifact = baseArtifact.extend({
+  type: z.literal('hyde_compare'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+  // Klein auf Absicht: der Effekt ist nur sichtbar, wenn man jede Stelle lesen
+  // kann. 4000 ist die Obergrenze des Embedding-Proxys pro Text.
+  corpus: z.array(z.string().max(4000)).min(2).max(20),
+  defaultQuestion: z.string().max(500).optional(),
+  topK: z.number().int().min(1).max(10).optional(),
+  generatorPrompt: z.string().max(2000).optional(),
+})
+
+// Dieselben Grenzen wie der Server (decision/model.ts) — Jev nimmt bis zu zehn
+// Stufen an, mehr als acht Fragen liest niemand.
+const decisionQuestion = z.discriminatedUnion('kind', [
+  z.object({
+    id: z.string().optional(),
+    kind: z.literal('choice'),
+    prompt: z.string().min(1).max(500),
+    options: z.array(z.string().min(1).max(200)).min(2).max(8),
+  }),
+  z.object({
+    id: z.string().optional(),
+    kind: z.literal('score'),
+    prompt: z.string().min(1).max(500),
+    levels: z.array(z.string().min(1).max(200)).min(2).max(10),
+  }),
+  z.object({
+    id: z.string().optional(),
+    kind: z.literal('noul'),
+    prompt: z.string().min(1).max(500),
+  }),
+])
+
+const decisionModelArtifact = baseArtifact.extend({
+  type: z.literal('decision_model'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+  defaultSituation: z.string().max(4000).optional(),
+  questions: z.array(decisionQuestion).min(1).max(8),
+  threshold: z.number().int().min(50).max(99).optional(),
+})
+
 const agentTraceArtifact = baseArtifact.extend({
   type: z.literal('agent_trace'),
   title: z.string().optional(),
@@ -184,6 +227,8 @@ const artifact = z.discriminatedUnion('type', [
   agentTraceArtifact,
   orchestrationArtifact,
   agentLoopArtifact,
+  hydeCompareArtifact,
+  decisionModelArtifact,
 ])
 
 const section = z.object({

@@ -15,6 +15,8 @@ import type {
   AgentTraceArtifact,
   OrchestrationArtifact,
   AgentLoopArtifact,
+  HydeCompareArtifact,
+  DecisionModelArtifact,
   ObjectGraphArtifact,
   OntologyArtifact,
   ProseArtifact,
@@ -27,6 +29,8 @@ import MarkdownEditor from './MarkdownEditor'
 import { fetchModels, type ModelInfo } from '../lib/llmApi'
 import { detectMedia, mediaKindLabel } from '../lib/media'
 import { uploadCourseDocument } from '../lib/documentApi'
+import DecisionQuestions, { cleanQuestion } from '../components/artifacts/DecisionQuestions'
+import type { DecisionQuestion } from '../schema/types'
 
 const t = labels.editor
 
@@ -555,6 +559,96 @@ function EmbeddingCompareEditor({
   )
 }
 
+function HydeCompareEditor({ draft, set }: { draft: HydeCompareArtifact; set: (d: HydeCompareArtifact) => void }) {
+  return (
+    <div className="space-y-4">
+      <Field label={t.fTitle}>
+        <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
+      </Field>
+      <Field label={t.fInstructions}>
+        <TextArea value={draft.instructions ?? ''} rows={3} onChange={(v) => set({ ...draft, instructions: v || undefined })} />
+      </Field>
+      <Field label={t.fHydeCorpus}>
+        <StringListEditor items={draft.corpus ?? []} onChange={(corpus) => set({ ...draft, corpus })} />
+        <p className="mt-1 text-xs text-slate-400">{t.hydeCorpusHint}</p>
+      </Field>
+      <Field label={t.fHydeQuestion}>
+        <TextInput
+          value={draft.defaultQuestion ?? ''}
+          onChange={(v) => set({ ...draft, defaultQuestion: v || undefined })}
+        />
+      </Field>
+      <NumberInput
+        label={t.fTopK}
+        value={draft.topK ?? 3}
+        min={1}
+        max={10}
+        step={1}
+        onChange={(v) => set({ ...draft, topK: v })}
+      />
+      <Field label={t.fHydeGenerator}>
+        <textarea
+          className={inputCls}
+          rows={3}
+          value={draft.generatorPrompt ?? ''}
+          onChange={(e) => set({ ...draft, generatorPrompt: e.target.value || undefined })}
+        />
+        <p className="mt-1 text-xs text-slate-400">{t.hydeGeneratorHint}</p>
+      </Field>
+    </div>
+  )
+}
+
+function DecisionModelEditor({ draft, set }: { draft: DecisionModelArtifact; set: (d: DecisionModelArtifact) => void }) {
+  // Die Fragenliste braucht stabile Schlüssel zum Bearbeiten; gespeichert
+  // werden nur die, die der Autor ohnehin hatte.
+  // Roh gehalten, damit eine neue, noch leere Optionszeile beim Tippen stehen
+  // bleibt; in den Entwurf geht die bereinigte Fassung.
+  const counter = useRef(0)
+  const [raw, setRaw] = useState(() =>
+    (draft.questions ?? []).map((q, i) => ({ ...q, id: q.id || `q${i + 1}` }) as DecisionQuestion & { id: string }),
+  )
+  return (
+    <div className="space-y-4">
+      <Field label={t.fTitle}>
+        <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
+      </Field>
+      <Field label={t.fInstructions}>
+        <TextArea value={draft.instructions ?? ''} rows={3} onChange={(v) => set({ ...draft, instructions: v || undefined })} />
+      </Field>
+      <Field label={t.fDecisionSituation}>
+        <TextArea
+          value={draft.defaultSituation ?? ''}
+          rows={4}
+          onChange={(v) => set({ ...draft, defaultSituation: v || undefined })}
+        />
+      </Field>
+      <div>
+        <span className="mb-1 block text-xs font-semibold uppercase tracking-kicker text-slate-500">
+          {t.fDecisionQuestions}
+        </span>
+        <DecisionQuestions
+          questions={raw}
+          newId={() => `q${Date.now().toString(36)}${counter.current++}`}
+          onChange={(questions) => {
+            setRaw(questions)
+            set({ ...draft, questions: questions.map(cleanQuestion) })
+          }}
+        />
+        <p className="mt-1 text-xs text-slate-400">{t.decisionQuestionsHint}</p>
+      </div>
+      <NumberInput
+        label={t.fDecisionThreshold}
+        value={draft.threshold ?? 90}
+        min={50}
+        max={99}
+        step={1}
+        onChange={(v) => set({ ...draft, threshold: v })}
+      />
+    </div>
+  )
+}
+
 /** A labelled number field. Bounded, because both values have hard limits. */
 function NumberInput({
   label,
@@ -903,6 +997,10 @@ export default function BlockEditorDialog({
         return <OrchestrationEditor draft={draft} set={setDraft} />
       case 'agent_loop':
         return <AgentLoopEditor draft={draft} set={setDraft} />
+      case 'hyde_compare':
+        return <HydeCompareEditor draft={draft} set={setDraft} />
+      case 'decision_model':
+        return <DecisionModelEditor draft={draft} set={setDraft} />
       default:
         return null
     }

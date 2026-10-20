@@ -325,6 +325,98 @@ export const de = {
     notConfigured: 'Für diesen Block ist noch kein Embedding-Dienst hinterlegt.',
   },
 
+  hyde: {
+    title: 'Suchen mit einem Phantombild',
+    corpusHeading: (n: number): string => `Die Sammlung · ${n} Stellen`,
+    corpusHint: 'In diesen Stellen wird gesucht. Mehr gibt es nicht.',
+    questionLabel: 'Deine Frage',
+    questionPlaceholder: 'Zum Beispiel: Wer zahlt den neuen Boiler?',
+    search: 'Suchen',
+    searching: 'Phantombild wird geschrieben …',
+    embedding: 'Vektoren werden berechnet …',
+    searchAgain: 'Neue Frage, neues Phantombild',
+    phantomHeading: 'Phantombild',
+    phantomBadge: 'vom Modell erfunden · nicht geprüft',
+    phantomHint:
+      'Diese Antwort hat ein Sprachmodell erfunden, ohne die Sammlung zu kennen. Sie darf '
+      + 'falsch sein — sie muss nur klingen wie die gesuchte Stelle. Ändere ruhig einen '
+      + 'Betrag, einen Namen oder sogar die Aussage ins Gegenteil und such nochmals.',
+    phantomEdited: 'Phantombild geändert.',
+    rerank: 'Mit diesem Phantombild suchen',
+    restore: 'Ursprüngliches Phantombild',
+    columnQuestion: 'Suche mit der Frage',
+    columnPhantom: 'Suche mit dem Phantombild',
+    columnQuestionHint: 'Der Vektor deiner Frage, so wie du sie getippt hast.',
+    columnPhantomHint: 'Der Vektor der erfundenen Antwort.',
+    similarity: 'Ähnlichkeit',
+    similarityHint:
+      'Ähnlichkeit = Kosinus zwischen den Vektoren: 1 heisst gleiche Richtung, um 0 heisst '
+      + 'nichts gemeinsam. Absolute Werte variieren je nach Modell; was zählt, ist die Reihenfolge.',
+    cutoff: 'Ab hier nicht mehr im Kontext',
+    moved: (delta: number): string => (delta > 0 ? `${delta} Plätze höher` : `${-delta} Plätze tiefer`),
+    movedOne: (delta: number): string => (delta > 0 ? '1 Platz höher' : '1 Platz tiefer'),
+    same: 'gleicher Platz',
+    passage: (n: number): string => `Stelle ${n}`,
+    stale: 'Frage oder Phantombild hat sich geändert — neu suchen.',
+    needQuestion: 'Formuliere zuerst eine Frage.',
+    modelLine: (llm: string, emb: string, dims: number): string =>
+      `Phantombild: ${llm} · Embeddings: ${emb}, ${dims} Dimensionen`,
+    error: 'Die Suche ist fehlgeschlagen.',
+  },
+
+  decision: {
+    title: 'Entscheiden mit Wahrscheinlichkeiten',
+    engineJev: (model: string): string => `Jev · ${model}`,
+    engineJevHint: 'Die Zahlen kommen von Jev, einem Modell, das auf kalibrierte Wahrscheinlichkeiten trainiert ist.',
+    engineSimulated: 'Nachgestellt, nicht Jev',
+    engineSimulatedHint: (model: string): string =>
+      `Hier schätzt ein gewöhnliches Sprachmodell (${model}) die Wahrscheinlichkeiten und muss sie in `
+      + 'ein festes Format schreiben. Die Form ist dieselbe wie bei Jev, die Zahlen aber nicht: '
+      + 'ein Sprachmodell schreibt Zahlen hin, es ist nicht auf sie trainiert. Für das Prinzip '
+      + 'reicht das, für eine echte Schwelle nicht.',
+    situationLabel: 'Situation',
+    situationPlaceholder: 'Was ist passiert? Zum Beispiel eine Meldung, wie sie eingeht.',
+    questionsHeading: 'Fragen',
+    questionsHint: 'Jede Frage hat feste Antwortmöglichkeiten. Darum kommt eine Verteilung zurück statt eines Satzes.',
+    kindChoice: 'Auswahl',
+    kindScore: 'Skala',
+    kindNoul: 'Aussage wahr?',
+    kindChoiceHint: 'Eine Option aus einer Liste.',
+    kindScoreHint: 'Eine Stufe auf einer Skala, von tief nach hoch.',
+    kindNoulHint: 'Trifft die Aussage zu? Eine Zahl zwischen 0 und 1.',
+    promptChoice: 'Frage',
+    promptScore: 'Frage',
+    promptNoul: 'Aussage',
+    optionsLabel: 'Optionen · eine pro Zeile',
+    levelsLabel: 'Stufen · eine pro Zeile, die tiefste zuerst',
+    addQuestion: (kind: string): string => `+ ${kind}`,
+    removeQuestion: 'Frage entfernen',
+    evaluate: 'Auswerten',
+    evaluating: 'Wird ausgewertet …',
+    reevaluate: 'Neu auswerten',
+    threshold: 'Schwelle',
+    thresholdHint:
+      'Ist die wahrscheinlichste Antwort mindestens so sicher, handelt der Ablauf selbst. '
+      + 'Sonst legt er die Frage einer Person vor. Die Schwelle setzt nicht das Modell, sondern du.',
+    act: 'handeln',
+    escalate: 'vorlegen',
+    actLine: (answer: string): string => `Handeln: ${answer}`,
+    escalateLine: 'Vorlegen: zu unsicher für einen Automatismus',
+    noulTrue: 'wahr',
+    noulFalse: 'falsch',
+    noulHolds: 'Aussage trifft zu',
+    noulFails: 'Aussage trifft nicht zu',
+    confidence: (pct: number): string => `Konfidenz ${pct} %`,
+    confidenceHint:
+      'Konfidenz misst, wie eindeutig die Verteilung ist — nicht dasselbe wie die höchste Wahrscheinlichkeit.',
+    summary: (act: number, total: number): string =>
+      `${act} von ${total} Fragen würden automatisch entschieden, ${total - act} gingen an eine Person.`,
+    stale: 'Situation oder Fragen haben sich geändert — neu auswerten.',
+    needSituation: 'Beschreibe zuerst die Situation.',
+    tokens: (input: number, output: number): string => `${input} → ${output} Tokens`,
+    error: 'Die Auswertung ist fehlgeschlagen.',
+  },
+
   // Admin panel
   admin: {
     title: 'Administration',
@@ -816,6 +908,19 @@ export const de = {
       'Im Abruf-Modus wird eine Frage gegen alle Stücke gerechnet und die Rangliste gezeigt. '
       + '„Treffer im Kontext" ist die Grenze, ab der ein Stück nicht mehr ans Modell ginge — '
       + 'der interessanteste Regler des Blocks.',
+    fHydeCorpus: 'Sammlung',
+    hydeCorpusHint:
+      'Die Stellen, in denen gesucht wird. Fünf bis acht in der Sprache echter Dokumente. Die '
+      + 'Zielstelle sollte mit der Frage kaum Wörter teilen, ein bis zwei Ablenker dafür viele.',
+    fHydeQuestion: 'Vorbelegte Frage',
+    fHydeGenerator: 'Anweisung an das Phantombild-Modell (optional)',
+    hydeGeneratorHint: 'Leer lassen für die Vorgabe: kurze Passage im Ton eines Mietvertrags oder Reglements, Details frei erfunden.',
+    fDecisionSituation: 'Vorbelegte Situation',
+    fDecisionQuestions: 'Fragen',
+    decisionQuestionsHint:
+      'Teilnehmende können die Fragen im Block ändern. Mische die Typen und nimm mindestens eine '
+      + 'Frage, die die Situation nur halb beantwortet — sonst steht jeder Balken bei 99 %.',
+    fDecisionThreshold: 'Schwelle (%)',
     fMediaUpload: 'Datei hochladen',
     fMediaUrl: 'Medien-URL',
     mediaUrlPlaceholder: 'https://… (Bild, Video oder YouTube/Vimeo)',

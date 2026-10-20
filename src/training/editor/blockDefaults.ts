@@ -32,6 +32,8 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: 'agent_trace', label: 'Agenten-Simulator', icon: '🤖', hint: 'Agent läuft mit; würde-tun statt tun' },
   { type: 'orchestration', label: 'Orchestrierung', icon: '🧩', hint: 'Werkzeuge beschreiben, Ablauf planen lassen' },
   { type: 'agent_loop', label: 'Agent-Schleife', icon: '🔁', hint: 'Ausführung Schritt für Schritt wie im Debugger' },
+  { type: 'hyde_compare', label: 'HyDE-Suche', icon: '🕵️', hint: 'Suche mit der Frage vs. mit erfundener Antwort' },
+  { type: 'decision_model', label: 'Entscheidungsmodell', icon: '⚖️', hint: 'Typisierte Fragen, Wahrscheinlichkeiten, Schwelle' },
 ]
 
 export const BLOCK_TYPE_LABEL: Record<BlockType, string> = BLOCK_TYPES.reduce(
@@ -184,6 +186,51 @@ export function makeNewArtifact(type: BlockType): Artifact {
           'Im Treppenhaus funktioniert die Sicherheitsbeleuchtung nicht.',
           'Der Mietvertrag läuft bis zum 31. Dezember 2027.',
         ],
+      }
+    case 'hyde_compare':
+      return {
+        id,
+        type,
+        // Zeichnet nichts auf; würde sonst den Abschnitt nie abschliessen lassen.
+        tracked: false,
+        title: 'Suchen mit einem Phantombild',
+        instructions:
+          'Stell eine kurze Frage. Links wird mit der Frage selbst gesucht, rechts mit einer Antwort, die ein Sprachmodell dafür erfunden hat. Ändere das Phantombild ruhig ins Falsche und such nochmals: Gefunden wird, was nach Antwort klingt, nicht was stimmt.',
+        // Die Zielstelle teilt mit der Frage kaum ein Wort; die Ablenker
+        // teilen Wörter, aber nicht den Sinn. Ohne diese Spannung gewinnt die
+        // Frage, und es gibt nichts zu sehen.
+        // Gemessen, nicht geraten: mit der Frage landen die beiden Ablenker
+        // (2, 1) vor der Zielstelle (3), sie fällt bei topK 2 aus dem Kontext.
+        // Mit dem Phantombild steht 3 vorne — auch wenn man darin „Vermieter“
+        // durch „Mieter“ ersetzt, die Aussage also umdreht.
+        corpus: [
+          'Wer zahlt die neue Waschmaschine in der gemeinsamen Waschküche? Sie wird aus dem Erneuerungsfonds der Stockwerkeigentümergemeinschaft finanziert.',
+          'Wer zahlt was? Neue Geräte, welche die Mieterschaft auf eigenen Wunsch anschafft, etwa ein Tumbler oder ein zweiter Kühlschrank, bezahlt sie selbst.',
+          'Der Ersatz von Warmwasseraufbereitern und Wassererwärmern infolge Alters geht zu Lasten der Vermieterschaft; Entkalkungen trägt die Mieterschaft im Rahmen des kleinen Unterhalts.',
+          'Wer zahlt die Nebenkosten? Akontozahlungen werden jährlich per 30. Juni abgerechnet; ein Saldo zugunsten der Mieterschaft wird mit der nächsten Miete verrechnet.',
+          'Kleine Reparaturen bis CHF 150 im Einzelfall, wie das Ersetzen von Duschschläuchen oder Glühbirnen, übernimmt die Mieterschaft.',
+          'Die Heizperiode dauert in der Regel vom 1. Oktober bis 30. April; die Raumtemperatur in Wohnräumen beträgt mindestens 20 Grad.',
+        ],
+        defaultQuestion: 'Wer zahlt den neuen Boiler?',
+        topK: 2,
+      }
+    case 'decision_model':
+      return {
+        id,
+        type,
+        tracked: false,
+        title: 'Entscheiden mit Wahrscheinlichkeiten',
+        instructions:
+          'Eine Meldung, mehrere Fragen mit festen Antwortmöglichkeiten. Das Modell antwortet nicht mit einem Satz, sondern mit Wahrscheinlichkeiten. Mit der Schwelle legst du fest, ab wann der Ablauf selbst handelt und wann er an eine Person geht.',
+        defaultSituation:
+          'Mieterin Frau Keller, Seestrasse 14, 3. OG links, schreibt am Sonntagabend: «Seit heute Nachmittag tropft es im Badezimmer von der Decke, inzwischen steht eine kleine Pfütze am Boden. Oben wohnt niemand, die Wohnung ist leer. Licht funktioniert noch.»',
+        questions: [
+          { kind: 'choice', prompt: 'Wer soll die Meldung als Erstes bearbeiten?', options: ['Hauswart', 'Sanitär-Notdienst', 'Versicherung', 'Bewirtschaftung am Montag'] },
+          { kind: 'score', prompt: 'Wie dringend ist die Meldung?', levels: ['kann warten', 'diese Woche', 'heute noch', 'sofort'] },
+          { kind: 'noul', prompt: 'Es besteht unmittelbare Gefahr für Personen.' },
+          { kind: 'noul', prompt: 'Die Ursache liegt in der leeren Wohnung darüber.' },
+        ],
+        threshold: 90,
       }
     case 'doc_convert':
       return {
