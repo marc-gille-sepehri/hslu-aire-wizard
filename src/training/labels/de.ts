@@ -729,6 +729,8 @@ export const de = {
 
   // Admin: Kursdurchführung tab
   adminInstances: {
+    morePeople: (n: number): string => `+ ${n} weitere`,
+    peopleCount: (n: number): string => `${n} ${n === 1 ? 'Person' : 'Personen'}`,
     tab: 'Kursdurchführung',
     heading: 'Kursdurchführungen',
     colCourse: 'Kurs',

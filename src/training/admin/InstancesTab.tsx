@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { labels } from '../labels'
 import { listCourseInstances, type CourseInstance, type InstancePerson } from './adminApi'
 import InstanceDialog from './InstanceDialog'
@@ -55,11 +55,67 @@ function ChartIcon() {
 }
 
 /** Comma-separated people names, with the count when there are several. */
+const PEOPLE_SHOWN = 4
+
+/**
+ * Die ersten Namen und „+ N weitere“; beim Darüberfahren (oder Fokus) die ganze
+ * Liste mit E-Mail. Das Popover ist `fixed` positioniert, weil die Tabelle in
+ * einem `overflow-x-auto`-Container liegt, der ein absolut positioniertes
+ * Element abschneiden würde.
+ */
 function People({ people }: { people: InstancePerson[] }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const [pos, setPos] = useState<{ left: number; top: number; maxHeight: number } | null>(null)
   if (people.length === 0) return <span className="text-slate-400">—</span>
+
+  const sorted = [...people].sort((a, b) => a.name.localeCompare(b.name, 'de'))
+  const rest = people.length - PEOPLE_SHOWN
+  const show = () => {
+    const r = ref.current?.getBoundingClientRect()
+    if (!r) return
+    const width = 320
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8))
+    // Unterhalb, wenn genug Platz ist, sonst oberhalb — ohne Lücke, damit die Maus
+    // ins Popover wandern kann, ohne es zu schliessen (zum Scrollen langer Listen).
+    const below = window.innerHeight - r.bottom - 16
+    const above = r.top - 16
+    if (below >= 240 || below >= above) setPos({ left, top: r.bottom, maxHeight: Math.max(160, below) })
+    else setPos({ left, top: Math.max(8, r.top - Math.min(above, 480)), maxHeight: Math.min(above, 480) })
+  }
+
   return (
-    <span className="text-slate-600" title={people.map((p) => p.email).join(', ')}>
-      {people.map((p) => p.name).join(', ')}
+    <span
+      ref={ref}
+      tabIndex={0}
+      onMouseEnter={show}
+      onMouseLeave={() => setPos(null)}
+      onFocus={show}
+      onBlur={() => setPos(null)}
+      className="block max-w-xs cursor-default text-slate-600 outline-none"
+    >
+      {people.slice(0, PEOPLE_SHOWN).map((p) => p.name).join(', ')}
+      {rest > 0 && (
+        <span className="ml-1.5 whitespace-nowrap rounded-full bg-cream px-2 py-0.5 text-xs font-semibold text-navy">
+          {t.morePeople(rest)}
+        </span>
+      )}
+      {pos && (
+        <span
+          role="tooltip"
+          style={{ left: pos.left, top: pos.top, maxHeight: pos.maxHeight }}
+          className="fixed z-50 block w-80 overflow-y-auto rounded-lg border border-solid border-mist bg-white p-3 text-left shadow-lg"
+        >
+          <span className="mb-2 block text-xs font-semibold uppercase tracking-kicker text-slate-500">
+            {t.peopleCount(people.length)}
+          </span>
+          {sorted.map((p) => (
+            <span key={p.email || p.name} className="block py-0.5 text-sm leading-snug">
+              <span className="text-navy">{p.name}</span>
+              {p.email && p.email !== p.name && <span className="block text-xs text-slate-400">{p.email}</span>}
+            </span>
+          ))}
+        </span>
+      )}
     </span>
   )
 }
