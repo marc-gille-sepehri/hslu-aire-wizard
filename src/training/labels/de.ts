@@ -757,6 +757,8 @@ export const de = {
     resultsLoading: 'Wird ausgewertet …',
     resultsNone: 'Dieser Kurs enthält keine Umfrage.',
     resultsResponses: (n: number, of: number): string => `${n} von ${of} Teilnehmenden haben abgegeben`,
+    resultsOutside: (n: number): string =>
+      `${n} weitere ${n === 1 ? 'Abgabe' : 'Abgaben'} von Personen ausserhalb der Durchführung (z. B. Tests durch Admins) — nicht mitgezählt.`,
     resultsAnonymous: 'anonym',
     resultsCsv: 'CSV herunterladen',
     resultsCsvError: 'CSV konnte nicht heruntergeladen werden.',

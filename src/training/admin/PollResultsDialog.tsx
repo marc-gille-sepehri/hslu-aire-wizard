@@ -141,6 +141,9 @@ function PollCard({ instanceId, poll }: { instanceId: string; poll: PollResult }
             </div>
             <span className="text-sm text-slate-600">{t.resultsResponses(poll.responses, poll.participants)}</span>
           </div>
+          {!!poll.outsideResponses && (
+            <p className="mt-1 text-xs text-slate-500">{t.resultsOutside(poll.outsideResponses)}</p>
+          )}
         </div>
         <button
           type="button"

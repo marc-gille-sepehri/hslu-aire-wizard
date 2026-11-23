@@ -420,6 +420,8 @@ export interface PollResult {
   anonymous: boolean
   participants: number
   responses: number
+  /** Abgaben von Personen, die nicht Teilnehmende der Durchführung sind (nicht gezählt). */
+  outsideResponses?: number
   questions: PollQuestionResult[]
 }
 
