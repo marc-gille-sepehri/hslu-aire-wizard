@@ -219,13 +219,13 @@ export function makeNewArtifact(type: BlockType): Artifact {
       return {
         id,
         type,
-        title: 'Ihre Rückmeldung zum Kurs',
-        instructions: 'Ihre Antworten helfen uns, den Kurs zu verbessern. Sie können sie bis zum Kursende ändern.',
+        title: 'Deine Rückmeldung zum Kurs',
+        instructions: 'Deine Antworten helfen uns, den Kurs zu verbessern. Du kannst sie bis zum Kursende ändern.',
         anonymous: true,
         questions: [
-          { id: 'q1', kind: 'scale', prompt: 'Wie nützlich war der Kurs für Ihre Arbeit?', minLabel: 'wenig', maxLabel: 'sehr' },
+          { id: 'q1', kind: 'scale', prompt: 'Wie nützlich war der Kurs für deine Arbeit?', minLabel: 'wenig', maxLabel: 'sehr' },
           { id: 'q2', kind: 'scale', prompt: 'Wie verständlich waren die Inhalte?', minLabel: 'wenig', maxLabel: 'sehr' },
-          { id: 'q3', kind: 'yesno', prompt: 'Würden Sie den Kurs weiterempfehlen?' },
+          { id: 'q3', kind: 'yesno', prompt: 'Würdest du den Kurs weiterempfehlen?' },
           { id: 'q4', kind: 'text', prompt: 'Was sollen wir beim nächsten Mal anders machen?' },
         ],
       }

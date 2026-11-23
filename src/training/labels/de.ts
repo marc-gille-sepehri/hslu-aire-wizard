@@ -370,11 +370,11 @@ export const de = {
     no: 'Nein',
     scaleMin: 'wenig',
     scaleMax: 'sehr',
-    textPlaceholder: 'Ihre Antwort …',
-    anonymousHint: 'Diese Umfrage ist anonym: Ihr Name erscheint nicht in der Auswertung.',
+    textPlaceholder: 'Deine Antwort …',
+    anonymousHint: 'Diese Umfrage ist anonym: Dein Name erscheint nicht in der Auswertung.',
     submit: 'Absenden',
     resubmit: 'Änderungen absenden',
-    submitted: 'Danke — Ihre Antworten sind abgegeben. Sie können sie ändern und erneut absenden.',
+    submitted: 'Danke — deine Antworten sind abgegeben. Du kannst sie ändern und erneut absenden.',
     unsaved: 'Geänderte Antworten sind noch nicht abgegeben.',
     previewHint: 'Vorschau: Antworten werden hier nicht gespeichert.',
     answered: (n: number, total: number): string => `${n} von ${total} beantwortet`,
@@ -392,7 +392,7 @@ export const de = {
     moveUp: 'Nach oben',
     moveDown: 'Nach unten',
     questionsHint:
-      'Ausgewertet wird je Kursdurchführung unter Administration → Kursdurchführung. Ändern Sie '
+      'Ausgewertet wird je Kursdurchführung unter Administration → Kursdurchführung. Ändere '
       + 'während einer laufenden Durchführung keine Fragen grundlegend: Antworten hängen an der Frage, '
       + 'nicht an ihrem Wortlaut.',
   },
