@@ -34,6 +34,7 @@ export const BLOCK_TYPES: BlockTypeMeta[] = [
   { type: 'agent_loop', label: 'Agent-Schleife', icon: '🔁', hint: 'Ausführung Schritt für Schritt wie im Debugger' },
   { type: 'hyde_compare', label: 'HyDE-Suche', icon: '🕵️', hint: 'Suche mit der Frage vs. mit erfundener Antwort' },
   { type: 'decision_model', label: 'Entscheidungsmodell', icon: '⚖️', hint: 'Typisierte Fragen, Wahrscheinlichkeiten, Schwelle' },
+  { type: 'poll', label: 'Umfrage', icon: '📊', hint: 'Ja/Nein, Skala 0–5, Freitext — Auswertung je Durchführung' },
 ]
 
 export const BLOCK_TYPE_LABEL: Record<BlockType, string> = BLOCK_TYPES.reduce(
@@ -213,6 +214,20 @@ export function makeNewArtifact(type: BlockType): Artifact {
         ],
         defaultQuestion: 'Wer zahlt den neuen Boiler?',
         topK: 2,
+      }
+    case 'poll':
+      return {
+        id,
+        type,
+        title: 'Ihre Rückmeldung zum Kurs',
+        instructions: 'Ihre Antworten helfen uns, den Kurs zu verbessern. Sie können sie bis zum Kursende ändern.',
+        anonymous: true,
+        questions: [
+          { id: 'q1', kind: 'scale', prompt: 'Wie nützlich war der Kurs für Ihre Arbeit?', minLabel: 'wenig', maxLabel: 'sehr' },
+          { id: 'q2', kind: 'scale', prompt: 'Wie verständlich waren die Inhalte?', minLabel: 'wenig', maxLabel: 'sehr' },
+          { id: 'q3', kind: 'yesno', prompt: 'Würden Sie den Kurs weiterempfehlen?' },
+          { id: 'q4', kind: 'text', prompt: 'Was sollen wir beim nächsten Mal anders machen?' },
+        ],
       }
     case 'decision_model':
       return {

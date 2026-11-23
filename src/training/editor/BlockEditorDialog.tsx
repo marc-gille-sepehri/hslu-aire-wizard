@@ -17,6 +17,8 @@ import type {
   AgentLoopArtifact,
   HydeCompareArtifact,
   DecisionModelArtifact,
+  PollArtifact,
+  PollQuestion,
   ObjectGraphArtifact,
   OntologyArtifact,
   ProseArtifact,
@@ -599,6 +601,120 @@ function HydeCompareEditor({ draft, set }: { draft: HydeCompareArtifact; set: (d
   )
 }
 
+const pt = labels.poll
+const POLL_KINDS: { kind: PollQuestion['kind']; label: string }[] = [
+  { kind: 'yesno', label: pt.kindYesno },
+  { kind: 'scale', label: pt.kindScale },
+  { kind: 'text', label: pt.kindText },
+]
+
+/** Neue Frage-id, die im Block noch nicht vorkommt (q1, q2, …). */
+function nextPollId(questions: PollQuestion[]): string {
+  const used = new Set(questions.map((q) => q.id))
+  let n = questions.length + 1
+  while (used.has(`q${n}`)) n++
+  return `q${n}`
+}
+
+function PollEditor({ draft, set }: { draft: PollArtifact; set: (d: PollArtifact) => void }) {
+  const questions = draft.questions ?? []
+  const setQuestions = (qs: PollQuestion[]) => set({ ...draft, questions: qs })
+  const update = (i: number, q: PollQuestion) => setQuestions(questions.map((x, j) => (j === i ? q : x)))
+  const move = (i: number, d: -1 | 1) => {
+    const j = i + d
+    if (j < 0 || j >= questions.length) return
+    const next = [...questions]
+    ;[next[i], next[j]] = [next[j], next[i]]
+    setQuestions(next)
+  }
+  // Typwechsel behält id und Frage; Skalenbeschriftungen fallen weg.
+  const changeKind = (q: PollQuestion, kind: PollQuestion['kind']): PollQuestion => ({ id: q.id, kind, prompt: q.prompt })
+
+  return (
+    <div className="space-y-4">
+      <Field label={t.fTitle}>
+        <TextInput value={draft.title ?? ''} onChange={(v) => set({ ...draft, title: v || undefined })} />
+      </Field>
+      <Field label={t.fInstructions}>
+        <TextArea value={draft.instructions ?? ''} rows={3} onChange={(v) => set({ ...draft, instructions: v || undefined })} />
+      </Field>
+      <label className="flex items-center gap-2 text-sm text-slate-700">
+        <input
+          type="checkbox"
+          checked={draft.anonymous === true}
+          onChange={(e) => set({ ...draft, anonymous: e.target.checked || undefined })}
+        />
+        {pt.fAnonymous}
+      </label>
+      <div>
+        <span className="mb-1 block text-xs font-semibold uppercase tracking-kicker text-slate-500">{pt.fQuestions}</span>
+        <div className="space-y-3">
+          {questions.map((q, i) => (
+            <div key={q.id} className="rounded-md border border-solid border-mist bg-white p-3">
+              <div className="mb-2 flex flex-wrap items-center gap-2">
+                <span className="font-sans text-xs font-bold text-slate-400">{i + 1}</span>
+                <div className="inline-flex overflow-hidden rounded-md border border-solid border-mist">
+                  {POLL_KINDS.map((k) => (
+                    <button
+                      key={k.kind}
+                      type="button"
+                      onClick={() => q.kind !== k.kind && update(i, changeKind(q, k.kind))}
+                      className={`px-2.5 py-1 font-sans text-xs font-semibold transition-colors ${
+                        q.kind === k.kind ? 'bg-navy text-white' : 'bg-white text-slate-600 hover:bg-cream'
+                      }`}
+                    >
+                      {k.label}
+                    </button>
+                  ))}
+                </div>
+                <span className="flex-1" />
+                <button type="button" onClick={() => move(i, -1)} disabled={i === 0} title={pt.moveUp} aria-label={pt.moveUp}
+                  className="rounded p-1 text-slate-400 hover:text-navy disabled:opacity-30">↑</button>
+                <button type="button" onClick={() => move(i, 1)} disabled={i === questions.length - 1} title={pt.moveDown} aria-label={pt.moveDown}
+                  className="rounded p-1 text-slate-400 hover:text-navy disabled:opacity-30">↓</button>
+                <button
+                  type="button"
+                  onClick={() => setQuestions(questions.filter((_, j) => j !== i))}
+                  disabled={questions.length <= 1}
+                  title={pt.removeQuestion}
+                  aria-label={pt.removeQuestion}
+                  className="rounded p-1 text-slate-300 transition-colors hover:text-red-700 disabled:opacity-30"
+                >
+                  ✕
+                </button>
+              </div>
+              <TextInput value={q.prompt} placeholder={pt.fPrompt} onChange={(v) => update(i, { ...q, prompt: v })} />
+              {q.kind === 'scale' && (
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <TextInput
+                    value={q.minLabel ?? ''}
+                    placeholder={`${pt.fMinLabel} (${pt.scaleMin})`}
+                    onChange={(v) => update(i, { ...q, minLabel: v || undefined })}
+                  />
+                  <TextInput
+                    value={q.maxLabel ?? ''}
+                    placeholder={`${pt.fMaxLabel} (${pt.scaleMax})`}
+                    onChange={(v) => update(i, { ...q, maxLabel: v || undefined })}
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => setQuestions([...questions, { id: nextPollId(questions), kind: 'scale', prompt: '' }])}
+          disabled={questions.length >= 30}
+          className="mt-2 rounded-md border-2 border-solid border-navy px-3 py-1.5 text-sm font-semibold text-navy transition-colors hover:bg-navy hover:text-white disabled:opacity-40"
+        >
+          {pt.addQuestion}
+        </button>
+        <p className="mt-1 text-xs text-slate-400">{pt.questionsHint}</p>
+      </div>
+    </div>
+  )
+}
+
 function DecisionModelEditor({ draft, set }: { draft: DecisionModelArtifact; set: (d: DecisionModelArtifact) => void }) {
   // Die Fragenliste braucht stabile Schlüssel zum Bearbeiten; gespeichert
   // werden nur die, die der Autor ohnehin hatte.
@@ -955,6 +1071,14 @@ export default function BlockEditorDialog({
   }, [onClose])
 
   const save = () => {
+    // Eine Umfragefrage ohne Text besteht die Validierung nicht und würde das
+    // ganze Modul am Speichern hindern — leere fallen hier weg.
+    if (draft.type === 'poll') {
+      const filled = draft.questions.filter((q) => q.prompt.trim())
+      updateArtifact(sectionId, artifact.id, { ...draft, questions: filled.length ? filled : draft.questions })
+      onClose()
+      return
+    }
     updateArtifact(sectionId, artifact.id, draft)
     onClose()
   }
@@ -1001,6 +1125,8 @@ export default function BlockEditorDialog({
         return <HydeCompareEditor draft={draft} set={setDraft} />
       case 'decision_model':
         return <DecisionModelEditor draft={draft} set={setDraft} />
+      case 'poll':
+        return <PollEditor draft={draft} set={setDraft} />
       default:
         return null
     }

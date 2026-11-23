@@ -394,3 +394,67 @@ export async function setDeactivated(email: string, deactivated: boolean): Promi
   const body = await res.json()
   return body.user as AdminUser
 }
+
+// ── Umfrageergebnisse je Kursdurchführung ──────────────────────────────────
+
+export type PollQuestionResult =
+  | { id: string; kind: 'yesno'; prompt: string; n: number; yes: number; no: number }
+  | {
+      id: string
+      kind: 'scale'
+      prompt: string
+      minLabel?: string
+      maxLabel?: string
+      n: number
+      /** Anzahl je Stufe 0..5. */
+      counts: number[]
+      mean: number | null
+    }
+  | { id: string; kind: 'text'; prompt: string; n: number; answers: { text: string; name?: string }[] }
+
+export interface PollResult {
+  moduleId: string
+  moduleTitle: string
+  artifactId: string
+  title: string
+  anonymous: boolean
+  participants: number
+  responses: number
+  questions: PollQuestionResult[]
+}
+
+export interface InstancePolls {
+  courseTitle: string
+  participants: number
+  polls: PollResult[]
+}
+
+export async function fetchInstancePolls(instanceId: string): Promise<InstancePolls> {
+  const res = await fetch(`${apiBaseUrl}/admin/course-instances/${encodeURIComponent(instanceId)}/polls`, {
+    headers: authHeaders(),
+  })
+  if (!res.ok) throw await parseError(res)
+  return (await res.json()) as InstancePolls
+}
+
+/**
+ * Lädt das CSV einer Umfrage herunter. Über fetch und nicht per Link, weil die
+ * Anfrage das Bearer-Token braucht; der Dateiname kommt vom Server.
+ */
+export async function downloadPollCsv(instanceId: string, moduleId: string, artifactId: string): Promise<void> {
+  const url =
+    `${apiBaseUrl}/admin/course-instances/${encodeURIComponent(instanceId)}` +
+    `/polls/${encodeURIComponent(moduleId)}/${encodeURIComponent(artifactId)}/csv`
+  const res = await fetch(url, { headers: authHeaders() })
+  if (!res.ok) throw await parseError(res)
+  const blob = await res.blob()
+  const name = /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') ?? '')?.[1] ?? 'umfrage.csv'
+  const href = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = href
+  a.download = name
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(href), 1000)
+}

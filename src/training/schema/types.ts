@@ -44,6 +44,7 @@ export type Artifact =
   | AgentLoopArtifact
   | HydeCompareArtifact
   | DecisionModelArtifact
+  | PollArtifact
 
 export type BaseArtifact = {
   id: string
@@ -266,4 +267,25 @@ export type DecisionModelArtifact = BaseArtifact & {
   questions: DecisionQuestion[]
   /** Schwelle in Prozent, ab der gehandelt statt vorgelegt wird, 50–99. Default 90. */
   threshold?: number
+}
+
+/**
+ * Eine Umfragefrage. Die `id` trägt die Auswertung — Antworten werden über sie
+ * zugeordnet. Einmal im Einsatz, nicht mehr umnummerieren.
+ */
+export type PollQuestion =
+  | { id: string; kind: 'yesno'; prompt: string }
+  /** Skala 0 bis 5; die Enden heissen standardmässig „wenig“ und „sehr“. */
+  | { id: string; kind: 'scale'; prompt: string; minLabel?: string; maxLabel?: string }
+  | { id: string; kind: 'text'; prompt: string }
+
+export type PollArtifact = BaseArtifact & {
+  type: 'poll'
+  title?: string
+  /** Text über den Fragen. */
+  instructions?: string
+  /** 1–30 Fragen. */
+  questions: PollQuestion[]
+  /** Namen erscheinen weder im Dashboard noch im CSV. */
+  anonymous?: boolean
 }

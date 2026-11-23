@@ -58,6 +58,8 @@ export type Interaction =
   | { type: 'selection'; selectedIndex?: number; selectedOptionId?: string; correct: boolean }
   | { type: 'prompt'; prompt: string; model?: string }
   | { type: 'reflect'; text: string }
+  // Umfrage: Antworten je Frage-id. Erst beim Absenden geschrieben.
+  | { type: 'poll'; answers: Record<string, boolean | number | string> }
   | { type: 'bpmn'; xml: string }
   | { type: 'mcp'; url?: string; toolName?: string; urlEntered: boolean; toolFired: boolean }
   | { type: 'ontology'; explored: boolean }

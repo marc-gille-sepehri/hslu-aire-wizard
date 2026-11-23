@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { labels } from '../labels'
 import { listCourseInstances, type CourseInstance, type InstancePerson } from './adminApi'
 import InstanceDialog from './InstanceDialog'
+import PollResultsDialog from './PollResultsDialog'
 
 const t = labels.adminInstances
 
@@ -43,6 +44,16 @@ function EnvelopeIcon() {
   )
 }
 
+/** Balkendiagramm-Symbol, aus Pfaden (siehe EnvelopeIcon). */
+function ChartIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 3v18h18" />
+      <path d="M8 17v-5M13 17V8M18 17v-8" />
+    </svg>
+  )
+}
+
 /** Comma-separated people names, with the count when there are several. */
 function People({ people }: { people: InstancePerson[] }) {
   if (people.length === 0) return <span className="text-slate-400">—</span>
@@ -59,6 +70,7 @@ export default function InstancesTab() {
   const [error, setError] = useState<string | null>(null)
   // null = closed; { instance: null } = create; { instance } = edit.
   const [dialog, setDialog] = useState<{ instance: CourseInstance | null } | null>(null)
+  const [results, setResults] = useState<CourseInstance | null>(null)
 
   const reload = useCallback(() => {
     listCourseInstances()
@@ -124,6 +136,15 @@ export default function InstancesTab() {
                         <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
                       </svg>
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => setResults(i)}
+                      aria-label={t.results}
+                      title={t.results}
+                      className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-cream hover:text-navy"
+                    >
+                      <ChartIcon />
+                    </button>
                     {i.participants.length > 0 ? (
                       <a
                         href={mailtoAll(i)}
@@ -156,6 +177,8 @@ export default function InstancesTab() {
           </tbody>
         </table>
       </div>
+
+      {results && <PollResultsDialog instance={results} onClose={() => setResults(null)} />}
 
       {dialog && (
         <InstanceDialog

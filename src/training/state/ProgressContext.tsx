@@ -151,3 +151,8 @@ export function useSavedInteraction(artifactId: string): { interaction: unknown;
   if (!ctx) return { interaction: undefined, loaded: true }
   return { interaction: ctx.saved[artifactId], loaded: ctx.savedLoaded }
 }
+
+/** The context, or null on the course-less preview/edit path (nothing is saved there). */
+export function useProgressOptional(): ProgressContextValue | null {
+  return useContext(ProgressContext)
+}

@@ -20,6 +20,7 @@ import Orchestration from './Orchestration'
 import AgentLoop from './AgentLoop'
 import HydeCompare from './HydeCompare'
 import DecisionModel from './DecisionModel'
+import Poll from './Poll'
 
 type ArtifactComponent<T extends Artifact = Artifact> = ComponentType<{ artifact: T }>
 
@@ -44,4 +45,5 @@ export const artifactComponents: Record<Artifact['type'], ArtifactComponent<any>
   agent_loop: AgentLoop,
   hyde_compare: HydeCompare,
   decision_model: DecisionModel,
+  poll: Poll,
 }

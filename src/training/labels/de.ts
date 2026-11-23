@@ -364,6 +364,39 @@ export const de = {
     error: 'Die Suche ist fehlgeschlagen.',
   },
 
+  // Umfrage-Baustein (Teilnehmende)
+  poll: {
+    yes: 'Ja',
+    no: 'Nein',
+    scaleMin: 'wenig',
+    scaleMax: 'sehr',
+    textPlaceholder: 'Ihre Antwort …',
+    anonymousHint: 'Diese Umfrage ist anonym: Ihr Name erscheint nicht in der Auswertung.',
+    submit: 'Absenden',
+    resubmit: 'Änderungen absenden',
+    submitted: 'Danke — Ihre Antworten sind abgegeben. Sie können sie ändern und erneut absenden.',
+    unsaved: 'Geänderte Antworten sind noch nicht abgegeben.',
+    previewHint: 'Vorschau: Antworten werden hier nicht gespeichert.',
+    answered: (n: number, total: number): string => `${n} von ${total} beantwortet`,
+    // Editor
+    kindYesno: 'Ja/Nein',
+    kindScale: 'Skala 0–5',
+    kindText: 'Freitext',
+    fQuestions: 'Fragen',
+    fPrompt: 'Frage',
+    fMinLabel: 'Beschriftung 0',
+    fMaxLabel: 'Beschriftung 5',
+    fAnonymous: 'Anonym auswerten (keine Namen in Dashboard und CSV)',
+    addQuestion: '+ Frage',
+    removeQuestion: 'Frage entfernen',
+    moveUp: 'Nach oben',
+    moveDown: 'Nach unten',
+    questionsHint:
+      'Ausgewertet wird je Kursdurchführung unter Administration → Kursdurchführung. Ändern Sie '
+      + 'während einer laufenden Durchführung keine Fragen grundlegend: Antworten hängen an der Frage, '
+      + 'nicht an ihrem Wortlaut.',
+  },
+
   decision: {
     title: 'Entscheiden mit Wahrscheinlichkeiten',
     engineJev: (model: string): string => `Jev · ${model}`,
@@ -716,6 +749,18 @@ export const de = {
     fTrainers: 'Trainer',
     fStart: 'Startdatum',
     version: (n: number): string => `Version ${n}`,
+    results: 'Umfrageergebnisse',
+    resultsTitle: (course: string): string => `Umfrageergebnisse · ${course}`,
+    resultsLoading: 'Wird ausgewertet …',
+    resultsNone: 'Dieser Kurs enthält keine Umfrage.',
+    resultsResponses: (n: number, of: number): string => `${n} von ${of} Teilnehmenden haben abgegeben`,
+    resultsAnonymous: 'anonym',
+    resultsCsv: 'CSV herunterladen',
+    resultsCsvError: 'CSV konnte nicht heruntergeladen werden.',
+    resultsMean: (m: string): string => `Ø ${m}`,
+    resultsAnswers: (n: number): string => `${n} ${n === 1 ? 'Antwort' : 'Antworten'}`,
+    resultsNoAnswers: 'Noch keine Antworten.',
+    resultsClose: 'Schliessen',
     noCourses:
       'Kein Kurs ist als „Braucht Durchführung" gekennzeichnet. Setze das Kennzeichen im Kurskatalog, dann lässt sich hier eine Durchführung anlegen.',
     searchPlaceholder: 'Nach Name oder E-Mail filtern …',

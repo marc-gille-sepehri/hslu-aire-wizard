@@ -114,6 +114,31 @@ const decisionModelArtifact = baseArtifact.extend({
   threshold: z.number().int().min(50).max(99).optional(),
 })
 
+// Dieselben Grenzen wie der Server (mcp/authoring/schema.ts).
+const pollQuestion = z.discriminatedUnion('kind', [
+  z.object({ id: z.string().min(1).max(100), kind: z.literal('yesno'), prompt: z.string().min(1).max(500) }),
+  z.object({
+    id: z.string().min(1).max(100),
+    kind: z.literal('scale'),
+    prompt: z.string().min(1).max(500),
+    minLabel: z.string().max(60).optional(),
+    maxLabel: z.string().max(60).optional(),
+  }),
+  z.object({ id: z.string().min(1).max(100), kind: z.literal('text'), prompt: z.string().min(1).max(500) }),
+])
+
+const pollArtifact = baseArtifact.extend({
+  type: z.literal('poll'),
+  title: z.string().optional(),
+  instructions: z.string().optional(),
+  questions: z
+    .array(pollQuestion)
+    .min(1)
+    .max(30)
+    .refine((qs) => new Set(qs.map((q) => q.id)).size === qs.length, { message: 'Frage-ids müssen eindeutig sein' }),
+  anonymous: z.boolean().optional(),
+})
+
 const agentTraceArtifact = baseArtifact.extend({
   type: z.literal('agent_trace'),
   title: z.string().optional(),
@@ -229,6 +254,7 @@ const artifact = z.discriminatedUnion('type', [
   agentLoopArtifact,
   hydeCompareArtifact,
   decisionModelArtifact,
+  pollArtifact,
 ])
 
 const section = z.object({
