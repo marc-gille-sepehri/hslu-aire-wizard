@@ -38,6 +38,8 @@ export default function Poll({ artifact }: { artifact: PollArtifact }) {
   const [answers, setAnswers] = useState<Answers>({})
   // Was zuletzt abgegeben wurde; null = noch nie.
   const [submitted, setSubmitted] = useState<Answers | null>(null)
+  const [sending, setSending] = useState(false)
+  const [failed, setFailed] = useState(false)
 
   // Erst nach dem Laden wiederherstellen — sonst überschreibt ein leerer
   // Anfangszustand, was die Person schon abgegeben hat.
@@ -50,7 +52,10 @@ export default function Poll({ artifact }: { artifact: PollArtifact }) {
     }
   }, [loaded, interaction])
 
-  const set = (id: string, v: Answer) => setAnswers((a) => ({ ...a, [id]: v }))
+  const set = (id: string, v: Answer) => {
+    setFailed(false)
+    setAnswers((a) => ({ ...a, [id]: v }))
+  }
 
   const answeredCount = useMemo(
     () => questions.filter((q) => cleaned(answers)[q.id] !== undefined).length,
@@ -60,13 +65,23 @@ export default function Poll({ artifact }: { artifact: PollArtifact }) {
   // Ohne Fortschrittskontext (Editor-Vorschau) wird nichts gespeichert.
   const preview = !progress
 
-  const submit = () => {
+  // Erst nach der Bestätigung des Servers als abgegeben zeigen — vorher hiess es
+  // „Danke“, auch wenn die Antworten nie angekommen sind.
+  const submit = async () => {
     const out = cleaned(answers)
-    if (Object.keys(out).length === 0) return
-    record(artifact.id, { type: 'poll', answers: out })
+    if (Object.keys(out).length === 0 || sending) return
+    setSending(true)
+    setFailed(false)
+    const ok = preview ? true : await record(artifact.id, { type: 'poll', answers: out })
+    setSending(false)
+    if (!ok) {
+      setFailed(true)
+      return
+    }
     setSubmitted(out)
     if (artifact.tracked !== false) markComplete(artifact.id)
   }
+  const done = submitted !== null && !dirty
 
   // Preflight ist aus: Überschriften, Absätze und Buttons bringen Browser-
   // Abstände und -Rahmen mit. Darum hier alles ausdrücklich, auch m-0.
@@ -108,18 +123,32 @@ export default function Poll({ artifact }: { artifact: PollArtifact }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-0 border-t border-solid border-mist pt-4">
-        <button
-          type="button"
-          onClick={submit}
-          disabled={!dirty || answeredCount === 0}
-          className="cursor-pointer rounded-md border-0 bg-gold px-5 py-2 font-sans text-sm font-semibold text-navy transition-colors hover:bg-gold-dark disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {submitted ? t.resubmit : t.submit}
-        </button>
+        {done ? (
+          // Abgegeben ist ein Zustand, kein ausgegrauter Knopf — der sah aus, als hänge er.
+          <span className="inline-flex items-center gap-2 rounded-md bg-navy/5 px-4 py-2 text-sm font-semibold text-navy">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            {t.done}
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={() => void submit()}
+            disabled={answeredCount === 0 || sending}
+            className="cursor-pointer rounded-md border-0 bg-gold px-5 py-2 font-sans text-sm font-semibold text-navy transition-colors hover:bg-gold-dark disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {sending ? t.sending : submitted ? t.resubmit : t.submit}
+          </button>
+        )}
         <span className="text-xs text-slate-500">{t.answered(answeredCount, questions.length)}</span>
-        <span className="text-xs text-slate-500">
-          {preview ? t.previewHint : submitted && !dirty ? t.submitted : submitted && dirty ? t.unsaved : null}
-        </span>
+        {failed ? (
+          <span className="text-xs font-semibold text-red-700">{t.failed}</span>
+        ) : (
+          <span className="text-xs text-slate-500">
+            {preview ? t.previewHint : done ? t.submitted : submitted ? t.unsaved : null}
+          </span>
+        )}
       </div>
     </div>
   )
