@@ -504,7 +504,9 @@ export const de = {
     deactivate: 'Deaktivieren',
     reactivate: 'Reaktivieren',
     noUsers: 'Keine Nutzer vorhanden.',
-    searchUsers: 'Suchen: Name, E-Mail, Kunde, Ort, Strasse …',
+    searchUsers: 'Suchen: Name, E-Mail, Kunde, Ort, Strasse, Rolle …',
+    usersCount: (n: number): string => `${n} ${n === 1 ? 'Person' : 'Personen'}`,
+    usersCountFiltered: (n: number, of: number): string => `${n} von ${of}`,
     noSearchMatch: (total: number): string => `Kein Treffer unter ${total} Nutzern.`,
     loadError: 'Nutzer konnten nicht geladen werden.',
     // Create dialog

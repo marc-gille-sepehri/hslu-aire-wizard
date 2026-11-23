@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { SortTh, sortBy, useSort } from './sorting'
 import '../styles.css'
 import { labels } from '../labels'
 import { useAuth } from '../auth/AuthContext'
@@ -155,6 +156,24 @@ function AdminPanel({ limited }: { limited: boolean }) {
  * der plattformweiten Rolle vorbehalten — der Server weist sie ohnehin ab, und
  * Knöpfe anzubieten, die in ein 403 laufen, ist schlechter als keine Knöpfe.
  */
+type UserSortKey = 'name' | 'email' | 'customer' | 'roles' | 'status'
+
+/** Nachname zuerst — so sucht man in einer Teilnehmerliste. */
+function userSortValue(u: AdminUser, key: UserSortKey): string {
+  switch (key) {
+    case 'name':
+      return `${u.lastName ?? ''} ${u.firstName ?? ''}`.trim()
+    case 'email':
+      return u.email
+    case 'customer':
+      return u.customerName ?? ''
+    case 'roles':
+      return [...u.roles].sort().join(' ')
+    case 'status':
+      return u.deactivated ? '1' : '0'
+  }
+}
+
 function UsersTab({ limited = false }: { limited?: boolean }) {
   const [users, setUsers] = useState<AdminUser[] | null>(null)
   const [showDeactivated, setShowDeactivated] = useState(false)
@@ -167,6 +186,7 @@ function UsersTab({ limited = false }: { limited?: boolean }) {
   /** Half-successes: the user exists, something after it did not work. */
   const [notice, setNotice] = useState<string | null>(null)
   const [search, setSearch] = useState('')
+  const { sort, toggle: toggleSort } = useSort<UserSortKey>('name')
 
   const load = async (includeDeactivated: boolean) => {
     setError(null)
@@ -196,7 +216,8 @@ function UsersTab({ limited = false }: { limited?: boolean }) {
 
   // Beide Listen sind vollständig geladen (Dutzende Einträge), also wird im
   // Browser gefiltert — ein Server-Umweg brächte nur Wartezeit pro Tastendruck.
-  const shown = (users ?? []).filter((u) =>
+  const all = users ?? []
+  const filtered = all.filter((u) =>
     matchesSearch(search, [
       u.firstName,
       u.lastName,
@@ -204,8 +225,10 @@ function UsersTab({ limited = false }: { limited?: boolean }) {
       u.customerName,
       u.customerCity,
       u.customerStreet,
+      ...u.roles,
     ]),
   )
+  const shown = sortBy(filtered, (u) => userSortValue(u, sort.key), sort.dir)
 
   return (
     <div>
@@ -216,6 +239,11 @@ function UsersTab({ limited = false }: { limited?: boolean }) {
           placeholder={t.searchUsers}
           className="min-w-0 flex-1 rounded-md border border-mist bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-navy focus:ring-4 focus:ring-gold/20"
         />
+        {users && (
+          <span className="text-sm tabular-nums text-slate-500">
+            {search.trim() ? t.usersCountFiltered(shown.length, all.length) : t.usersCount(all.length)}
+          </span>
+        )}
         <label className="flex items-center gap-2 text-sm text-slate-700">
           <input
             type="checkbox"
@@ -280,11 +308,11 @@ function UsersTab({ limited = false }: { limited?: boolean }) {
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="bg-cream text-xs uppercase tracking-kicker text-slate-500">
-              <th className="px-4 py-3 font-semibold">{t.colName}</th>
-              <th className="px-4 py-3 font-semibold">{t.colEmail}</th>
-              <th className="px-4 py-3 font-semibold">{t.colCustomer}</th>
-              <th className="px-4 py-3 font-semibold">{t.colRoles}</th>
-              <th className="px-4 py-3 font-semibold">{t.colStatus}</th>
+              <SortTh label={t.colName} sortKey="name" sort={sort} onSort={toggleSort} />
+              <SortTh label={t.colEmail} sortKey="email" sort={sort} onSort={toggleSort} />
+              <SortTh label={t.colCustomer} sortKey="customer" sort={sort} onSort={toggleSort} />
+              <SortTh label={t.colRoles} sortKey="roles" sort={sort} onSort={toggleSort} />
+              <SortTh label={t.colStatus} sortKey="status" sort={sort} onSort={toggleSort} />
               <th className="px-4 py-3 font-semibold text-right">{t.colActions}</th>
             </tr>
           </thead>
