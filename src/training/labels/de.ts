@@ -18,6 +18,7 @@ export const de = {
   objectives: 'Lernziele',
   prev: 'Zurück',
   next: 'Weiter',
+  finishModule: 'Modul abschliessen',
   submit: 'Antwort prüfen',
   tryAgain: 'Erneut versuchen',
   correct: 'Richtig',

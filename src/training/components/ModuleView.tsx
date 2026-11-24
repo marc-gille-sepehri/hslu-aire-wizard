@@ -16,7 +16,7 @@ import HistoryDrawer from '../editor/HistoryDrawer'
 import RevisionPreview from '../editor/RevisionPreview'
 import { loadRevision, restoreRevision } from '../lib/revisionApi'
 import { DraftRecoveryDialog, StaleDraftDialog } from '../editor/DraftDialogs'
-import { artifactFromHash, sectionUrl } from '../routing/courseUrls'
+import { artifactFromHash, courseUrl, sectionUrl } from '../routing/courseUrls'
 import { NotFound } from '../routing/CourseRouter'
 
 export default function ModuleView({
@@ -383,14 +383,25 @@ function ModuleViewInner({
             >
               ← {labels.prev}
             </button>
-            <button
-              type="button"
-              onClick={() => canNext && goToSection(sectionIndex + 1)}
-              disabled={!canNext}
-              className="rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-slate-500 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {labels.next} →
-            </button>
+            {canNext ? (
+              <button
+                type="button"
+                onClick={() => goToSection(sectionIndex + 1)}
+                className="rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-slate-500"
+              >
+                {labels.next} →
+              </button>
+            ) : (
+              // Letzter Abschnitt: ein ausgegrautes „Weiter“ sah aus, als sei
+              // etwas nicht fertig. Hier geht es zurück zum Kurs.
+              <button
+                type="button"
+                onClick={() => navigate(courseId ? courseUrl(courseId) : '/training')}
+                className="rounded-md border-0 bg-gold px-4 py-2 text-sm font-semibold text-navy hover:bg-gold-dark"
+              >
+                {labels.finishModule} →
+              </button>
+            )}
           </footer>
         </div>
       </LearnerStateProvider>
